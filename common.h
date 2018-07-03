@@ -6,7 +6,7 @@
 #define FLAG_DESTR 0x4
 
 typedef struct tile{
-	chtype symbol;
+	chtype s;
   int flags;
 } tile_t;
 
@@ -31,5 +31,4 @@ typedef struct map{
  * 		}
  * }
 */
-#define UNPACK(varname, map_ptr) char (*varname)[(map_ptr)->width] = (char (*)[(map_ptr)->width]) map_ptr->buffer 
 
