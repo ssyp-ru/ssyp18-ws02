@@ -15,7 +15,7 @@ void drawMap(map_t* mapPacked)
 	{
 		for(int j = 0; j < mapPacked->height; j++)
 		{
-			mvaddch(j, i, map[j][i]);
+			mvaddch(j, i, map[j][i].symbol);
 		}
 	}
 
@@ -31,9 +31,33 @@ void generateRoom(map_t* mapPacked, int width, int height, int x, int y)
 	{
 		for(int j = y; j < y + height; j++)
 		{
-			map[j][i] = ' ';
+			map[j][i] = ' ' | COLOR_PAIR(1);
 		}
 	}
+}
+
+
+map_t makeMap(int width, int height)
+{
+	map_t* mapPacked = malloc(sizeof(map_t));
+	mapPacked->buffer = calloc(width * height, sizeof(int));
+	mapPacked->width = width;
+	mapPacked->height = height;
+
+	UNPACK(map, mapPacked);
+	
+	init_pair(1, COLOR_WHITE, COLOR_BLACK);
+
+	time_t t;
+	srand((unsigned) time(&t));
+	
+	for(int i = 0 ; i < width; i++)
+		for(int j = 0; j < height; j++)
+			mapArray[j][i] = '.' | COLOR_PAIR(1);
+
+	buildWall(mapPacked, width, height, rand() % 2, 0, 0);
+
+	return mapPacked;
 }
 
 
@@ -52,7 +76,7 @@ void buildWall(map_t* mapPacked, int width, int height,
 			wallLoc = rand() % (height - 2) + 1 + y;
 
 		for(int i = x; i < x + width; i++)
-			map[wallLoc][i] = '#';
+			map[wallLoc][i] = '#' | COLOR_PAIR(1);
 
 		if(width > 2 && wallLoc - y > 2)
 			if(rand() % 15 < 13 || width > mapPacked->width / 4 
@@ -92,7 +116,7 @@ void buildWall(map_t* mapPacked, int width, int height,
 			gateLoc = possibleHoleSpots[0];
 		else
 			gateLoc = possibleHoleSpots[rand() % it];
-		map[wallLoc][gateLoc] = '.';
+		map[wallLoc][gateLoc] = '.' | COLOR_PAIR(1);
 	}
 	else
 	{
