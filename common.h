@@ -1,3 +1,5 @@
+#pragma once
+
 typedef struct map_t {
 	char * buffer;
 	int height, width;
