@@ -4,6 +4,8 @@
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
+#include <ncurses.h>
+
 /**
  * This macros defines a new variable which allows to access map_t.buffer
  * as a two-dimensional array with width of map_t.width.
@@ -26,7 +28,7 @@ typedef struct tile{
 
 typedef struct map{
 	tile_t * buffer;
-	int height, int width;
+	int height, width;
 } map_t;	
 
 

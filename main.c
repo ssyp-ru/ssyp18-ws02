@@ -16,7 +16,7 @@ int main()
 	start_color();
 
 
-	map_t map = generateMap(width, height);
+	map_t* map = generateMap(width, height);
 	drawMap(map);
 
 	getch();

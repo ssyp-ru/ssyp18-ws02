@@ -31,13 +31,14 @@ void generateRoom(map_t* mapPacked, int width, int height, int x, int y)
 	{
 		for(int j = y; j < y + height; j++)
 		{
-			map[j][i] = ' ' | COLOR_PAIR(1);
+			map[j][i].symbol = ' ' | COLOR_PAIR(1);
+			map[j][i].flags |= FLAG_PERM;			
 		}
 	}
 }
 
 
-map_t makeMap(int width, int height)
+map_t* generateMap(int width, int height)
 {
 	map_t* mapPacked = malloc(sizeof(map_t));
 	mapPacked->buffer = calloc(width * height, sizeof(int));
@@ -53,8 +54,10 @@ map_t makeMap(int width, int height)
 	
 	for(int i = 0 ; i < width; i++)
 		for(int j = 0; j < height; j++)
-			mapArray[j][i] = '.' | COLOR_PAIR(1);
-
+		{
+			map[j][i].symbol = '.' | COLOR_PAIR(1);
+			map[j][i].flags |= FLAG_PERM;
+		}
 	buildWall(mapPacked, width, height, rand() % 2, 0, 0);
 
 	return mapPacked;
@@ -76,27 +79,42 @@ void buildWall(map_t* mapPacked, int width, int height,
 			wallLoc = rand() % (height - 2) + 1 + y;
 
 		for(int i = x; i < x + width; i++)
-			map[wallLoc][i] = '#' | COLOR_PAIR(1);
-
+		{
+			map[wallLoc][i].symbol = '#' | COLOR_PAIR(1);
+			map[wallLoc][i].flags &= ~FLAG_PERM;
+		}
 		if(width > 2 && wallLoc - y > 2)
+		{
 			if(rand() % 15 < 13 || width > mapPacked->width / 4 
 			|| wallLoc - y > mapPacked->height / 4)
+			{
 				buildWall(mapPacked, width, wallLoc - y,
-									wallLoc - y >= width, x, y);
+				wallLoc - y >= width, x, y);
+			}
 			else if(width > mapPacked->width / 20
 			|| wallLoc - y > mapPacked->height / 20)
+			{
 				generateRoom(mapPacked, width, wallLoc - y, x, y);
+			}
+		}
 		else if(width >= 2 && wallLoc - y >= 2)
 			generateRoom(mapPacked, width, wallLoc - y, x, y);
 
 		if(width > 2 && height - wallLoc + y - 1 > 2)
+		{
 			if(rand() % 15 < 13 || width > mapPacked->width / 4
 			|| height - wallLoc + y - 1 > mapPacked->height / 4)
+			{
 				buildWall(mapPacked, width, height - wallLoc + y - 1,
-									height - wallLoc + y - 1 >= width, x, wallLoc + 1);
+				height - wallLoc + y - 1 >= width, x, wallLoc + 1);
+			}
 			else if(width > mapPacked->width / 20 
 			|| height - wallLoc + y - 1 > mapPacked->height / 20)
-				generateRoom(mapPacked, width, height - wallLoc + y - 1, x, wallLoc + 1);
+			{
+				generateRoom(mapPacked, width,
+				height - wallLoc + y - 1, x, wallLoc + 1);
+			}
+		}
 		else if(width >= 2 && height - wallLoc + y - 1 >= 2)
 			generateRoom(mapPacked, width, height - wallLoc + y - 1, x, wallLoc + 1);
 
@@ -105,8 +123,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 		int possibleHoleSpots[width];
 
 		for(int i = x; i < x + width; i++)
-			if((map[wallLoc - 1][i] == '.' || map[wallLoc - 1][i] == ' ')
-			&& (map[wallLoc + 1][i] == '.' || map[wallLoc + 1][i] == ' '))
+			if((map[wallLoc + 1][i].flags & FLAG_PERM) != 0 
+			&& (map[wallLoc + 1][i].flags & FLAG_PERM) != 0)
 			{
 				possibleHoleSpots[it] = i;
 				it++;
@@ -116,7 +134,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 			gateLoc = possibleHoleSpots[0];
 		else
 			gateLoc = possibleHoleSpots[rand() % it];
-		map[wallLoc][gateLoc] = '.' | COLOR_PAIR(1);
+		map[wallLoc][gateLoc].symbol = '.' | COLOR_PAIR(1);
+		map[wallLoc][gateLoc].flags |= FLAG_PERM; 
 	}
 	else
 	{
@@ -128,26 +147,41 @@ void buildWall(map_t* mapPacked, int width, int height,
 			wallLoc = rand() % (width - 2) + 1 + x;
 
 		for(int i = y; i < y + height; i++)
-			map[i][wallLoc] = '#';
-
+		{
+			map[i][wallLoc].symbol = '#' | COLOR_PAIR(1);
+			map[i][wallLoc].flags &= ~FLAG_PERM;
+		}
 		if(wallLoc - x > 2 && height > 2)
+		{
 			if(rand() % 15 < 13 || wallLoc - x > mapPacked->width / 4
 			|| height > mapPacked->height / 4)
+			{
 				buildWall(mapPacked, wallLoc - x, height, height >= wallLoc - x, x, y);
+			}
 			else if(wallLoc - x > mapPacked->width / 20
 			|| height > mapPacked->height / 20)
+			{
 				generateRoom(mapPacked, wallLoc - x, height, x, y);
+			}
+		}
 		else if(wallLoc - x >= 2 && height >= 2)
 			generateRoom(mapPacked, wallLoc - x, height, x, y);
 
 		if(width - wallLoc + x - 1 > 2 && height > 2)
+		{
 			if(rand() % 15 < 13 || width - wallLoc + x - 1 > mapPacked->width / 4
 			|| height > mapPacked->height / 4)
+			{	
 				buildWall(mapPacked, width - wallLoc + x - 1, height, 
-									height >= width - wallLoc + x - 1, wallLoc + 1, y);
+				height >= width - wallLoc + x - 1, wallLoc + 1, y);
+			}
 			else if(width - wallLoc + x - 1 > mapPacked->width / 20
 			|| height > mapPacked->height / 20)
-				generateRoom(mapPacked, width - wallLoc + x - 1, height, wallLoc + 1, y);
+			{
+				generateRoom(mapPacked, width - wallLoc + x - 1, 
+										height, wallLoc + 1, y);
+			}
+		}
 		else if(width - wallLoc + x - 1 >= 2 && height > 2)
 			generateRoom(mapPacked, width - wallLoc + x - 1, height, wallLoc + 1, y);
 
@@ -156,8 +190,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 		int possibleHoleSpots[height];
 
 		for(int i = y; i < y + height; i++)
-			if((map[i][wallLoc - 1] == '.' || map[i][wallLoc - 1] == ' ')
-			&& (map[i][wallLoc + 1] == '.' || map[i][wallLoc + 1] == ' '))
+			if((map[i][wallLoc - 1].flags & FLAG_PERM) != 0
+			&& (map[i][wallLoc + 1].flags & FLAG_PERM) != 0)
 			{
 				possibleHoleSpots[it] = i;
 				it++;
@@ -168,7 +202,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 		else
 			gateLoc = possibleHoleSpots[rand() % it];
 
-		map[gateLoc][wallLoc] = '.';
+		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(1);
+		map[gateLoc][wallLoc].flags |= FLAG_PERM;
 	}
 
 }
