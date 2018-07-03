@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 #define PI 3.14159265358979323846
-
+#define COLOR_GREY COLOR_MAGENTA
+#define COLOR_BROWN COLOR_CYAN
 int main(int argc, char*argv[]){
 	initscr();
 	start_color();
@@ -27,10 +28,16 @@ int main(int argc, char*argv[]){
 		int type;
 		int dirX;
 		int dirY;
-	};	
+	};
+	init_color(COLOR_GREY,300, 300, 300);	
+	init_color(COLOR_BROWN,200, 100, 0);
 	init_pair(1, COLOR_RED, COLOR_BLACK);	
 	init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-	//attron(COLOR_PAIR(1));
+	init_pair(3,COLOR_BLUE, COLOR_BLACK);
+	init_pair(4,COLOR_GREEN, COLOR_BLACK);
+	init_pair(5,COLOR_BLUE, COLOR_BLACK);
+	init_pair(6,COLOR_GREY, COLOR_BLACK);
+	init_pair(7,COLOR_BROWN, COLOR_BLACK);
 	struct bullet bullets[100];
 	srand(time(NULL));
 	getmaxyx(stdscr,sizeY,sizeX);
@@ -210,21 +217,29 @@ int main(int argc, char*argv[]){
 						mvprintw(i1, i2 + step, ".");
 						break;
 					case 3:	
-						attron(COLOR_PAIR(1));
+						attron(COLOR_PAIR(7));
 						mvprintw(i1, i2 + step, "/");	
-						attroff(COLOR_PAIR(1));
+						attroff(COLOR_PAIR(7));
 						break;
 					case 4:
+						attron(COLOR_PAIR(2));
 						mvprintw(i1, i2 + step, "P");
+						attroff(COLOR_PAIR(2));
 						break; 
 					case 5:
+						attron(COLOR_PAIR(4));
 						mvprintw(i1, i2 + step, "$");
+						attroff(COLOR_PAIR(4));
 						break;
 					case 6:
+						attron(COLOR_PAIR(7));
 						mvprintw(i1, i2 + step, "Y");
+						attroff(COLOR_PAIR(7));
 						break;
 					case 7:
+						attron(COLOR_PAIR(6));
 						mvprintw(i1, i2 + step, "*");
+						attroff(COLOR_PAIR(6));
 						break;
 				}
 			}		
@@ -236,6 +251,7 @@ int main(int argc, char*argv[]){
 				findMap[k][i] = -1;
 				//if(xView * xView + yView * yView > viewRadius * viewRadius){
 					if(map[k][i] == 2){
+						attron(COLOR_PAIR(6));
 						if(k == 0 || k == sizeY - 1 ||
 							i == 0 || i == sizeX - 1){
 							mvprintw(k,i + step,"#");
@@ -245,7 +261,13 @@ int main(int argc, char*argv[]){
 								mvprintw(k,i + step,"-");
 							else
 								mvprintw(k, i + step, "|");
-							}
+							if(map[k - 1][i] == 2 
+							&& map[k + 1][i] == 2
+							&& map[k][i - 1] == 2 
+							&& map[k][i + 1] == 2)
+								mvprintw(k, i + step, "#");
+						}
+						attroff(COLOR_PAIR(6));
 					}
 			}
 		}
@@ -447,5 +469,3 @@ int main(int argc, char*argv[]){
 	getch();
 	endwin();		
 } 
-//chtype ch = '#' | COLOR_PAIR(1);
-//mvaddch(1,20, ch);
