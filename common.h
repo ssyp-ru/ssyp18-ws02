@@ -5,7 +5,8 @@ typedef struct tile{
 
 typedef struct map{
 	tile_t * buffer;
-	int height, int width;
+	int height;
+ 	int width;
 } map_t;	
 
 

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include "common.h"
 #define PI 3.14159265358979323846
 #define COLOR_GREY COLOR_MAGENTA
 #define COLOR_BROWN COLOR_CYAN
@@ -43,7 +44,10 @@ int main(int argc, char*argv[]){
 	getmaxyx(stdscr,sizeY,sizeX);
 	xPos = 40;
 	yPos = 20;
+	map_t_width = sizeX;
+	map_t_width = sizeY;
 	sizeX -= step;
+	UNPACK(map, map_t);
 	int map[sizeY][sizeX];
 	int findMap[sizeY][sizeX];
 	
