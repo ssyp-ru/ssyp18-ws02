@@ -45,8 +45,8 @@ int main(int argc, char*argv[]){
 	xPos = 40;
 	yPos = 20;
 	sizeX -= step;
-	map_t* map_;
-	UNPACK(map, map_t);
+//	map_t* map_;
+//	UNPACK(map, map_t);
 	int map[sizeY][sizeX];
 	int findMap[sizeY][sizeX];
 	
