@@ -1,4 +1,4 @@
-struct map_t {
+typedef struct map_t {
 	char * buffer;
 	int height, width;
 } map_t;
