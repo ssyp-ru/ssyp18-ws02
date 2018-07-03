@@ -1,4 +1,7 @@
+#pragma once
+
 #include <ncurses.h>
+
 
 #define FLAG_PERM  0x1
 #define FLAG_TRANS 0x2
@@ -11,7 +14,7 @@ typedef struct tile{
 
 typedef struct map{
 	tile_t * buffer;
-	int height, int width;
+	int height, width;
 } map_t;	
 
 
