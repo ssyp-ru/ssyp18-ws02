@@ -2,9 +2,9 @@ CC=gcc
 LD=ld
 CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0
 LDLIBS=-lncurses
-SOURCES=main.c
-OBJECTS=$(SOURCES:.c=.o)
+SOURCES=mapgen.c level.c actors.c main.c roomvector.c
 EXECUTABLE=main
+OBJECTS=$(SOURCES:.c=.o)
 
 all: $(SOURCES) $(EXECUTABLE)
 
