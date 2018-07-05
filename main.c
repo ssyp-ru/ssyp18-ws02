@@ -19,8 +19,13 @@ int main()
 	map_t* map = generateMap(width, height);
 	drawMap(map);
 
-	getch();
+	move(10, 70);	
 
+	getch();
+	
+	free(map->buffer);
+	free(map);
+	
 	endwin();
 
 	return 0;
