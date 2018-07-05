@@ -1,30 +1,22 @@
-#include "mapgen.h"
-#include <ncurses.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include "common.h"
-
+#include "level.h"
 
 int main()
 {
 	int width = 60;
 	int height = 60;
+	
+	int amountOfEntities = 0;
 
 	initscr();
-	
-	start_color();
+	noecho();
+	curs_set(0);
+	keypad(stdscr, true);
 
+	level_t* level = initLevel(amountOfEntities, width, height);	
 
-	map_t* map = generateMap(width, height);
-	drawMap(map);
+	while(updateLevel(level));
 
-	move(10, 70);	
+	freeLevel(level);
 
-	getch();
-	
-	free(map->buffer);
-	free(map);
-	
 	endwin();
 }

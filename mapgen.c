@@ -1,27 +1,9 @@
 #include <ncurses.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdio.h>
 #include "mapgen.h"
 #include "common.h"
-
-
-void drawMap(map_t* mapPacked)
-{
-	UNPACK(map, mapPacked);
-
-	for(int i = 0; i < mapPacked->width; i++)
-	{
-		for(int j = 0; j < mapPacked->height; j++)
-		{
-			mvaddch(j, i, map[j][i].symbol);
-		}
-	}
-
-	refresh();
-}
-
+#include "roomvector.h"
+#include "room.h"
 
 void generateRoom(map_t* mapPacked, int width, int height, int x, int y)
 {
@@ -35,33 +17,14 @@ void generateRoom(map_t* mapPacked, int width, int height, int x, int y)
 			map[j][i].flags |= FLAG_PERM;			
 		}
 	}
-}
 
+	room_t newRoom;
+	newRoom.x = x;
+	newRoom.y = y;
+	newRoom.width = width;
+	newRoom.height = height;
 
-map_t* generateMap(int width, int height)
-{
-	map_t* mapPacked = malloc(sizeof(map_t));
-	mapPacked->buffer = calloc(width * height, sizeof(tile_t));
-	mapPacked->width = width;
-	mapPacked->height = height;
-
-	UNPACK(map, mapPacked);
-	
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-
-	time_t t;
-	srand((unsigned) time(&t));
-	
-	for(int i = 0 ; i < width; i++)
-		for(int j = 0; j < height; j++)
-		{
-			map[j][i].symbol = '.' | COLOR_PAIR(1);
-			map[j][i].flags |= FLAG_PERM;
-		}
-
-	buildWall(mapPacked, width, height, rand() % 2, 0, 0);
-
-	return mapPacked;
+	vector_add(mapPacked->rooms, newRoom);
 }
 
 
@@ -84,9 +47,10 @@ void buildWall(map_t* mapPacked, int width, int height,
 			map[wallLoc][i].symbol = '#' | COLOR_PAIR(1);
 			map[wallLoc][i].flags &= ~FLAG_PERM;
 		}
+
 		if(width > 2 && wallLoc - y > 2)
 		{
-			if(rand() % 15 < 13 || width > mapPacked->width / 4 
+			if(rand() % 10 < 9 || width > mapPacked->width / 4 
 			|| wallLoc - y > mapPacked->height / 4)
 			{
 				buildWall(mapPacked, width, wallLoc - y,
@@ -101,7 +65,7 @@ void buildWall(map_t* mapPacked, int width, int height,
 
 		if(width > 2 && height - wallLoc + y - 1 > 2)
 		{
-			if(rand() % 15 < 13 || width > mapPacked->width / 4
+			if(rand() % 10 < 9 || width > mapPacked->width / 4
 			|| height - wallLoc + y - 1 > mapPacked->height / 4)
 				buildWall(mapPacked, width, height - wallLoc + y - 1,
 				height - wallLoc + y - 1 >= width, x, wallLoc + 1);
@@ -111,7 +75,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 				height - wallLoc + y - 1, x, wallLoc + 1);
 		}
 		else if(width >= 2 && height - wallLoc + y - 1 >= 2)
-			generateRoom(mapPacked, width, height - wallLoc + y - 1, x, wallLoc + 1);
+			generateRoom(mapPacked, width, 
+			height - wallLoc + y - 1, x, wallLoc + 1);
 
 		int gateLoc;
 		int it = 0;
@@ -145,13 +110,14 @@ void buildWall(map_t* mapPacked, int width, int height,
 		for(int i = y; i < y + height; i++)
 		{
 			map[i][wallLoc].symbol = '#' | COLOR_PAIR(1);
-			map[i][wallLoc].flags &= ~FLAG_PERM;
+			map[i][wallLoc].flags ^= FLAG_PERM;
 		}
 		if(wallLoc - x > 2 && height > 2)
 		{
-			if(rand() % 15 < 13 || wallLoc - x > mapPacked->width / 4
+			if(rand() % 10 < 9 || wallLoc - x > mapPacked->width / 4
 			|| height > mapPacked->height / 4)
-				buildWall(mapPacked, wallLoc - x, height, height >= wallLoc - x, x, y);
+				buildWall(mapPacked, wallLoc - x,
+				height, height >= wallLoc - x, x, y);
 			else if(wallLoc - x > mapPacked->width / 20
 			|| height > mapPacked->height / 20)
 				generateRoom(mapPacked, wallLoc - x, height, x, y);
@@ -161,7 +127,7 @@ void buildWall(map_t* mapPacked, int width, int height,
 
 		if(width - wallLoc + x - 1 > 2 && height > 2)
 		{
-			if(rand() % 15 < 13 || width - wallLoc + x - 1 > mapPacked->width / 4
+			if(rand() % 10 < 9 || width - wallLoc + x - 1 > mapPacked->width / 4
 			|| height > mapPacked->height / 4)
 				buildWall(mapPacked, width - wallLoc + x - 1, height, 
 				height >= width - wallLoc + x - 1, wallLoc + 1, y);
@@ -171,7 +137,8 @@ void buildWall(map_t* mapPacked, int width, int height,
 										height, wallLoc + 1, y);
 		}
 		else if(width - wallLoc + x - 1 >= 2 && height > 2)
-			generateRoom(mapPacked, width - wallLoc + x - 1, height, wallLoc + 1, y);
+			generateRoom(mapPacked, width - wallLoc + x - 1,
+			height, wallLoc + 1, y);
 
 		int gateLoc;
 		int it = 0;
@@ -196,3 +163,47 @@ void buildWall(map_t* mapPacked, int width, int height,
 
 }
 
+
+map_t* generateMap(int width, int height)
+{
+	map_t* mapPacked = (map_t*) malloc(sizeof(map_t));
+	mapPacked->buffer = (tile_t*) calloc(width * height, sizeof(tile_t));
+	mapPacked->width = width;
+	mapPacked->height = height;
+	mapPacked->amountOfRooms = 0;
+	mapPacked->rooms = vector_init(1);
+
+	UNPACK(map, mapPacked);
+
+	for(int i = 0 ; i < width; i++)
+		for(int j = 0; j < height; j++)
+		{
+			map[j][i].symbol = '.' | COLOR_PAIR(1);
+			map[j][i].flags |= FLAG_PERM;
+		}
+
+	buildWall(mapPacked, width, height, rand() % 2, 0, 0);
+
+	return mapPacked;
+}
+
+
+void drawMap(map_t* mapPacked)
+{
+	UNPACK(map, mapPacked);
+
+	for(int i = 0; i < mapPacked->width; i++)
+	{
+		for(int j = 0; j < mapPacked->height; j++)
+		{
+			mvaddch(j, i, map[j][i].symbol);
+		}
+	}
+}
+
+void freeMap(map_t* map)
+{
+	vector_free(map->rooms);
+	free(map->buffer);
+	free(map);
+}
