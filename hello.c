@@ -125,59 +125,70 @@ void initScr(){
 	halfdelay(100);
 	curs_set(0);
 }
-void drawView(int index, map_t *_map, hero_t *_hero){
-	UNPACK(map, _map);
+void drawView(int index, hero_t *hero){
 	for(int i = 0; i < index; i++){
-		int x = _hero->view[index].xPos;
-		int y = _hero->view[index].yPos;
-		if(!(map[y][x].flags & FLAG_SOLID)){
+			int x = hero->view[i].xPos;
+			int y = hero->view[i].yPos;
 			mvaddch(y, x + STEP, '.');
-		}
-	}
+		}	
 }
-int checkView(int viewRadius, map_t *_map, hero_t *_hero){
+int checkView(int viewRadius, map_t *_map, hero_t *hero){
 	UNPACK(map, _map);
 	int index = 0;
 	float angle = 0;
-	int xPos = _hero->xPos;
-	int yPos = _hero->yPos;	
+	int xPos = hero->xPos;
+	int yPos = hero->yPos;	
 	for(angle = -4; angle <= 4; angle += 0.2){
 		for(float x = 0; x >= -4; x -= 0.2){	
-			if(map[(int)(angle * x + yPos)]
-				[(int)(x + xPos + 0.5)].flags & FLAG_SOLID){
-					break;
-			}else{
-				_hero->view[index].yPos = (int)(angle * x + yPos);
-				_hero->view[index].xPos = (int)(x + xPos + 0.5);
-				index++;
-			}					
+			int x1 = x + xPos + 0.5;
+			int y1 = angle * x + yPos;
+			int radX = x1 - xPos;
+			int radY = y1 - yPos;
+			if(radX * radX + radY * radY <= viewRadius * viewRadius){
+				if(map[y1][x1].flags & FLAG_SOLID){
+						break;
+				}else{
+					hero->view[index].yPos = y1;
+					hero->view[index].xPos = x1;
+					index++;
+				}
+			}			
 		}
-		for(float x = 0; x <= 4; x += 0.2){	
-			if(map[(int)(angle * x + yPos)]
-				[(int)(x + xPos + 0.5)].flags & FLAG_SOLID){
-					break;
-			}else{
-				_hero->view[index].yPos = (int)(angle * x + yPos);
-				_hero->view[index].xPos = (int)(x + xPos + 0.5);
-				index++;	
+		for(float x = 0; x <= 4; x += 0.2){
+			int y1 = angle * x + yPos;
+			int x1 = x + xPos + 0.5;
+			int radX = x1 - xPos;
+			int radY = y1 - yPos;
+			if(radX * radX + radY * radY <= viewRadius * viewRadius){
+				if(map[y1][x1].flags & FLAG_SOLID){
+						break;
+				}else{
+					hero->view[index].yPos = y1;
+					hero->view[index].xPos = x1;
+					index++;	
+				}
 			}
 		}
 	}				
 	for(int y = 0; y >= -viewRadius; y--){
-		if(map[(int)(y + yPos)][xPos].flags & FLAG_SOLID){
+		int y1 = y + yPos;
+		int x1 = xPos;
+		if(map[y1][x1].flags & FLAG_SOLID){
 			break;
 		}else{
-			_hero->view[index].yPos = (int)(y + yPos);
-			_hero->view[index].xPos = xPos;
+			hero->view[index].yPos = y1;
+			hero->view[index].xPos = x1;
 			index++;
 		}
 	}	
 	for(int y = 0; y <= viewRadius; y++){
-		if(map[(int)(y + yPos)][xPos].flags & FLAG_SOLID){
+		int y1 = y + yPos;
+		int x1 = xPos;
+		if(map[y1][x1].flags & FLAG_SOLID){
 			break;
 		}else{
-			_hero->view[index].yPos = (int)(y + yPos);
-			_hero->view[index].xPos = xPos;
+			hero->view[index].yPos = y1;
+			hero->view[index].xPos = x1;
 			index++;
 		}
 	}
@@ -191,14 +202,14 @@ map_t * initMap(int sizeX, int sizeY){
 	return _map;
 }
 hero_t * initHero(int xPos, int yPos, int inventorySize, int maxView){
-	hero_t * _hero = calloc(1, sizeof(hero_t));
-	_hero->view = calloc(maxView * maxView, sizeof(vision_t));
-	_hero->inventory = calloc(inventorySize, sizeof(inventory_t));
-	_hero->hp = 2;
-	_hero->xPos = xPos;
-	_hero->yPos = yPos;
-	_hero->look = '@';
-	return _hero;
+	hero_t * hero = calloc(1, sizeof(hero_t));
+	hero->view = calloc(maxView * maxView, sizeof(vision_t));
+	hero->inventory = calloc(inventorySize, sizeof(inventory_t));
+	hero->hp = 2;
+	hero->xPos = xPos;
+	hero->yPos = yPos;
+	hero->look = '@' | COLOR_PAIR(2);
+	return hero;
 }
 void drawMap(map_t *_map){
 	int sizeX = _map->width;
@@ -210,10 +221,10 @@ void drawMap(map_t *_map){
 		}
 	}
 }
-void behave(hero_t * _hero, map_t * _map){
+void behave(hero_t * hero, map_t * _map){
 	UNPACK(map, _map);
-	int x = _hero->xPos;
-	int y = _hero->yPos;
+	int x = hero->xPos;
+	int y = hero->yPos;
 	int moveX = 0; 
 	int moveY = 0;
 	switch(getch()){
@@ -231,8 +242,8 @@ void behave(hero_t * _hero, map_t * _map){
 			break;
 	}
 	if(!(map[y + moveY][x + moveX].flags & FLAG_SOLID)){
-		_hero->xPos += moveX;
-		_hero->yPos += moveY;
+		hero->xPos += moveX;
+		hero->yPos += moveY;
 	}
 }
 void drawText(map_t * _map, int xPos, int yPos){
@@ -303,7 +314,7 @@ void act(){
 	//Creating map and unpacking it
 	map_t * _map = initMap(sizeX, sizeY);
 	//Creating main character, his vision and  an inventory
-	hero_t *_hero = initHero(xPos, yPos, 25, 100);
+	hero_t * hero = initHero(xPos, yPos, 25, 100);
 	//Generation of labirint with rooms
 	_map = genLab(_map);
 	_map = genRooms(_map);
@@ -314,17 +325,16 @@ void act(){
 	//Interactive part
 	while(!ex){   
 		//Text messages	
-		drawText(_map, _hero->xPos, _hero->yPos);
+		drawText(_map, hero->xPos, hero->yPos);
 		//Output of a map
 		drawMap(_map);
 		//Field of view
-		drawView(checkView(viewRadius, _map, _hero), _map, _hero);        
+		drawView(checkView(viewRadius, _map, hero), hero);     	
 		//Draw a hero ( not a function until future additions )
-		mvaddch(_hero->yPos, _hero->xPos + STEP, _hero->look);
+		mvaddch(hero->yPos, hero->xPos + STEP, hero->look);
 		//Input and act
-		behave(_hero, _map);
+		behave(hero, _map);
 		refresh();
-		clear();
 	}
 	getch();
 	endwin();		
