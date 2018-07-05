@@ -1,7 +1,12 @@
-struct map_t {
-	char * buffer;
-	int height, width;
-} map_t;
+typedef struct tile{
+	chtype symbol;
+  int flags;
+} tile_t;
+
+typedef struct map{
+	tile_t * buffer;
+	int height, int width;
+} map_t;	
 
 
 /**
@@ -16,4 +21,4 @@ struct map_t {
  * 		}
  * }
 */
-#define UNPACK(varname, map_ptr) char (*varname)[(map_ptr)->width] = (char (*)[(map_ptr)->width]) map_ptr->buffer 
+#define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
