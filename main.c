@@ -27,6 +27,4 @@ int main()
 	free(map);
 	
 	endwin();
-
-	return 0;
 }
