@@ -2,39 +2,39 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
-#include <time.h>
 #include "common.h"
-#define PI 3.14159265358979323846
+#include "hero.h"
 #define COLOR_GREY COLOR_MAGENTA
 #define COLOR_BROWN COLOR_CYAN
-void genLab(int sizeX, int sizeY,map_t *_map, int xPos, int yPos){
+#define STEP 20
+
+map_t * genLab(map_t *_map){
+	int sizeX = _map->width;
+	int sizeY = _map->height;
 	UNPACK(map, _map);
-	int originX,originY;
-	int rand4;
+	int originX, originY, index = 1; 
+	int rand4, countCells = 1500;
+	for(int i = 0; i < sizeX; i++){
+		for(int k = 0; k < sizeY; k++){
+			map[k][i].flags |= FLAG_SOLID;
+		}
+	}
 	originX = rand() % (sizeX - 3) + 1;
 	originY = rand() % (sizeY - 3) + 1;
-	map[originY][originX].s = ' ';
-	for(int i = 0; i < 5000; i++){
+	map[originY][originX].flags &= ~FLAG_SOLID;
+	while(index < countCells){
 		rand4 = rand() % 4;
 		int counter = 0;
-		if(map[originY][originX + 1].s == ' ')
-			counter++;
-		if(map[originY][originX - 1].s == ' ')
-			counter++;
-		if(map[originY + 1][originX].s == ' ')
-			counter++;
-		if(map[originY - 1][originX].s == ' ')
-			counter++;	
-		if(map[originY + 1][originX + 1].s == ' ')
-			counter++;
-		if(map[originY - 1][originX - 1].s == ' ')
-			counter++;
-		if(map[originY + 1][originX - 1].s == ' ')
-			counter++;
-		if(map[originY - 1][originX + 1].s == ' ')
-			counter++;
-		if(map[originY][originX].s == '|' && counter < 5)
-			map[originY][originX].s = ' ';
+		for(int i = -1; i <= 1; i++){
+			for(int k = -1; k <= 1; k++){
+				if(k != 0 || i != 0)
+					counter += !(map[originY + k][originX + i].flags & FLAG_SOLID);
+			}
+		}
+		if(map[originY][originX].flags & FLAG_SOLID && counter < 4){
+			map[originY][originX].flags &= ~FLAG_SOLID;
+			index++;
+		}
 		else{
 			originX = rand() % (sizeX - 3) + 1;
 			originY = rand() % (sizeY - 3) + 1;
@@ -58,64 +58,55 @@ void genLab(int sizeX, int sizeY,map_t *_map, int xPos, int yPos){
 				break;	
 		}
 	}
+	return _map;
+}
+map_t * genTestRoom(map_t *_map, int xPos, int yPos){
+	UNPACK(map, _map);
+	for(int i1 = 0; i1 < 10; i1++){
+		for(int k1 = 0; k1 < 10; k1++){
+			map[i1 - 5 + yPos][k1 - 5 + xPos].flags &= ~FLAG_SOLID;
+			map[i1 - 5 + yPos][k1 - 5 + xPos].s = ' ';
+		}
+	}
+	return _map;
+}
+map_t * genRooms(map_t *_map){
+	int sizeX = _map->width;
+	int sizeY = _map->height;
+	UNPACK(map, _map);
 	for(int i = 0; i < 5; i++){
 		int randX = rand() % (sizeX - 15) + 2;
 		int randY = rand() % (sizeY - 15) + 2;
 		int siz1 = rand() % 3 + 6;
 		int siz2 = rand() % 3 + 6;
-		int cntr = 0;
+		int counter = 0;
 		for(int k = randY; k <= randY + siz1; k++){
 			for(int l = randX; l <= randX + siz2; l++){
 				if(k == randY || k == randY + siz1
 					|| l == randX || l == randX + siz2){
-					if(map[k - 1][l].s != '|' && map[k + 1][l].s != '|' &&
-						 cntr < 3){
-						map[k][l].s = '/';
-						cntr++;
+					if(!(map[k - 1][l].flags & FLAG_SOLID) &&
+					!(map[k + 1][l].flags & FLAG_SOLID) && counter < 3){
+						//Place for a door
+						map[k][l].flags &= ~FLAG_SOLID;
+						counter++;
 					}
-					else if(map[k][l - 1].s != '|' &&
-					 map[k][l + 1].s != '|' && cntr < 3){
-						map[k][l].s = '/';
-						cntr++;	
+					else if(!(map[k][l - 1].flags & FLAG_SOLID) &&
+					!(map[k][l + 1].flags & FLAG_SOLID) && counter < 3){
+						//Place for a door
+						map[k][l].flags &= ~FLAG_SOLID;
+						counter++;	
 					}
 					else
-						map[k][l].s = '|';
+						map[k][l].flags |= FLAG_SOLID;
 				}
-				else map[k][l].s = ' ';		
+				else map[k][l].flags &= ~FLAG_SOLID;		
 			}
 		}
-		cntr = 0;
+		counter = 0;
 	}
-	for(int i1 = 0; i1 < 10; i1++){
-		for(int k1 = 0; k1 < 10; k1++){
-			map[i1 - 5 + yPos][k1 - 5 + xPos].s = ' ';
-		}
-	}
-
-}	
-int main(int argc, char*argv[]){
-	initscr();
-	start_color();
-	char line[50] = "";
-	float angle = 0;
-	int sizeX = 0;
-	int sizeY = 0;
-	int xPos = 0, step = 20;
-	int viewRadius = 4,index = 0;
-	int yPos = 0,cntBul = 0;
-	int inventory[25];
-	int visible[500][2];
-	for(int i = 0; i < 50; i++){
-		visible[i][0] = -1;
-		visible[i][1]= -1;
-	}
-	struct bullet{
-		int xPos;
-		int yPos;
-		int type;
-		int dirX;
-		int dirY;
-	};
+	return _map;
+}
+void initColors(){
 	init_color(COLOR_GREY,300, 300, 300);	
 	init_color(COLOR_BROWN,200, 100, 0);
 	init_pair(1, COLOR_RED, COLOR_BLACK);	
@@ -125,346 +116,221 @@ int main(int argc, char*argv[]){
 	init_pair(5,COLOR_BLUE, COLOR_BLACK);
 	init_pair(6,COLOR_GREY, COLOR_BLACK);
 	init_pair(7,COLOR_BROWN, COLOR_BLACK);
-	struct bullet bullets[100];
+}
+void initScr(){
+	initscr();
+	start_color();
+	keypad(stdscr,true);
+	noecho();
+	halfdelay(100);
+	curs_set(0);
+}
+void drawView(int index, map_t *_map, hero_t *_hero){
+	UNPACK(map, _map);
+	for(int i = 0; i < index; i++){
+		int x = _hero->view[index].xPos;
+		int y = _hero->view[index].yPos;
+		if(!(map[y][x].flags & FLAG_SOLID)){
+			mvaddch(y, x + STEP, '.');
+		}
+	}
+}
+int checkView(int viewRadius, map_t *_map, hero_t *_hero){
+	UNPACK(map, _map);
+	int index = 0;
+	float angle = 0;
+	int xPos = _hero->xPos;
+	int yPos = _hero->yPos;	
+	for(angle = -4; angle <= 4; angle += 0.2){
+		for(float x = 0; x >= -4; x -= 0.2){	
+			if(map[(int)(angle * x + yPos)]
+				[(int)(x + xPos + 0.5)].flags & FLAG_SOLID){
+					break;
+			}else{
+				_hero->view[index].yPos = (int)(angle * x + yPos);
+				_hero->view[index].xPos = (int)(x + xPos + 0.5);
+				index++;
+			}					
+		}
+		for(float x = 0; x <= 4; x += 0.2){	
+			if(map[(int)(angle * x + yPos)]
+				[(int)(x + xPos + 0.5)].flags & FLAG_SOLID){
+					break;
+			}else{
+				_hero->view[index].yPos = (int)(angle * x + yPos);
+				_hero->view[index].xPos = (int)(x + xPos + 0.5);
+				index++;	
+			}
+		}
+	}				
+	for(int y = 0; y >= -viewRadius; y--){
+		if(map[(int)(y + yPos)][xPos].flags & FLAG_SOLID){
+			break;
+		}else{
+			_hero->view[index].yPos = (int)(y + yPos);
+			_hero->view[index].xPos = xPos;
+			index++;
+		}
+	}	
+	for(int y = 0; y <= viewRadius; y++){
+		if(map[(int)(y + yPos)][xPos].flags & FLAG_SOLID){
+			break;
+		}else{
+			_hero->view[index].yPos = (int)(y + yPos);
+			_hero->view[index].xPos = xPos;
+			index++;
+		}
+	}
+	return index;
+}
+map_t * initMap(int sizeX, int sizeY){
+	map_t *_map = calloc(1, sizeof(map_t));
+	_map->buffer = calloc(sizeX * sizeY, sizeof(tile_t));
+	_map->width = sizeX;
+	_map->height = sizeY;
+	return _map;
+}
+hero_t * initHero(int xPos, int yPos, int inventorySize, int maxView){
+	hero_t * _hero = calloc(1, sizeof(hero_t));
+	_hero->view = calloc(maxView * maxView, sizeof(vision_t));
+	_hero->inventory = calloc(inventorySize, sizeof(inventory_t));
+	_hero->hp = 2;
+	_hero->xPos = xPos;
+	_hero->yPos = yPos;
+	_hero->look = '@';
+	return _hero;
+}
+void drawMap(map_t *_map){
+	int sizeX = _map->width;
+	int sizeY = _map->height;
+	UNPACK(map, _map);
+	for(int i = 0; i < sizeX; i++){
+		for(int k = 0; k < sizeY; k++){
+			mvaddch(k, i + STEP, map[k][i].s);
+		}
+	}
+}
+void behave(hero_t * _hero, map_t * _map){
+	UNPACK(map, _map);
+	int x = _hero->xPos;
+	int y = _hero->yPos;
+	int moveX = 0; 
+	int moveY = 0;
+	switch(getch()){
+		case KEY_UP:
+			moveY = -1;
+			break;
+		case KEY_DOWN:
+			moveY = 1;
+			break;
+		case KEY_RIGHT:
+			moveX = 1;
+			break;
+		case KEY_LEFT:
+			moveX = -1;
+			break;
+	}
+	if(!(map[y + moveY][x + moveX].flags & FLAG_SOLID)){
+		_hero->xPos += moveX;
+		_hero->yPos += moveY;
+	}
+}
+void drawText(map_t * _map, int xPos, int yPos){
+	char line[50] = "";
+	mvprintw(1,1,"             ");
+	UNPACK(map, _map);
+	switch(map[yPos][xPos].s){
+		case ' ':
+			strcpy(line, "_");
+			break;
+		case 'P':
+			strcpy(line, "A key!");
+			break;
+		case '$':
+			strcpy(line, "Some money!");
+			break;
+		case 'Y':
+			strcpy(line, "A slingshot!");
+			break;
+		case '*':
+			strcpy(line, "A bullet!");
+			break;
+	}
+	mvprintw(1, 1, "%s", line);
+}
+map_t * makeWalls(map_t * _map){
+	int sizeX = _map->width;
+	int sizeY = _map->height;
+	UNPACK(map, _map);
+	for(int i = 0; i < sizeX; i++){
+		for(int k = 0; k < sizeY; k++){	
+			if(map[k][i].flags & FLAG_SOLID){
+				if(k == 0 || k == sizeY - 1 ||
+					i == 0 || i == sizeX - 1){
+					map[k][i].s = '#' | COLOR_PAIR(1);
+				}else{
+					if(!(map[k - 1][i].flags & FLAG_SOLID) &&
+						!(map[k + 1][i].flags & FLAG_SOLID))
+						map[k][i].s = '-' | COLOR_PAIR(6);
+					else
+						map[k][i].s = '|' | COLOR_PAIR(6);
+					if(map[k - 1][i].flags & FLAG_SOLID
+						&& map[k + 1][i].flags & FLAG_SOLID
+						&& map[k][i - 1].flags & FLAG_SOLID
+						&& map[k][i + 1].flags & FLAG_SOLID)
+						map[k][i].s = '#' | COLOR_PAIR(6);
+				}
+			}else
+				map[k][i].s = ' ';
+		}
+	}
+	return _map;
+}
+//Function of main act
+void act(){
+	//Initialisation of tools for program
+	int sizeX = 0;
+	int sizeY = 0, viewRadius = 4;
+	int xPos , step = 20;
+	int yPos;
+	//Initialisation of colors
+	initColors();
 	srand(time(NULL));
 	getmaxyx(stdscr,sizeY,sizeX);
 	xPos = 40;
 	yPos = 20;
 	sizeX -= step;
-	map_t *_map = calloc(sizeof(map_t), 1);
-	_map->buffer = calloc(sizeof(tile_t), sizeX * sizeY);
-	_map->width = sizeX;
-	_map->height = sizeY;
-	UNPACK(map, _map);
-	
-	for(int i = 0; i < 25; i++){
-		inventory[i] = 0;
-	}
-	for(int i = 0; i < sizeX; i++){
-		for(int k = 0; k < sizeY; k++){
-			map[k][i].s = '|';
-		}
-	}
-	genLab(sizeX, sizeY, _map, xPos, yPos);
-
-//	map[yPos + 1][xPos + 1] = 5;
-//	map[yPos + 2][xPos + 2] = 3;
-//	map[yPos + 3][xPos + 3] = 7;
-//	map[yPos - 1][xPos - 1] = 6;
-//	map[yPos][xPos] = 4;
-	keypad(stdscr,true);
-	noecho();
-	halfdelay(100);
+	//Creating map and unpacking it
+	map_t * _map = initMap(sizeX, sizeY);
+	//Creating main character, his vision and  an inventory
+	hero_t *_hero = initHero(xPos, yPos, 25, 100);
+	//Generation of labirint with rooms
+	_map = genLab(_map);
+	_map = genRooms(_map);
+	//Introduce some walls and a testing room
+	_map = makeWalls(_map);	
+	_map = genTestRoom(_map, xPos, yPos);
 	bool ex = false;
-	curs_set(0);
-	int way[100][2];
-	bool chDirect = false, chDirect2 = false;
-	while(!ex){
-		//clear();
-		/*for(int i = 0; i < sizeX; i++){
-			for(int k = 0; k < sizeY; k++){
-				if(map[k][i] == 2)
-					mvprintw(k,i + step,"#");
-				if(map[k][i] == 0)
-					mvprintw(k,i + step," ");
-			}
-		}*/	
-		for(angle = -4; angle <= 4; angle += 0.2){
-			for(float x = 0; x >= -4; x -= 0.2){	
-				if(map[(int)(angle * x + yPos)]
-					[(int)(x + xPos + 0.5)].s == '|'){
-						break;
-				}else{
-					visible[index][0] = (int)(angle * x + yPos);
-					visible[index][1] = (int)(x + xPos + 0.5);
-					index++;
-				}					
-			}
-			for(float x = 0; x <= 4; x += 0.2){	
-				if(map[(int)(angle * x + yPos)]
-					[(int)(x + xPos + 0.5)].s == '|'){
-						break;
-				}else{
-					visible[index][0] = (int)(angle * x + yPos);
-					visible[index][1] = (int)(x + xPos + 0.5);
-					index++;	
-				}
-			}
-		}				
-		for(int y = 0; y >= -viewRadius; y--){
-			if(map[(int)(y + yPos)][xPos].s == '|'){
-				break;
-			}else{
-				visible[index][0] = (int)(y + yPos);
-				visible[index][1] = xPos;
-				index++;
-			}
-		}	
-		for(int y = 0; y <= viewRadius; y++){
-			if(map[(int)(y + yPos)][xPos].s == '|'){
-				break;
-			}else{
-				visible[index][0] = (int)(y + yPos);
-				visible[index][1] = xPos;
-				index++;
-			}
-		}              
-		for(int i = 0; i < index; i++){
-			int i1 = visible[i][0];
-			int i2 = visible[i][1];
-			int wid = xPos - i2;
-			int hei = yPos - i1;
-			if(hei * hei + wid * wid <= viewRadius * viewRadius){
-				switch(map[i1][i2].s){
-					case ' ':
-						mvprintw(i1, i2 + step, ".");
-						break;
-					case '/':	
-						attron(COLOR_PAIR(7));
-						mvprintw(i1, i2 + step, "/");	
-						attroff(COLOR_PAIR(7));
-						break;
-					case 'P':
-						attron(COLOR_PAIR(2));
-						mvprintw(i1, i2 + step, "P");
-						attroff(COLOR_PAIR(2));
-						break; 
-					case '$':
-						attron(COLOR_PAIR(4));
-						mvprintw(i1, i2 + step, "$");
-						attroff(COLOR_PAIR(4));
-						break;
-					case 'Y':
-						attron(COLOR_PAIR(7));
-						mvprintw(i1, i2 + step, "Y");
-						attroff(COLOR_PAIR(7));
-						break;
-					case '*':
-						attron(COLOR_PAIR(6));
-						mvprintw(i1, i2 + step, "*");
-						attroff(COLOR_PAIR(6));
-						break;
-				}
-			}		
-		}
-		for(int i = 0; i < sizeX; i++){
-			for(int k = 0; k < sizeY; k++){
-				if(map[k][i].s == '|'){
-					attron(COLOR_PAIR(6));
-					if(k == 0 || k == sizeY - 1 ||
-						i == 0 || i == sizeX - 1){
-						mvprintw(k,i + step,"#");
-					}else{
-						if(map[k - 1][i].s != '|' &&
-							 map[k + 1][i].s != '|')
-								mvprintw(k,i + step,"-");
-						else
-							mvprintw(k, i + step, "|");
-						if(map[k - 1][i].s == '|'
-							&& map[k + 1][i].s == '|'
-							&& map[k][i - 1].s == '|'
-							&& map[k][i + 1].s == '|')
-							mvprintw(k, i + step, "#");
-					}
-					attroff(COLOR_PAIR(6));
-				}
-			}
-		}
-		index = 0;
-		//findMap[yPos][xPos] = 0;
-		//int queueX[200]; //FIXME: remove magic number
-		//int queueY[200]; //FIXME: remove magic number
-		//int qStart=0, qEnd=1;
-		//x = queueX[qStart]; y = queueY[qStart]; qStart = (qStart +1)%200;
-		//queueX[qEnd] = x; queueY[qEnd] = y; qEnd = (qEnd + 1) % 200;
-		int ra1 = 1;/*
-		while(ra1 < sizeY / 2 - 2){
-			for(int i = xPos - ra1; i < xPos + ra1; i++){
-				for(int k = yPos - ra1; k < yPos + ra1; k++){
-					if(findMap[k][i] != - 1){
-						if(findMap[k - 1][i] != -1 &&
-						map[k - 1][i] != 2)
-							findMap[k - 1][i] = findMap[k][i] + 1;
-						if(findMap[k + 1][i] != -1 && 
-						map[k + 1][i] != 2)
-							findMap[k + 1][i] = findMap[k][i] + 1;	
-						if(findMap[k][i - 1] != -1 &&
-						map[k][i - 1] != 2)
-							findMap[k][i - 1] = findMap[k][i] + 1;	
-						if(findMap[k][i + 1] != -1 &&
-						map[k][i + 1] != 2)
-							findMap[k][i + 1] = findMap[k][i] + 1;
-					}
-				}
-			} ra1++;
-		}*/
-		attron(COLOR_PAIR(1));
-		mvprintw(yPos,xPos + step,"@",3);
-		attroff(COLOR_PAIR(1));
-		mvprintw(1,1,"             ",line);
-		switch(map[yPos][xPos].s){
-			case ' ':
-				strcpy(line, "_");
-				break;
-			case 'P':
-				strcpy(line, "A key!");
-				break;
-			case '$':
-				strcpy(line, "Some money!");
-				break;
-			case 'Y':
-				strcpy(line, "A slingshot!");
-				break;
-			case '*':
-				strcpy(line, "A bullet!");
-				break;
-		}
-		mvprintw(1,1,"%s",line);
-		int ch = getch();
-		for(int i = 0; i < cntBul; i++){
-			mvprintw(bullets[i].yPos,bullets[i].xPos,"*");
-			bullets[i].xPos += bullets[i].dirX;
-			bullets[i].yPos += bullets[i].dirY;
-			if(map[bullets[i].xPos][bullets[i].yPos].s == '|'){
-				cntBul--;	
-			}
-		}
-//		if(timer2 != timer){
-		if(chDirect || chDirect2){
-			switch(ch){
-				case KEY_UP:
-					if(map[yPos - 1][xPos].s == '/' && chDirect){
-						map[yPos - 1][xPos].s = ' ';
-						inventory[4]--;
-						chDirect = false;
-					}	
-					if(chDirect2){
-						cntBul++;
-						inventory[7]--;
-						bullets[cntBul].xPos = xPos;
-						bullets[cntBul].yPos = yPos;
-						bullets[cntBul].type = 0;
-						bullets[cntBul].dirX = 0;
-						bullets[cntBul].dirY = -1;
-					}
-					break;
-				case KEY_DOWN:
-					if(map[yPos + 1][xPos].s == '/' && chDirect){
-						map[yPos + 1][xPos].s = ' ';
-						inventory[4]--;
-						chDirect = false;
-					}
-					if(chDirect2){
-						cntBul++;
-						inventory[7]--;
-						bullets[cntBul].xPos = xPos;
-						bullets[cntBul].yPos = yPos;
-						bullets[cntBul].type = 0;
-						bullets[cntBul].dirX = 0;
-						bullets[cntBul].dirY = 1;
-					}
-					break;
-				case KEY_LEFT:
-					if(map[yPos][xPos - 1].s == '/' && chDirect){
-						map[yPos][xPos - 1].s = ' ';
-						inventory[4]--;
-						chDirect = false;
-					}
-					if(chDirect2){
-						cntBul++;
-						inventory[7]--;
-						bullets[cntBul].xPos = xPos;
-						bullets[cntBul].yPos = yPos;
-						bullets[cntBul].type = 0;
-						bullets[cntBul].dirX = -1;
-						bullets[cntBul].dirY = 0;
-					}
-					break;
-				case KEY_RIGHT:
-					if(map[yPos][xPos + 1].s == '/' && chDirect){
-						map[yPos][xPos + 1].s = ' ';
-						inventory[4]--;
-						chDirect = false;
-					}
-					if(chDirect2){
-						cntBul++;
-						inventory[7]--;
-						bullets[cntBul].xPos = xPos;
-						bullets[cntBul].yPos = yPos;
-						bullets[cntBul].type = 0;
-						bullets[cntBul].dirX = 1;
-						bullets[cntBul].dirY = 0;
-					}
-					break;
-			}
-		}
-		switch(ch){	
-				case 115:
-					if(inventory[7] > 0 && inventory[6] > 0){
-						chDirect2 = true;
-					}
-					break;
-				case 112:
-					switch(map[yPos][xPos].s){
-						case 4:
-							inventory[4] += 1;
-							map[yPos][xPos].s = ' ';
-							break;
-						case 5:
-							inventory[5] += 1;
-							map[yPos][xPos].s = ' ';
-							break;
-						case 6:
-							inventory[6] += 1;
-							map[yPos][xPos].s = ' ';
-							break;
-						case 7:
-							inventory[7] += 1;
-							map[yPos][xPos].s = ' ';
-							break;
-					}
-					break;
-				case 111:
-					if(inventory[4] > 0)
-						chDirect = true;
-					break;
-				case KEY_UP:
-					if(map[yPos - 1][xPos].s != '|' &&
-						yPos > 0 && map[yPos - 1][xPos].s != '/')
-						yPos--;
-					break;
-				case KEY_DOWN:
-					if(map[yPos + 1][xPos].s != '|' &&
-						 yPos < sizeY - 1 &&
-						 map[yPos + 1][xPos].s != '/')
-						yPos++;
-					break;
-				case KEY_LEFT:
-					if(map[yPos][xPos - 1].s != '|' &&
-					xPos > 0 && map[yPos][xPos - 1].s != '/')
-						xPos--;	
-					break;
-				case KEY_RIGHT:
-					if(map[yPos][xPos + 1].s != '|' && 
-					xPos < sizeX - 1 && map[yPos][xPos + 1].s != '/')
-						xPos++;
-					break;
-				case KEY_F(2):
-					ex = true;
-					break;
-				default:
-					break;
-//			}	
-		}
-	//	clear();
-		/*for(int i = 0; i < sizeX; i++){
-			for(int k = 0; k < sizeY; k++){
-				mvprintw(k,i,"%d",findMap[k][i]);
-			}
-		}*/
+	//Interactive part
+	while(!ex){   
+		//Text messages	
+		drawText(_map, _hero->xPos, _hero->yPos);
+		//Output of a map
+		drawMap(_map);
+		//Field of view
+		drawView(checkView(viewRadius, _map, _hero), _map, _hero);        
+		//Draw a hero ( not a function until future additions )
+		mvaddch(_hero->yPos, _hero->xPos + STEP, _hero->look);
+		//Input and act
+		behave(_hero, _map);
 		refresh();
-	
+		clear();
 	}
 	getch();
 	endwin();		
 } 
+//Main function
+int main(int argc, char*argv[]){
+	initScr();
+	act();
+}
