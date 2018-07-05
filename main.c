@@ -4,10 +4,17 @@
 #include <math.h>
 #include <time.h>
 
+
 FILE* lf = NULL;
 
-chtype field[200][74]; // FIXME Global variable
+//chtype field[200][74]; // FIXME Global variable
 
+typedef struct map_t {
+	chtype* buffer;
+	int height, wight;
+} map_t;
+
+#define UNPACK(varname, map_ptr) char (*varname)[(map_ptr)->wight] = (char (*)[(map_ptr)->wight]) map_ptr->buffer
 typedef struct vector {
 		void** data;
 		size_t len;
@@ -28,6 +35,10 @@ typedef struct tree_t {
 	struct tree_t *left, *right, *parent;
 	void* value;
 } tree_t;
+
+void backTreeWalk (vector_t* vector) {
+	
+}
 
 tree_t* tree_create (void* value) {
 	tree_t* tree = malloc(sizeof(tree_t));
@@ -118,9 +129,8 @@ void tree_dfs(tree_t* tree, void(*callback)(void*)) {
 	}
 }
 
-int sizeRooms;
-
-void render (int scrollx, int scrolly) {
+void render (map_t* map, int scrollx, int scrolly) {
+	UNPACK(field, map);
 	for (int i = 0; i < 100; i++) {
 		for (int j = 0; j < 37; j++) {
 			mvaddch(j, i, field[i +scrollx][j+scrolly]);
@@ -132,7 +142,8 @@ void room_free(room_t* room) {
 	if(room != NULL) free(room);
 }
 
-void createLine (int x1, int y1, int x2, int y2, char ch, int COLOR) {
+void createLine (int x1, int y1, int x2, int y2, char ch, int COLOR, map_t* map) {
+	UNPACK(field, map);
 	double x=x1, y=y1;
 	if (x1-x2 == 0) {
 		double l = 0;
@@ -184,7 +195,7 @@ void createLine (int x1, int y1, int x2, int y2, char ch, int COLOR) {
 		}
 	}
 }
-void divRoom (tree_t* parent, vector_t* leaves) {
+void divRoom (tree_t* parent, vector_t* leaves, map_t* map) {
 	room_t* proom = parent->value;
 	if(proom->S <= 64 || (proom->lenX <=16 && proom->lenY <= 8)) {
 		vector_add(leaves, parent);
@@ -204,7 +215,7 @@ void divRoom (tree_t* parent, vector_t* leaves) {
 		y2 = proom->y2;
 		fprintf(lf, "line x1=%d y1=%d x2=%d y2=%d\n", x1,y1,x2,y2);
 		fprintf(lf, "x=%d y=%d\n", proom->lenX , proom->lenY);
-		createLine(x1, y1, x2, y2, '#', 1);
+		createLine(x1, y1, x2, y2, '#', 1, map);
 		nrooms[1]->x2 = proom->x2;
 		nrooms[1]->y2 = proom->y2;
 		nrooms[1]->x1 = x2;
@@ -221,7 +232,7 @@ void divRoom (tree_t* parent, vector_t* leaves) {
 		x1 = x2 - proom->lenX;
 		fprintf(lf, "line x1=%d y1=%d x2=%d y2=%d\n", x1,y1,x2,y2);
 		fprintf(lf, "x=%d y=%d\n", proom->lenX , proom->lenY);
-		createLine(x1, y1, x2, y2, '#', 1);
+		createLine(x1, y1, x2, y2, '#', 1, map);
 		nrooms[1]->x2 = proom->x2;
 		nrooms[1]->y2 = proom->y2;
 		nrooms[1]->x1 = proom->x1;
@@ -241,10 +252,11 @@ void divRoom (tree_t* parent, vector_t* leaves) {
 	for (int i=0; i< 2; i++) {
 		tree_add(parent, nrooms[i]);
 	}
-	divRoom(parent->right, leaves);
-	divRoom(parent->left, leaves);
+	divRoom(parent->right, leaves, map);
+	divRoom(parent->left, leaves, map);
 }
 int main(int argc, char *argv[]) {
+	map_t* map = (map_t*) malloc ( sizeof(map_t));
 	lf = fopen("log.txt","w");
 	fprintf(lf,"log opened\n");
 	room_t* roomF = (room_t*) malloc ( sizeof(room_t));
@@ -254,6 +266,7 @@ int main(int argc, char *argv[]) {
 	init_pair(1, COLOR_BLACK, COLOR_WHITE);
 	init_pair(2, COLOR_WHITE, COLOR_WHITE);
 	init_pair(3, COLOR_YELLOW, COLOR_WHITE);
+	UNPACK(field, map);
 	for (int i = 0; i < 200; i++) {
 		for (int j = 0; j < 74; j++) {
 			field[i][j] = '.' | COLOR_PAIR(2);
@@ -263,17 +276,17 @@ int main(int argc, char *argv[]) {
 	roomF->y1 = rand() % 5 + 30;
 	roomF->x2 = rand() % 15 + 70;
 	roomF->y2 = rand() % 5 + 10;
-	createLine(roomF->x1, roomF->y1, roomF->x2, roomF->y1, '#', 1);
-	createLine(roomF->x1, roomF->y1, roomF->x1, roomF->y2, '#', 1);
-	createLine(roomF->x1, roomF->y2, roomF->x2, roomF->y2, '#', 1);
-	createLine(roomF->x2, roomF->y1, roomF->x2, roomF->y2, '#', 1);
+	createLine(roomF->x1, roomF->y1, roomF->x2, roomF->y1, '#', 1, map);
+	createLine(roomF->x1, roomF->y1, roomF->x1, roomF->y2, '#', 1, map);
+	createLine(roomF->x1, roomF->y2, roomF->x2, roomF->y2, '#', 1, map);
+	createLine(roomF->x2, roomF->y1, roomF->x2, roomF->y2, '#', 1, map);
 	roomF->lenX = roomF->x2 - roomF->x1;
 	roomF->lenY = roomF->y1 - roomF->y2;
 	roomF->S = roomF->lenX * roomF->lenY;
 	tree_t* root = tree_create(roomF);
 	vector_t* leaves = vector_init(16);
-	divRoom(root, leaves);
-	render(0, 0);
+	divRoom(root, leaves, map);
+	render(map, 0, 0);
 	refresh();
 	fclose(lf);
 	tree_dfs(root, room_free);
