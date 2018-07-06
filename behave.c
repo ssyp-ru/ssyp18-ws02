@@ -14,26 +14,46 @@ int behave_player(actor_t* self)
 			return 0;
 		
 		case 'w':
-			if (self->y - 1 >= 0 &&
-			(map[self->y  - 1][self->x].flags & FLAG_SOLID) == 0)
-				self->y--;
+			if (self->y < 1)
+				break;
+		   	
+			if (map[self->y  - 1][self->x].flags & FLAG_SOLID)
+				break;
+			
+			self->y--;
+			
 			break;
+		
 		case 's':
-			if((self->y + 1 < self->level->map->height) &&
-				(map[self->y + 1][self->x].flags & FLAG_SOLID) == 0)
-				self->y++;
+			if (self->y + 1 >= self->level->map->height)
+				break;
+		   
+			if (map[self->y + 1][self->x].flags & FLAG_SOLID)
+				break;
+			
+			self->y++;
+			
 			break;
 	
 		case 'a':
-			if((self->x - 1) >= 0 &&
-				(map[self->y][self->x - 1].flags & FLAG_SOLID) == 0)
-				self->x--;
+			if (self->x < 1)
+				break;
+
+			if (map[self->y][self->x - 1].flags & FLAG_SOLID)
+				break;
+			
+			self->x--;
+			
 			break;
 
 		case 'd':
-			if((self->x + 1 < self->level->map->width) &&
-				(map[self->y][self->x + 1].flags & FLAG_SOLID) == 0)
-				self->x++;
+			if (self->x + 1 >= self->level->map->width)
+				break;
+	  		if (map[self->y][self->x + 1].flags & FLAG_SOLID)
+				break;
+
+		  	self->x++;
+
 			break;
 	}
 
