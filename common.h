@@ -1,7 +1,7 @@
+#pragma once
 #include <ncurses.h>
 
-
-#define FLAG_PERM  0x1
+#define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
