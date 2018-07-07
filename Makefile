@@ -1,15 +1,16 @@
 LD=ld
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wpedantic -c -g -O0 -Werror
-lab: tree.c
-LDLIBS=-lncurses
-SOURCES=main.c tree.c
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror
+LDLIBS=-lncurses -lm
+SOURCES=main.c 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=main
 
 all: $(SOURCES) $(EXECUTABLE)
 
 build: all
+
+kdtreetest: kdtree.o kdtreetest.o
 
 run: all
 	./$(EXECUTABLE)

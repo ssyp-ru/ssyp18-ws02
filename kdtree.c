@@ -74,14 +74,14 @@ kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth) {
 	do {
 		if (depth%2) {
 			if (parent->node->x > point->x)
-				if (tree->lbranch)
+				if (parent->lbranch)
 					parent = parent->lbranch;
 				else {
 					parent->lbranch = child;
 					return tree;
 				}
 			else
-				if (tree->rbranch)
+				if (parent->rbranch)
 					parent = parent->rbranch;
 				else {
 					parent->rbranch = child;
@@ -89,14 +89,14 @@ kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth) {
 				}
 		} else {
 			if (parent->node->y > point->y)
-				if (tree->lbranch)
+				if (parent->lbranch)
 					parent = parent->lbranch;
 				else {
 					parent->lbranch = child;
 					return tree;
 				}
 			else
-				if (tree->rbranch)
+				if (parent->rbranch)
 					parent = parent->rbranch;
 				else {
 					parent->rbranch = child;
@@ -107,7 +107,7 @@ kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth) {
 }
 
 kdtree_t * kd_create (feature_t ** point, int len) {
-	kdtree_t * tree;
+	kdtree_t * tree = NULL;
 	int i = 0;
 	while (i < len) {
 		tree = kd_insert (tree, point[i], 0); 
@@ -122,7 +122,6 @@ void kd_delete (kdtree_t * root) {
 			kd_delete (root->rbranch);
 		if (root->lbranch) 
 			kd_delete (root->lbranch);
-		if (!root->rbranch && !root->lbranch)
-			free (root);
+	free (root);
 	}
 }
