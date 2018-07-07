@@ -13,9 +13,9 @@
 
 
 
-#define CHAR_BEGIN "["
-#define CHAR_END "]"
-#define PORT 696
+#define CHAR_BEGIN '['
+#define CHAR_END ']'
+#define PORT 5555
 #define MAX_MSG 128
 
 
@@ -41,7 +41,7 @@ typedef struct server_t{
 
 
 
-int list_len(list_t * head){
+int list_len(list * head){
 	int len = 0;
 	list * curr;
 	for(curr = head; curr; len++, curr = curr->next);
@@ -56,7 +56,6 @@ list * list_prepend(list * head, void * data){
 }
 
 list * list_delete(list * head){
-	
 	list * curr = head->next;
 	free(head);
 	return curr;
@@ -100,7 +99,7 @@ void list_delete_all(list * head){
 		head = t;
 	}	
 }
-
+/*
 int set_nonblock(int fd){
 	int flags;
 #if define(O_NONBLOCK)
@@ -111,7 +110,7 @@ int set_nonblock(int fd){
 	flags = 1;
 	return ioctl(fd, FIONBIO, &flags);
 #endif
-}
+}*/
 msg_t * mesg_empty() {
 	msg_t * new_msg = malloc(sizeof(msg_t));
 	new_msg->len = 0;
@@ -127,7 +126,7 @@ msg_t * mesg_parse(int fd, const char * Recv, int len, msg_t * buf, list ** list
 				buf = mesg_empty();
 			break;
 			case CHAR_END:
-				*list_ref = list_prepend(*list_ref, buf);
+				*list_ref = list_prepend(*list_ref, mesg_empty());
 			break;
 			default:
 				if(buf != NULL)
@@ -138,7 +137,7 @@ msg_t * mesg_parse(int fd, const char * Recv, int len, msg_t * buf, list ** list
 	return buf;
 }
 
-server* server_create(uint16_t port){
+server * server_create(uint16_t port){
 	int fd = socket(AF_INET, 
 			SOCK_STREAM, 
 			IPPROTO_TCP);
@@ -154,13 +153,13 @@ server* server_create(uint16_t port){
 		perror("bind");
 		exit(EXIT_FAILURE);
 	}
-	set_nonblock(fd);
+	//set_nonblock(fd);
 	if(listen(fd, SOMAXCONN)){
 		perror("bind");
 		exit(EXIT_FAILURE);
 	}
-	server_t * new_server = malloc(sizeof(server));
-	new_server->fds = calloc(MAX_CONNECTIONS, sizeof(int));
+	server * new_server = malloc(sizeof(server));
+	new_server->fds = calloc(FD_SETSIZE, sizeof(server));
 	new_server->fds[0] = fd;
 	new_server->status = 0;
 	return new_server;
@@ -175,15 +174,15 @@ list * server_read(server * new_server) {
 	int i;
 	read_fd_set = active_fd_set;
 	for(i = 0; i < FD_SETSIZE; i++){
-		FD_SET(new_server->fds[i], &active_fd_set);
+		FD_SET(new_server->fds[0], &active_fd_set);
 	}
 
 	if(select(FD_SETSIZE, &read_fd_set, NULL, NULL, NULL) < 0){
 		perror("select");
 		exit(EXIT_FAILURE);
 	}
-	for(i = 1; i < FD_SETSIZE, i++){
-		if(FD_ISSET(new_server->fds[0], &active_fd_set) && fd_count){
+	for(i = 1; i < FD_SETSIZE; i++){
+		if(FD_ISSET(new_server->fds[0], &active_fd_set) && new_server->fd_count){
 			size = sizeof(clientname);
 			int new = accept(new_server->fds[0], 
 					(struct sockaddr *)&clientname, &size);
@@ -201,13 +200,13 @@ list * server_read(server * new_server) {
 				}
 				new_server->fds[i] = new;
 			if(new_server->buffers[i]) 
-				free(new_server->buffers[i];
+				free(new_server->buffers[i]);
 			new_server->buffers[i] = NULL;
 			}
 		}
 	}
 	for(i = 1; i < FD_SETSIZE; i++){
-		int RecvSize = recv(new_server->fds[0], buffer, MAX_MSG, MAX_MSG);
+		int RecvSize = recv(new_server->fds[0], new_server->buffers[i], MAX_MSG, MAX_MSG);
 		if((RecvSize <= 0) && (errno != EAGAIN)){
 			new_server->recycled = list_prepend(new_server->recycled, i);
 			shutdown(new_server->fds[i], SHUT_RDWR);
@@ -215,7 +214,7 @@ list * server_read(server * new_server) {
 			new_server->status = i;
 		}
 		else {
-			new_server->buffers[i] = mesg_parse(new_server->fds[i], buffer, RecvSize,
+			new_server->buffers[i] = mesg_parse(new_server->fds[i], new_server->recycled->data, RecvSize,
 				 																	new_server->buffers[i], &curr);
 		}
 	}
@@ -247,13 +246,14 @@ void server_delete(server * new_server){
 
 
 int main(){
-	int servachock = server_create(PORT);
-	if(servachock < 0)
-		return 0;
+	server * servachock = server_create(PORT);
 	while(1){
 		list * mesg = server_read(servachock);
-		server_broadcast(servachock, mesg);
+		while(mesg){
+			server_broadcast(servachock, mesg->data);
+			mesg = mesg->next;
+		}
 	}
-	server_delete(servachock);
+//	server_delete(servachock);
 	return 0;
 }
