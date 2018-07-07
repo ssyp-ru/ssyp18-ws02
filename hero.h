@@ -8,6 +8,7 @@ typedef struct item {
 	int flags;
 	char * description;
 	int quality;
+	int amount;
 } item_t;
 
 typedef struct inventory{
@@ -17,15 +18,14 @@ typedef struct inventory{
 } inventory_t;
 
 typedef struct actor{
-	inventory_t inventory;
+	inventory_t * inventory;
 	int flags;
 	int hp;
 	int strength;
 	int agility;
 	int stamina;
 	int viewRad;
-	int x;
-	int y;
+	int x, y;
 //	void (*behave)() = &behave;
 	chtype look;
 } actor_t;	

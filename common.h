@@ -7,7 +7,7 @@
 
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
-	DOOR, DEAD_BADGER
+	DOOR, DEAD_BADGER, STAIR
 } ftype_t;
 
 typedef struct tile{
@@ -32,14 +32,8 @@ typedef struct feature{
 
 typedef struct level_t {
 	map_t * map;
-	kdtree_t * features;
+//	kdtree_t * features;
 } level_t;
-
-// Function for picking up items from a feature
-void pick_up(actor_t * actor, feature_t feature);
-
-//Function for dropping item on a floor
-void throw_away(item_t * item, level_t * level, int x, int y);
 
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
 

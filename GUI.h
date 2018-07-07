@@ -4,8 +4,7 @@
 
 // Structure of coordinates
 typedef struct coord{
-	int x;
-	int y;
+	int x, y;
 } coord_t;
 
 // Structure of vision
@@ -31,7 +30,7 @@ void draw_hero(actor_t * actor);
 
 // Function for drawing features which lay on a terrain
 // collect()'s items in a box and draws them in the correct places
-//void drawFeatures(kdtree_t * features, WINDOW * window);
+void drawFeatures(feature_t * features);
 
 // Function which introduces messages and their history
 void draw_text(char * line);
@@ -41,4 +40,4 @@ void init_GUI(map_t * _map);
 
 //Main function
 //Every function above is called inside render()
-void render(map_t * _map, actor_t * actor);
+void render(map_t * _map, actor_t * actor, feature_t * features);
