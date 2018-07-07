@@ -33,16 +33,16 @@ typedef struct actor {
 typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
-	struct actor* allActors;
+	struct actor* all_actors;
 	unsigned int len;
 	unsigned int capacity;
 } avect_t;
 
-typedef struct roomVector {
+typedef struct room_vector {
 	room_t* data;
 	size_t length;
 	size_t capacity;
-} roomVector_t;
+} room_vector_t;
 
 typedef struct tile {
 	chtype symbol;
@@ -51,7 +51,7 @@ typedef struct tile {
 
 typedef struct map {
 	tile_t* buffer;
-	roomVector_t* rooms;
+	room_vector_t* rooms;
 	int height, width;
 } map_t;
 

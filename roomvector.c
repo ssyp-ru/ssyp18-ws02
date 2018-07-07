@@ -1,13 +1,13 @@
 #include "roomvector.h"
 #include "stdlib.h"
 
-room_t vector_get(roomVector_t* v, int i) {
+room_t vector_get(room_vector_t* v, int i) {
 	return v->data[i];
 }
 
-roomVector_t* vector_init(int L) {
-	roomVector_t* v = (roomVector_t*)malloc(sizeof(
-	        roomVector_t));
+room_vector_t* vector_init(int L) {
+	room_vector_t* v = (room_vector_t*)malloc(sizeof(
+	        room_vector_t));
 
 	v->data = (room_t*)calloc(L, sizeof(room_t));
 	v->length = 0;
@@ -16,7 +16,7 @@ roomVector_t* vector_init(int L) {
 	return v;
 }
 
-void vector_add(roomVector_t* v, room_t val) {
+void vector_add(room_vector_t* v, room_t val) {
 	v->data[v->length] = val;
 
 	if (++v->length == v->capacity) {
@@ -25,7 +25,7 @@ void vector_add(roomVector_t* v, room_t val) {
 	}
 }
 
-void vector_free(roomVector_t* v) {
+void vector_free(room_vector_t* v) {
 	free(v->data);
 	free(v);
 }

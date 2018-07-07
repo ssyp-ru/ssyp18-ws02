@@ -14,25 +14,16 @@
 #include "behave.h"
 #include "mapgen.h"
 
-void drawActors(avect_t* vect);
+void draw_actors(avect_t* vect);
 
-avect_t* initActors(level_t* level, int amountOfEntities);
+avect_t* init_actors(level_t* level, int amount_of_entities);
 
-avect_t* createNewVector(int num);
-
-void resizeVector(avect_t* vect);
-
-void addVectorElem(avect_t* vect, actor_t newActor);
+void add_vector_elem(avect_t* vect, actor_t newActor);
 
 actor_t* actor_get(avect_t* vect, int num);
 
-void freeActors(avect_t* vect);
+void free_actors(avect_t* vect);
 
-bool updateActors(avect_t* vect);
-
-actor_t workWithKeyboard(actor_t actp);
-
-actor_t monsterState(actor_t monster, avect_t* vect,
-                     int num);
+bool update_actors(avect_t* vect);
 
 #endif

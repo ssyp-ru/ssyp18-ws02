@@ -1,8 +1,8 @@
 #include "mapgen.h"
 
-void generateRoom(map_t* mapPacked, int width,
+void generate_room(map_t* map_packed, int width,
                   int height, int x, int y) {
-	UNPACK(map, mapPacked);
+	UNPACK(map, map_packed);
 
 	for (int i = x; i < x + width; i++) {
 		for (int j = y; j < y + height; j++) {
@@ -11,22 +11,22 @@ void generateRoom(map_t* mapPacked, int width,
 		}
 	}
 
-	room_t newRoom;
-	newRoom.x = x;
-	newRoom.y = y;
-	newRoom.width = width;
-	newRoom.height = height;
+	room_t new_room;
+	new_room.x = x;
+	new_room.y = y;
+	new_room.width = width;
+	new_room.height = height;
 
-	vector_add(mapPacked->rooms, newRoom);
+	vector_add(map_packed->rooms, new_room);
 }
 
-void buildWall(map_t* mapPacked,
+void build_wall(map_t* map_packed,
                int width,
                int height,
                bool isHorizontal,
                int x,
                int y) {
-	UNPACK(map, mapPacked);
+	UNPACK(map, map_packed);
 
 	if (isHorizontal) {
 		int wallLoc;
@@ -43,32 +43,32 @@ void buildWall(map_t* mapPacked,
 
 		if (width > 2 && wallLoc - y > 2) {
 			if (rand() % 10 < 9
-			        || width > mapPacked->width / 4 ||
-			        wallLoc - y > mapPacked->height / 4) {
-				buildWall(mapPacked, width, wallLoc - y,
+			        || width > map_packed->width / 4 ||
+			        wallLoc - y > map_packed->height / 4) {
+				build_wall(map_packed, width, wallLoc - y,
 				          wallLoc - y >= width, x, y);
-			} else if (width > mapPacked->width / 20 ||
-			           wallLoc - y > mapPacked->height / 20)
-				generateRoom(mapPacked, width, wallLoc - y, x, y);
+			} else if (width > map_packed->width / 20 ||
+			           wallLoc - y > map_packed->height / 20)
+				generate_room(map_packed, width, wallLoc - y, x, y);
 		} else if (width >= 2 && wallLoc - y >= 2)
-			generateRoom(mapPacked, width, wallLoc - y, x, y);
+			generate_room(map_packed, width, wallLoc - y, x, y);
 
 		if (width > 2 && height - wallLoc + y - 1 > 2) {
 			if (rand() % 10 < 9
-			        || width > mapPacked->width / 4 ||
-			        height - wallLoc + y - 1 > mapPacked->height / 4)
-				buildWall(mapPacked, width,
+			        || width > map_packed->width / 4 ||
+			        height - wallLoc + y - 1 > map_packed->height / 4)
+				build_wall(map_packed, width,
 				          height - wallLoc + y - 1,
 				          height - wallLoc + y - 1 >= width, x,
 				          wallLoc + 1);
-			else if (width > mapPacked->width / 20 ||
-			         height - wallLoc + y - 1 > mapPacked->height / 20)
-				generateRoom(mapPacked, width,
+			else if (width > map_packed->width / 20 ||
+			         height - wallLoc + y - 1 > map_packed->height / 20)
+				generate_room(map_packed, width,
 				             height - wallLoc + y - 1, x,
 				             wallLoc + 1);
 		} else if (width >= 2
 		           && height - wallLoc + y - 1 >= 2)
-			generateRoom(mapPacked, width,
+			generate_room(map_packed, width,
 			             height - wallLoc + y - 1, x, wallLoc + 1);
 
 		int gateLoc;
@@ -105,36 +105,36 @@ void buildWall(map_t* mapPacked,
 		}
 		if (wallLoc - x > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || wallLoc - x > mapPacked->width / 4 ||
-			        height > mapPacked->height / 4)
-				buildWall(mapPacked, wallLoc - x, height,
+			        || wallLoc - x > map_packed->width / 4 ||
+			        height > map_packed->height / 4)
+				build_wall(map_packed, wallLoc - x, height,
 				          height >= wallLoc - x, x, y);
-			else if (wallLoc - x > mapPacked->width / 20 ||
-			         height > mapPacked->height / 20)
-				generateRoom(mapPacked, wallLoc - x, height, x,
+			else if (wallLoc - x > map_packed->width / 20 ||
+			         height > map_packed->height / 20)
+				generate_room(map_packed, wallLoc - x, height, x,
 				             y);
 		} else if (wallLoc - x >= 2 && height >= 2)
-			generateRoom(mapPacked, wallLoc - x, height, x,
+			generate_room(map_packed, wallLoc - x, height, x,
 			             y);
 
 		if (width - wallLoc + x - 1 > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || width - wallLoc + x - 1 > mapPacked->width / 4
+			        || width - wallLoc + x - 1 > map_packed->width / 4
 			        ||
-			        height > mapPacked->height / 4)
-				buildWall(mapPacked, width - wallLoc + x - 1,
+			        height > map_packed->height / 4)
+				build_wall(map_packed, width - wallLoc + x - 1,
 				          height,
 				          height >= width - wallLoc + x - 1, wallLoc + 1,
 				          y);
 			else if (width - wallLoc + x - 1 >
-			         mapPacked->width / 20 ||
-			         height > mapPacked->height / 20)
-				generateRoom(mapPacked, width - wallLoc + x - 1,
+			         map_packed->width / 20 ||
+			         height > map_packed->height / 20)
+				generate_room(map_packed, width - wallLoc + x - 1,
 				             height, wallLoc + 1,
 				             y);
 		} else if (width - wallLoc + x - 1 >= 2
 		           && height > 2)
-			generateRoom(mapPacked, width - wallLoc + x - 1,
+			generate_room(map_packed, width - wallLoc + x - 1,
 			             height, wallLoc + 1, y);
 
 		int gateLoc;
@@ -160,15 +160,15 @@ void buildWall(map_t* mapPacked,
 	}
 }
 
-map_t* generateMap(int width, int height) {
-	map_t* mapPacked = (map_t*)malloc(sizeof(map_t));
-	mapPacked->buffer = (tile_t*)calloc(
+map_t* generate_map(int width, int height) {
+	map_t* map_packed = (map_t*)malloc(sizeof(map_t));
+	map_packed->buffer = (tile_t*)calloc(
 	                        width * height, sizeof(tile_t));
-	mapPacked->width = width;
-	mapPacked->height = height;
-	mapPacked->rooms = vector_init(1);
+	map_packed->width = width;
+	map_packed->height = height;
+	map_packed->rooms = vector_init(1);
 
-	UNPACK(map, mapPacked);
+	UNPACK(map, map_packed);
 
 	for (int i = 0; i < width; i++)
 		for (int j = 0; j < height; j++) {
@@ -176,23 +176,23 @@ map_t* generateMap(int width, int height) {
 			map[j][i].flags &= ~FLAG_SOLID;
 		}
 
-	buildWall(mapPacked, width, height, rand() % 2, 0,
+	build_wall(map_packed, width, height, rand() % 2, 0,
 	          0);
 
-	return mapPacked;
+	return map_packed;
 }
 
-void drawMap(map_t* mapPacked) {
-	UNPACK(map, mapPacked);
+void draw_map(map_t* map_packed) {
+	UNPACK(map, map_packed);
 
-	for (int i = 0; i < mapPacked->width; i++) {
-		for (int j = 0; j < mapPacked->height; j++) {
+	for (int i = 0; i < map_packed->width; i++) {
+		for (int j = 0; j < map_packed->height; j++) {
 			mvaddch(j, i, map[j][i].symbol);
 		}
 	}
 }
 
-void freeMap(map_t* map) {
+void free_map(map_t* map) {
 	vector_free(map->rooms);
 	free(map->buffer);
 	free(map);

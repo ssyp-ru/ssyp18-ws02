@@ -14,8 +14,8 @@
   tile_t(*varname)[(map_ptr)->width] = \
       (tile_t(*)[(map_ptr)->width])map_ptr->buffer
 
-void drawMap(map_t* map);
+void draw_map(map_t* map);
 
-map_t* generateMap(int width, int height);
+map_t* generate_map(int width, int height);
 
-void freeMap(map_t* map);
+void free_map(map_t* map);
