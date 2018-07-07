@@ -1,11 +1,9 @@
 #include "level.h"
 
-
-int main()
-{
+int main() {
 	int width = 60;
 	int height = 60;
-	
+
 	int amountOfEntities = 0;
 
 	initscr();
@@ -13,9 +11,10 @@ int main()
 	curs_set(0);
 	keypad(stdscr, true);
 
-level_t* level = initLevel(amountOfEntities, width, height);	
+	level_t* level = initLevel(amountOfEntities, width, height);
 
-	while(updateLevel(level));
+	while (updateLevel(level))
+		;
 
 	freeLevel(level);
 
