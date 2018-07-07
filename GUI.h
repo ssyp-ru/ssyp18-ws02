@@ -1,6 +1,6 @@
 #pragma once
 #include "common.h"
-#include "hero.h"
+#include "actor.h"
 
 // Structure of coordinates
 typedef struct coord{

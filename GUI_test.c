@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "GUI.h"
 #include "common.h"
-#include "hero.h"
+#include "actor.h"
 #include "feature.h"
 
 int main(){
@@ -31,7 +31,7 @@ int main(){
 	actor->strength = 10;
 	actor->agility = 8;
 	actor->stamina = 6;
-	actor->look = '@';
+	actor->symbol = '@';
 	actor->x = x;
 	actor->y = y;
 	feature_t * features = calloc(5, sizeof(feature_t));

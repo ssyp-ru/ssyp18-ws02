@@ -2,6 +2,8 @@
 #include <ncurses.h>
 #define FLAG_FRIENDLY 0x1
 #define FLAG_STACKABLE 0x1
+#include "common.h"
+
 typedef struct item {
 	chtype type;
 	float weight;
@@ -21,13 +23,16 @@ typedef struct actor{
 	inventory_t * inventory;
 	int flags;
 	int hp;
+	int state;
+	int targ_x, targ_y;
 	int strength;
 	int agility;
 	int stamina;
 	int viewRad;
 	int x, y;
-//	void (*behave)() = &behave;
-	chtype look;
+	struct level* level;
+	int (*begave)(struct actor*);
+	chtype symbol;
 } actor_t;	
 
 

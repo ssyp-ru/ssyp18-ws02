@@ -146,7 +146,7 @@ void draw_stats(actor_t * actor){
 void draw_actor(actor_t * actor){
 	int x = actor->x;
 	int y = actor->y;
-	mvwaddch(GUI.map_field, y, x, actor->look);	
+	mvwaddch(GUI.map_field, y, x, actor->symbol);	
 }
 
 void closeWindows(){

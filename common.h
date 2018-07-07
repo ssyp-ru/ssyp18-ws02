@@ -45,23 +45,6 @@ typedef struct feature{
  * }
 */
 
-typedef struct inventory {
-	char* name;
-	unsigned int item_count;
-} inv_t;
-
-typedef struct actor {
-	int hp;
-	chtype symbol;
-	int x, y;
-	inv_t* inventory;
-	int state;  
-	int flags;            
-	int targ_x, targ_y;  
-	struct level* level;
-	int (*behave)(struct actor*);
-} actor_t;
-
 typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
