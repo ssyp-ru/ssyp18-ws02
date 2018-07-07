@@ -2,9 +2,9 @@ CC=gcc
 LD=ld
 CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0
 LDLIBS=-lncurses
-SOURCES=main.c
+SOURCES=main.c serv.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=main
+EXECUTABLE=serv
 
 all: $(SOURCES) $(EXECUTABLE)
 
