@@ -2,7 +2,7 @@ CC=gcc
 LD=ld
 CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0 
 LDLIBS=-lncurses -lm
-SOURCES=main.c
+SOURCES=main.c tree.c render.c rooms.c vector_tree.c dumblogger.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=main
 

@@ -8,14 +8,14 @@ vector_t* vector_init (int len) {
 	vector->len = 0;
 	if(len < 16)
 		len = 16;
-	vector->maxLen = len;
-	vector->data = calloc(len, sizeof(room_t));
+	vector->max_len = len;
+	vector->data = calloc(len, sizeof(room_t*));
 	return vector;
 }
-void vector_add (vector_t* v, tree_t value) {
-	if(v->len >= v->maxLen) {
-		v->maxLen = v->len * 2;
-		tree_t * data_help = realloc(v->data, sizeof(tree_t) * v->maxLen);
+void vector_add (vector_t* v, tree_t* value) {
+	if(v->len >= v->max_len) {
+		v->max_len = v->len * 2;
+		tree_t** data_help = realloc(v->data, sizeof(tree_t*) * v->max_len);
 		if (data_help != NULL) {
 			v->data = data_help;
 		} else {
@@ -26,7 +26,7 @@ void vector_add (vector_t* v, tree_t value) {
 	}
 	v->data[v->len++] = value;
 }
-tree_t vector_get (vector_t* v, size_t i) {
+tree_t* vector_get (vector_t* v, size_t i) {
 	return v->data[i];
 }
 void vector_free(vector_t* v) {
@@ -34,8 +34,11 @@ void vector_free(vector_t* v) {
 	free(v);
 }
 vector_t* vector_copy (vector_t* v) {
-	vector_t* vector = vector_init(v->maxLen);
-	vector->len = vector->maxLen;
+	vector_t* vector = vector_init(v->max_len);
+	vector->len = vector->max_len;
 	memcpy(vector->data, v->data, v->len*sizeof(void*));
 	return vector;
+}
+int vector_get_len (vector_t* v) {
+	return v->len;
 }

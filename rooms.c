@@ -3,10 +3,12 @@
 #include "rooms.h"
 #include <stdlib.h>
 #include <ncurses.h>
+#include <string.h>
+#include "dumblogger.h"
 void room_free(room_t* room) {
 	if(room != NULL) free(room);
 }
-void createLine (int x1, int y1, int x2, int y2, char ch, int COLOR, map_t* map) {
+void create_line (int x1, int y1, int x2, int y2, char ch, int COLOR, map_t* map) {
 	UNPACK(field, map);
 	double x=x1, y=y1;
 	if (x1-x2 == 0) {
@@ -59,100 +61,127 @@ void createLine (int x1, int y1, int x2, int y2, char ch, int COLOR, map_t* map)
 		}
 	}
 }
-void divRoom (tree_t* parent, vector_t* leaves, map_t* map) {
-	room_t* proom = parent->value;
-	if(proom->S <= 64 || (proom->lenX <=16 && proom->lenY <= 8)) {
-		vector_add(leaves, *parent);
+void div_room (tree_t* parent, vector_t* leaves, map_t* map) {
+	room_t* parent_room = parent->value;
+	if(parent_room->S <= 64 || (parent_room->len_x <=16 && parent_room->len_y <= 8)) {
+		vector_add(leaves, parent);
 		return;
 	}
-	room_t* nrooms[2];
-	nrooms[0] = malloc(sizeof(room_t));
-	nrooms[1] = malloc(sizeof(room_t));
-	int lenLast;
+	room_t* next_rooms[2];
+	next_rooms[0] = malloc(sizeof(room_t));
+	next_rooms[1] = malloc(sizeof(room_t));
+	int len_last;
 	int x1=0, y1=0, x2=0, y2=0;
-	if (proom->lenX > proom->lenY*2) {
-		lenLast = proom->lenX;
-		x1 = proom->x1 + (rand() %((lenLast*40)/100) + ((lenLast*30)/100));
-		y1 = proom->y1;
+	if (parent_room->len_x > parent_room->len_y*2) {
+		len_last = parent_room->len_x;
+		x1 = parent_room->x1 + (rand() %((len_last*40)/100) + ((len_last*30)/100));
+		y1 = parent_room->y1;
 		x2 = x1;
-		y2 = proom->y2;
-		createLine(x1, y1, x2, y2, '#', 1, map);
-		nrooms[1]->x2 = proom->x2;
-		nrooms[1]->y2 = proom->y2;
-		nrooms[1]->x1 = x2;
-		nrooms[1]->y1 = y1;
-		nrooms[0]->x2 = x2;
-		nrooms[0]->y2 = y2;
-		nrooms[0]->x1 = proom->x1;
-		nrooms[0]->y1 = proom->y1;
+		y2 = parent_room->y2;
+		create_line(x1, y1, x2, y2, '#', 1, map);
+		next_rooms[1]->x2 = parent_room->x2;
+		next_rooms[1]->y2 = parent_room->y2;
+		next_rooms[1]->x1 = x2;
+		next_rooms[1]->y1 = y1;
+		next_rooms[0]->x2 = x2;
+		next_rooms[0]->y2 = y2;
+		next_rooms[0]->x1 = parent_room->x1;
+		next_rooms[0]->y1 = parent_room->y1;
 	} else {
-		lenLast = proom->lenY;
-		y2 = proom->y2 + (rand() %((lenLast*40)/100) + ((lenLast*30)/100));
-		x2 = proom->x2;
+		len_last = parent_room->len_y;
+		y2 = parent_room->y2 + (rand() %((len_last*40)/100) + ((len_last*30)/100));
+		x2 = parent_room->x2;
 		y1 = y2;
-		x1 = x2 - proom->lenX;
-		createLine(x1, y1, x2, y2, '#', 1, map);
-		nrooms[1]->x2 = proom->x2;
-		nrooms[1]->y2 = proom->y2;
-		nrooms[1]->x1 = proom->x1;
-		nrooms[1]->y1 = y2;
-		nrooms[0]->x2 = x2;
-		nrooms[0]->y2 = y2;
-		nrooms[0]->x1 = proom->x1;
-		nrooms[0]->y1 = proom->y1;
+		x1 = x2 - parent_room->len_x;
+		create_line(x1, y1, x2, y2, '#', 1, map);
+		next_rooms[1]->x2 = parent_room->x2;
+		next_rooms[1]->y2 = parent_room->y2;
+		next_rooms[1]->x1 = parent_room->x1;
+		next_rooms[1]->y1 = y2;
+		next_rooms[0]->x2 = x2;
+		next_rooms[0]->y2 = y2;
+		next_rooms[0]->x1 = parent_room->x1;
+		next_rooms[0]->y1 = parent_room->y1;
 	}
-	nrooms[0]->lenX = nrooms[0]->x2 - nrooms[0]->x1;
-	nrooms[0]->lenY = nrooms[0]->y1 - nrooms[0]->y2;
-	nrooms[0]->S = nrooms[0]->lenX * nrooms[0]->lenY;
-	nrooms[1]->lenX = nrooms[1]->x2 - nrooms[1]->x1;
-	nrooms[1]->lenY = nrooms[1]->y1 - nrooms[1]->y2;
-	nrooms[1]->S = nrooms[1]->lenX * nrooms[1]->lenY;
+	next_rooms[0]->len_x = next_rooms[0]->x2 - next_rooms[0]->x1;
+	next_rooms[0]->len_y = next_rooms[0]->y1 - next_rooms[0]->y2;
+	next_rooms[0]->S = next_rooms[0]->len_x * next_rooms[0]->len_y;
+	next_rooms[1]->len_x = next_rooms[1]->x2 - next_rooms[1]->x1;
+	next_rooms[1]->len_y = next_rooms[1]->y1 - next_rooms[1]->y2;
+	next_rooms[1]->S = next_rooms[1]->len_x * next_rooms[1]->len_y;
 
 	for (int i=0; i< 2; i++) {
-		tree_add(parent, nrooms[i]);
+		tree_add(parent, next_rooms[i]);
 	}
-	divRoom(parent->right, leaves, map);
-	divRoom(parent->left, leaves, map);
+	div_room(parent->right, leaves, map);
+	div_room(parent->left, leaves, map);
 }
-
+//В данной функции parent_room является левой или правой комнатой относительно room
 void div_walls_of_rooms (tree_t*	leaves, map_t* map) {
 	UNPACK(field, map);
-	if (leaves->parent != NULL) {
+	if (leaves->parent != NULL && leaves != NULL) {
 		room_t* room = leaves->value;
-		room_t* proom;
+		room_t* parent_room;
 		if (leaves->parent->right->value == leaves->value) {
-			proom = leaves->parent->left->value;
+			parent_room = leaves->parent->left->value;
 		} else {
-			proom = leaves->parent->right->value;
+			parent_room = leaves->parent->right->value;
 		}
-		if (proom->x1 > room->x1) {
-			room->doorX[0] = proom->x1;
-			room->doorX[1] = proom->x1;
-			room->doorY[0] = room->y1 + (proom->y2 - room->y1)/2;
-			room->doorY[0] = room->y1 + (proom->y2 - room->y1)/2 - 1;	
+		if (parent_room->x1 > room->x1) {
+			room->door_x[0] = parent_room->x1;
+			room->door_x[1] = parent_room->x1;
+			room->door_y[0] = room->y1 + (parent_room->y2 - room->y1)/2;
+			room->door_y[1] = room->y1 + (parent_room->y2 - room->y1)/2 - 1;	
+			while ((char)field[room->door_y[0]][room->door_x[0]+1].symbol  == '#' ||
+				(char)field[room->door_y[0]][room->door_x[0]-1].symbol == '#' ||
+				(char)field[room->door_y[1]][room->door_x[1]+1].symbol  == '#' ||
+				(char)field[room->door_y[1]][room->door_x[1]-1].symbol == '#') {
+				room->door_y[0]++;
+				room->door_y[1]++;			
+			}
 		}
-		else if (proom->x1 < room->x1) {
-			room->doorX[0] = room->x1;
-			room->doorX[1] = room->x1;
-			room->doorY[0] = room->y1 + (proom->y2 - room->y1)/2;
-			room->doorY[0] = room->y1 + (proom->y2 - room->y1)/2 - 1;	
+		else if (parent_room->x1 < room->x1) {
+			room->door_x[0] = room->x1;
+			room->door_x[1] = room->x1;
+			room->door_y[0] = room->y1 + (parent_room->y2 - room->y1)/2;
+			room->door_y[1] = room->y1 + (parent_room->y2 - room->y1)/2 - 1;	
+			while ((char)field[room->door_y[0]][room->door_x[0]+1].symbol  == '#' ||
+				(char)field[room->door_y[0]][room->door_x[0]-1].symbol == '#' ||
+				(char)field[room->door_y[1]][room->door_x[1]+1].symbol  == '#' ||
+				(char)field[room->door_y[1]][room->door_x[1]-1].symbol == '#') {
+				room->door_y[0]++;
+				room->door_y[1]++;
+			}
 		}
-		else if (proom->y1 > room->y1) {
-			room->doorX[0] = room->x1 + (proom->x2 - room->x1)/2;
-		 	room->doorX[1] = room->x1 + (proom->x2 - room->x1)/2 - 1;		
-			room->doorY[0] = proom->y1;
-			room->doorY[1] = proom->y1;	
+		else if (parent_room->y1 < room->y1) {
+			room->door_x[0] = room->x1 + (parent_room->x2 - room->x1)/2;
+		 	room->door_x[1] = room->x1 + (parent_room->x2 - room->x1)/2 - 1;		
+			room->door_y[0] = parent_room->y1;
+			room->door_y[1] = parent_room->y1;
+			while ((char)field[room->door_y[0]+1][room->door_x[0]].symbol  == '#' ||
+				(char)field[room->door_y[0]-1][room->door_x[0]].symbol  == '#' ||
+				(char)field[room->door_y[1]+1][room->door_x[1]].symbol  == '#' ||
+				(char)field[room->door_y[1]-1][room->door_x[1]].symbol  == '#') {
+				room->door_x[0]++;
+				room->door_x[1]++;
+			}
 		}
-		else if (proom->y1 < room->y2) {
-			room->doorX[0] = room->x1 + (proom->x2 - room->x1)/2;
-			room->doorX[1] = room->x1 + (proom->x2 - room->x1)/2 - 1;		
-			room->doorY[0] = room->y1;
-			room->doorY[1] = room->y1;	
+		else if (parent_room->y1 > room->y1) {
+			room->door_x[0] = room->x1 + (parent_room->x2 - room->x1)/2;
+			room->door_x[1] = room->x1 + (parent_room->x2 - room->x1)/2 - 1;		
+			room->door_y[0] = room->y1;
+			room->door_y[1] = room->y1;	
+			while ((char)field[room->door_y[0]+1][room->door_x[0]].symbol  == '#' ||
+				(char)field[room->door_y[0]-1][room->door_x[0]].symbol  == '#' ||
+				(char)field[room->door_y[1]+1][room->door_x[1]].symbol  == '#' ||
+				(char)field[room->door_y[1]-1][room->door_x[1]].symbol  == '#') {
+				room->door_x[0]++;
+				room->door_x[1]++;
+			}
 		}
 		for(int i = 0; i<2; i++) {
-			field[room->doorY[i]][room->doorX[i]].symbol = '/' | COLOR_PAIR(3);
-	}
-
+			field[room->door_y[i]][room->door_x[i]].symbol = '/' | COLOR_PAIR(2);
+		}
 	} else {
 		return;
 	}
