@@ -113,9 +113,8 @@ void draw_text(char * line){
 	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
-void drawFeatures(feature_t * features){
-	for(int i = 0; i < 2; i++)
-		mvwaddch(GUI.map_field, features[i].y, features[i].x, features[i].symbol);	
+void drawFeatures(feature_t * features){	
+	//	mvwaddch(GUI.map_field, features[i].y, features[i].x, features[i].symbol);	
 }
 
 void draw_inv(actor_t * actor){
@@ -144,12 +143,14 @@ void draw_stats(actor_t * actor){
 }
 
 void draw_actor(actor_t * actor){
-	int x = actor->x;
-	int y = actor->y;
-	mvwaddch(GUI.map_field, y, x, actor->symbol);	
+	for(int i = 0; i < 2; i++){
+		int x = actor[i].x;
+		int y = actor[i].y;
+		mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
+	}
 }
 
-void closeWindows(){
+void close_windows(){
 	delwin(GUI.map_field);
 	delwin(GUI.mes_field);
 	delwin(GUI.inv_field);

@@ -22,7 +22,7 @@ typedef struct map{
 } map_t;	
 
 typedef struct feature{
-	inventory_t * inventory;
+	struct inventory * inventory;
 	ftype_t type;
 	int x, y;
 	int flags;

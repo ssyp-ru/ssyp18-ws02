@@ -5,6 +5,7 @@
 #include "common.h"
 #include "actor.h"
 #include "feature.h"
+#include "find_path.h"
 
 int main(){
 	initscr();
@@ -14,48 +15,33 @@ int main(){
 	keypad(stdscr,true);
 	halfdelay(100);
 	curs_set(0);
-	actor_t * actor = calloc(1, sizeof(actor_t));
+	feature_t * features;
+	actor_t * actor = calloc(2, sizeof(actor_t));
 	actor->inventory = calloc(1, sizeof(inventory_t));
 	actor->inventory->max_amount = 15;
 	actor->inventory->item = 
 		calloc(actor->inventory->max_amount, sizeof(item_t));
-	actor->inventory->item[0].description = "A small thief knife";
-	actor->inventory->item[1].description = "A rotten pie";
-	actor->inventory->item[2].description = "A broken helmet";
-	actor->inventory->item[0].amount = 1;	
-	actor->inventory->item[1].amount = 1;	
-	actor->inventory->item[1].flags = FLAG_STACKABLE;
-	actor->inventory->item[2].amount = 1;
-	actor->inventory->amount = 3;
-	actor->hp = 4;
-	actor->strength = 10;
-	actor->agility = 8;
-	actor->stamina = 6;
-	actor->symbol = '@';
-	actor->x = x;
-	actor->y = y;
-	feature_t * features = calloc(5, sizeof(feature_t));
-	features[0].inventory = calloc(1, sizeof(inventory_t));
-	features[0].inventory->item = calloc(10, sizeof(item_t));
-	features[1].inventory = calloc(1, sizeof(inventory_t));
-	features[1].inventory->item = calloc(10, sizeof(item_t));
-	features[0].x = x + 3;
-	features[0].y = y;
-	features[0].symbol = 'P';
-	features[0].inventory->amount = 1;
-	features[0].inventory->item[0].description = "A rotten pie";
-	features[0].inventory->item[0].flags |= FLAG_STACKABLE;
-	features[1].x = x + 5;
-	features[1].y = y;
-	features[1].symbol = 'Y';
-	features[1].inventory->amount = 1;
-	features[1].inventory->item[0].description = "A large sword";
-	features[1].inventory->item[0].flags &= FLAG_STACKABLE;
+	actor[0].hp = 4;
+	actor[0].strength = 10;
+	actor[0].agility = 8;
+	actor[0].stamina = 6;
+	actor[0].symbol = '@';
+	actor[0].x = x;
+	actor[0].y = y;
+	actor[1].symbol = 'V';
+	actor[1].hp = 2;
+	actor[1].x = x + 15;
+	actor[1].y = y + 15;
 	getmaxyx(stdscr, size_y, size_x);
 	map_t * _map = calloc(1, sizeof(map_t));
 	_map->buffer = calloc(size_x * size_y, sizeof(tile_t));
 	_map->width = size_x - 30;
 	_map->height = size_y;
+	level_t * level = calloc(1, sizeof(level_t));
+	level->map = _map;
+	actor[0].level = level;
+	actor[1].level = level;
+	actor[1].view_radius = 4;
 	UNPACK(map, _map);
 	noecho();
 	for(int i = 0; i < size_x; i++){
@@ -64,22 +50,45 @@ int main(){
 			map[k][i].symbol = '-';
 		}
 	}
-	init_GUI(_map);
+	init_GUI(level->map);
 	int input = 0;
-	while(input != 113){
-		render(_map, actor, features);
+	pvector_t * way;
+	way = find_path((actor[1]), x, y);
+	while(input != 'q'){
+		bool tick = false;
+		render(level->map, actor, features);
+		for(int i = 0; i < way->length; i++)
+			mvaddch(way->buffer[i].y, way->buffer[i].x+30, '+');
 		input = getch();
-		if(input == KEY_RIGHT)
-			actor->x++;
-		if(input == 112 && features[0].x == actor->x){
-			pick_up(actor, features[0]);
+		switch(input){
+			case 'w':
+				actor[0].y--;
+				tick = true;
+				break;
+			case 'a':
+				actor[0].x--;
+				tick = true;
+				break;
+			case 's':
+				actor[0].y++;
+				tick = true;
+				break;
+			case 'd':
+				actor[0].x++;
+				tick = true;
+				break;
 		}
-		if(input == 112 && features[1].x == actor->x){
-			pick_up(actor, features[1]);
+		if(tick){
+			way = find_path(actor[1], actor[0].x, actor[0].y);
+			if(way->length > 0){
+				actor[1].x = way->buffer[way->length-2].x;
+				actor[1].y = way->buffer[way->length-2].y;
+			}	
+			tick = false;
 		}
 		refresh();
 	}
-	closeWindows();
+	close_windows();
 	endwin();
 	return 0;
 }

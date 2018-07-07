@@ -20,7 +20,7 @@ typedef struct inventory{
 } inventory_t;
 
 typedef struct actor{
-	inventory_t * inventory;
+	struct inventory * inventory;
 	int flags;
 	int hp;
 	int state;
@@ -28,9 +28,9 @@ typedef struct actor{
 	int strength;
 	int agility;
 	int stamina;
-	int viewRad;
+	int view_radius;
 	int x, y;
-	struct level* level;
+	struct level * level;
 	int (*begave)(struct actor*);
 	chtype symbol;
 } actor_t;	
