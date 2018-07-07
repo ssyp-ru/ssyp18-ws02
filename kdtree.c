@@ -115,3 +115,14 @@ kdtree_t * kd_create (feature_t ** point, int len) {
 	}
 	return tree;
 }
+
+void kd_delete (kdtree_t * root) {
+	if (root) {
+		if (root->rbranch)
+			kd_delete (root->rbranch);
+		if (root->lbranch) 
+			kd_delete (root->lbranch);
+		if (!root->rbranch && !root->lbranch)
+			free (root);
+	}
+}

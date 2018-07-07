@@ -25,10 +25,11 @@ int main () {
 	}
 	kdtree_t * tree = kd_create (ppoint, 20);
 	feature_t * nearkd = findNN (tree, &find, 1);
-	feature_t nearf  = nearest (point, find);
+	feature_t nearf = nearest (point, find);
 	if (nearf.x == nearkd->x && nearf.y == nearkd->y)
 		printf ("yes");
 	else
 		printf ("no");
+	kd_delete (tree);
 	return 0;
 }
