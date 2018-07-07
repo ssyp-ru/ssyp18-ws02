@@ -2,89 +2,89 @@
 #include <ncurses.h>
 
 struct GUI {
-	WINDOW * mapField;
-	WINDOW * statField;
-	WINDOW * invField;
-	WINDOW * mesField;
+	WINDOW * map_field;
+	WINDOW * stat_field;
+	WINDOW * inv_field;
+	WINDOW * mes_field;
 } GUI;
-void drawMap(map_t * _map){
-	int sizeX = _map->width;
-	int sizeY = _map->height;
+void draw_map(map_t * _map){
+	int size_x = _map->width;
+	int size_y = _map->height;
 	UNPACK(map, _map);
-	for(int i = 0; i < sizeX; i++){
-		for(int k = 0; k < sizeY; k++){
-			mvwaddch(GUI.mapField, k, i, map[k][i].symbol);
+	for(int i = 0; i < size_x; i++){
+		for(int k = 0; k < size_y; k++){
+			mvwaddch(GUI.map_field, k, i, map[k][i].symbol);
 		}
 	}
 }
 
-void drawView(int xPos, int yPos, int viewRadius, map_t * _map){
+void draw_view(int x, int y, int view_radius, map_t * _map){
 	UNPACK(map, _map);
 	int index = 0;
 	float angle = 0;
 	vision_t * vision = calloc(1, sizeof(vision_t));
 	vision->view = calloc(10000, sizeof(coord_t));
-	for(angle = -viewRadius; angle <= viewRadius; angle += 0.2){
-		for(float x = 0; x >= -viewRadius; x -= 0.2){	
-			int y1 = angle * x + yPos - 0.5;
-			int x1 = x + xPos + 0.5;
-			int radX = x1 - xPos;
-			int radY = y1 - yPos;
-			if(radX * radX + radY * radY <= viewRadius * viewRadius){
+	for(angle = -view_radius; angle <= view_radius; angle += 0.2){
+		for(float x = 0; x >= -view_radius; x -= 0.2){	
+			int y1 = angle * x + y - 0.5;
+			int x1 = x + x + 0.5;
+			int rad_x = x1 - x;
+			int rad_y = y1 - y;
+			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius){
 				if(map[y1][x1].flags & FLAG_SOLID){
 						break;
 				}else{
-					vision->view[index].yPos = y1;
-					vision->view[index].xPos = x1;
+					vision->view[index].y = y1;
+					vision->view[index].x = x1;
 					index++;
 				}
 			}			
 		}
-		for(float x = 0; x <= viewRadius; x += 0.2){
-			int y1 = angle * x + yPos - 0.5;
-			int x1 = x + xPos + 0.5;
-			int radX = x1 - xPos;
-			int radY = y1 - yPos;
-			if(radX * radX + radY * radY <= viewRadius * viewRadius){
+		for(float x = 0; x <= view_radius; x += 0.2){
+			int y1 = angle * x + y - 0.5;
+			int x1 = x + x + 0.5;
+			int rad_x = x1 - x;
+			int rad_y = y1 - y;
+			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius){
 				if(map[y1][x1].flags & FLAG_SOLID){
 						break;
 				}else{
-					vision->view[index].yPos = y1;
-					vision->view[index].xPos = x1;
+					vision->view[index].y = y1;
+					vision->view[index].x = x1;
 					index++;	
 				}
 			}
 		}
 	}				
-	for(int y = 0; y >= -viewRadius; y--){
-		int y1 = y + yPos;
-		int x1 = xPos;
+	for(int y = 0; y >= -view_radius; y--){
+		int y1 = y + y;
+		int x1 = x;
 		if(map[y1][x1].flags & FLAG_SOLID){
 			break;
 		}else{
-			vision->view[index].yPos = y1;
-			vision->view[index].xPos = x1;
+			vision->view[index].y = y1;
+			vision->view[index].x = x1;
 			index++;
 		}
 	}	
-	for(int y = 0; y <= viewRadius; y++){
-		int y1 = y + yPos;
-		int x1 = xPos;
+	for(int y = 0; y <= view_radius; y++){
+		int y1 = y + y;
+		int x1 = x;
 		if(map[y1][x1].flags & FLAG_SOLID){
 			break;
 		}else{
-			vision->view[index].yPos = y1;
-			vision->view[index].xPos = x1;
+			vision->view[index].y = y1;
+			vision->view[index].x = x1;
 			index++;
 		}
 	}	
 	for(int i = 0; i < index; i++){
-			int x = vision->view[i].xPos;
-			int y = vision->view[i].yPos;
-			mvwaddch(GUI.mapField, y, x, '.');
+			int x = vision->view[i].x;
+			int y = vision->view[i].y;
+			mvwaddch(GUI.map_field, y, x, '.');
 		}	
 }
-void drawBorder(WINDOW * window){
+void draw_borded(WINDOW * window){
 	int x,y;
 	getmaxyx(window, y, x);
 	for(int i = 0; i < y; i++){
@@ -108,76 +108,76 @@ void drawBorder(WINDOW * window){
 		}
 	}
 }
-void drawText(char * line){
-	mvwprintw(GUI.mesField, 2, 2, line);
+void draw_text(char * line){
+	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
 /*void drawFeatures(kdtree_t * features, WINDOW * window){
 	...
 }*/
 
-void drawInv(hero_t * hero){
+void draw_inv(hero_t * hero){
 	 int amount	= hero->inventory.amount;
 	 for(int i = 0; i < amount; i++){
-			mvwprintw(GUI.invField, i * 2 + 2, 2,
+			mvwprintw(GUI.inv_field, i * 2 + 2, 2,
 				 	hero->inventory.item[i].description);
 	 }
 }
 
-void drawStats(hero_t * hero){
+void draw_stats(hero_t * hero){
 	int hp = hero->hp;
 	int strength = hero->strength;
 	int agility = hero->agility;
 	int stamina = hero->stamina;
-	mvwprintw(GUI.statField, 2, 2, "HP: %d", hp);
-	mvwprintw(GUI.statField, 4, 2, "Strength: %d", strength);
-	mvwprintw(GUI.statField, 6, 2, "Agility: %d", agility);
-	mvwprintw(GUI.statField, 8, 2, "Stamina: %d", stamina);
+	mvwprintw(GUI.stat_field, 2, 2, "HP: %d", hp);
+	mvwprintw(GUI.stat_field, 4, 2, "Strength: %d", strength);
+	mvwprintw(GUI.stat_field, 6, 2, "Agility: %d", agility);
+	mvwprintw(GUI.stat_field, 8, 2, "Stamina: %d", stamina);
 }
 
-void drawHero(hero_t * hero){
-	int xPos = hero->xPos;
-	int yPos = hero->yPos;
-	mvwaddch(GUI.mapField, yPos, xPos, hero->look);	
+void draw_hero(hero_t * hero){
+	int x = hero->x;
+	int y = hero->y;
+	mvwaddch(GUI.map_field, y, x, hero->look);	
 }
 
 void closeWindows(){
-	delwin(GUI.mapField);
-	delwin(GUI.mesField);
-	delwin(GUI.invField);
-	delwin(GUI.statField);
+	delwin(GUI.map_field);
+	delwin(GUI.mes_field);
+	delwin(GUI.inv_field);
+	delwin(GUI.stat_field);
 
 }
 
 void render(map_t * _map, hero_t * hero){
-	int xPos = hero->xPos;
-	int yPos = hero->yPos;
-	drawMap(_map);
-	drawView(xPos, yPos, 5, _map);
-	drawInv(hero);
-	drawText("There is nothing here!");
-	drawStats(hero);
-	drawHero(hero);
+	int x = hero->x;
+	int y = hero->y;
+	draw_map(_map);
+	draw_view(x, y, 5, _map);
+	draw_inv(hero);
+	draw_text("There is nothing here!");
+	draw_stats(hero);
+	draw_hero(hero);
 	//drawFeatures(features, window);
-	drawBorder(GUI.mapField);
-	drawBorder(GUI.mesField);
-	drawBorder(GUI.invField);
-	drawBorder(GUI.statField);
-	wrefresh(GUI.mapField);
-	wrefresh(GUI.mesField);
-	wrefresh(GUI.invField);
-	wrefresh(GUI.statField);
+	draw_borded(GUI.map_field);
+	draw_borded(GUI.mes_field);
+	draw_borded(GUI.inv_field);
+	draw_borded(GUI.stat_field);
+	wrefresh(GUI.map_field);
+	wrefresh(GUI.mes_field);
+	wrefresh(GUI.inv_field);
+	wrefresh(GUI.stat_field);
 }
 
-void initGUI(map_t * _map){
-	int sizeX = _map->width;
-	int sizeY = _map->height;
+void init_GUI(map_t * _map){
+	int size_x = _map->width;
+	int size_y = _map->height;
 	int step = 40;
 	int yText = 6;
 	int yInv = 20;
-	GUI.mapField = newwin(sizeY, sizeX, 0, step);
-	GUI.mesField = newwin(yText, step, 0, 0);
-	GUI.invField = newwin(yInv,step, yText, 0);
-	GUI.statField = newwin(sizeY - yText - yInv, step, yText + yInv, 0);
+	GUI.map_field = newwin(size_y, size_x, 0, step);
+	GUI.mes_field = newwin(yText, step, 0, 0);
+	GUI.inv_field = newwin(yInv,step, yText, 0);
+	GUI.stat_field = newwin(size_y - yText - yInv, step, yText + yInv, 0);
 }
 

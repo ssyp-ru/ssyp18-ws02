@@ -13,10 +13,10 @@ typedef struct item {
 typedef struct inventory{
 	item_t * item;
 	int amount;
-	int maxAmount;
+	int max_amount;
 } inventory_t;
 
-typedef struct hero{
+typedef struct actor{
 	inventory_t inventory;
 	int flags;
 	int hp;
@@ -24,10 +24,10 @@ typedef struct hero{
 	int agility;
 	int stamina;
 	int viewRad;
-	int xPos;
-	int yPos;
+	int x;
+	int y;
 //	void (*behave)() = &behave;
 	chtype look;
-} hero_t;	
+} actor_t;	
 
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <ncurses.h>
-
+#include "hero.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
@@ -24,6 +24,7 @@ typedef struct map{
 typedef struct feature{
 	inventory_t * inventory;
 	ftype_t type;
+	int x, y;
 	int flags;
 	char * description;
 	chtype symbol;
@@ -35,10 +36,10 @@ typedef struct level_t {
 } level_t;
 
 // Function for picking up items from a feature
-void pickUp(actor_t * actor, feature_t feature);
+void pick_up(actor_t * actor, feature_t feature);
 
 //Function for dropping item on a floor
-void throwAway(item_t * item, level_t * level, int xPos, int yPos);
+void throw_away(item_t * item, level_t * level, int x, int y);
 
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
 
