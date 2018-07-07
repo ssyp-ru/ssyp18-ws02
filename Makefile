@@ -1,23 +1,22 @@
-CC=gcc
 LD=ld
-CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0
-LDLIBS=-lncurses
-SOURCES=mapgen.c level.c actors.c main.c roomvector.c
-EXECUTABLE=main
-OBJECTS=$(SOURCES:.c=.o)
+   CC=gcc
+      CFLAGS=-std=c11 -Wall -Wpedantic -g -O0
+                  LDLIBS=-lncurses
+                         SOURCES=genmap.c shrew_map.c cellular_map.c\
+                                 mapgen.c level.c actor.c main.c\
+                                 roomvector.c behave.c
 
-all: $(SOURCES) $(EXECUTABLE)
+                                 OBJECTS=$(SOURCES:.c=.o)
 
-build: all
+                                         build:
+                                         all
 
-run: all
-	./$(EXECUTABLE)
-
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDLIBS)
-
-.c.o:
-	$(CC) $(CFLAGS) $< -o $@ $(LDLIBS) 
-
-clean:
-	rm -rf *.o all -rf
+                                         clean:
+                                         rm -rf *.o all
+                                         main_shrew:
+                                         main_shrew.o shrew_map.o cellular_map.o genmap.o
+                                         main_cellular:
+                                         main_cellular.o shrew_map.o cellular_map.o genmap.o
+                                         main_recdev:
+                                         main_recdev.o genmap.o recursive_devision_map.o
+                                         roomvector.o

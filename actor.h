@@ -1,21 +1,29 @@
+#pragma once
+
 #ifndef _ACTOR_05_07_18_11_21
 #define _ACTOR_05_07_18_11_21
 
-typedef struct actor{
-	chtype symbol;
-	int flags;
-	int x, y;
-} actor_t;
+#define FLAG_ISPLAYER 0x1
+#define FLAG_DEAD 0x2
 
+#include <math.h>
+#include <ncurses.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
+#include "behave.h"
+#include "mapgen.h"
 
-typedef struct actors{
-	actor_t* array;
-	int amount;
-} actors_t;
+void draw_actors(avect_t* vect);
 
+avect_t* init_actors(level_t* level, int amount_of_entities);
 
-typedef struct level{
-	map_t* map;
-	actors_t* actors;
-} level_t;
+void add_vector_elem(avect_t* vect, actor_t newActor);
 
+actor_t* actor_get(avect_t* vect, int num);
+
+void free_actors(avect_t* vect);
+
+bool update_actors(avect_t* vect);
+
+#endif

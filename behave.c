@@ -3,6 +3,7 @@
 #include <time.h>
 #include <stdint.h>
 #include "actor.h"
+#include "mapgen.h"
 
 void behave_fire(actor_t* self, level_t* level){
 	actor_t bullet;
