@@ -8,7 +8,7 @@ typedef struct feature{
 typedef struct kdtree {
 	struct kdtree * rbranch;
 	struct kdtree * lbranch;
-	feature_t node;
+	feature_t * node;
 } kdtree_t;
 
 typedef struct box {
@@ -18,10 +18,13 @@ typedef struct box {
 typedef struct features_vec {
 	feature_t * buffer;
 	int last;
-	int capacity;
+size_t capacity;
 } fvec_t;
 
 fvec_t * collect(kdtree_t * root, box_t room);
 void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret);
-feature_t findNN (kdtree_t* kdtree, feature_t red, int num); 
-kdtree_t * kdcreate (feature_t * point, int depth, int i);
+feature_t * findNN (kdtree_t* kdtree, feature_t * red, int num); 
+kdtree_t * kd_create (feature_t ** point, int len);
+kdtree_t * kd_create_node(feature_t * point);
+kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth); 
+
