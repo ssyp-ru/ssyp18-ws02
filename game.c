@@ -50,7 +50,7 @@ void start_game() {
 	avect_t ** queue = calloc(100, sizeof(avect_t*));
 	for(int i = 0; i < 100; i++)
 		queue[i] = create_new_vector(1);
-
+	
 	for(int i = 0; i < actors->len; i++)
 		add_vector_elem(queue[0], actor_get(actors, i));
 	main_cycle(actors, queue, 100, levels);
