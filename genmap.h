@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 #include "common.h"
+#include "roomvector.h"
 
 #define FLAG_PERM  0x1
 #define FLAG_TRANS 0x2
@@ -30,3 +31,7 @@ map_t * mapgen_shrew(map_t *_map);
 map_t * mapgen_rooms_shrew(map_t *_map);
 
 map_t * make_walls_shrew(map_t * _map);
+
+//generation using recursive devision (recursive_devision_map.c)
+map_t* mapgen_recdev(map_t * map);
+

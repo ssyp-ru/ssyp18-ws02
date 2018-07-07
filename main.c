@@ -1,27 +1,22 @@
-#include <ncurses.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include "caves.h"
-#include "common.h"
+#include "level.h"
 
-int main()
-{
+int main() {
+	int width = 60;
+	int height = 60;
+
+	int amount_of_entities = 0;
+
 	initscr();
 	noecho();
+	curs_set(0);
+	keypad(stdscr, true);
 
-	int size_x = 102, size_y = 102;
-	int birth_limit  = 4, death_limit = 3;
-	int num_of_steps = 5;
-	float chance_to_be_alive = 0.4;
+	level_t* level = init_level(amount_of_entities, width, height);
 
-	map_t * map = create_map(size_y, size_x);
-	map         = fill_map(map, chance_to_be_alive);
-	map         = simulation_step(map, birth_limit, death_limit, num_of_steps);
-	print_map(map);
-	getch();
+	while (update_level(level))
+		;
+
+	free_level(level);
+
 	endwin();
-	free_map(map);
-	return 0;
 }
-

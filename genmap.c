@@ -7,10 +7,12 @@ map_t * create_map(int height,int width) {
 	map->buffer = calloc(width*height, sizeof(tile_t));
 	map->height = height;
 	map->width  = width;
+	map->rooms  = NULL;
 	return map;
 }
 
 void free_map(map_t * map) {
+	vector_free(map->rooms);
 	free(map->buffer);
 	free(map);
 }
