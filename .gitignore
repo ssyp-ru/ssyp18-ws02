@@ -1,0 +1,6 @@
+*.o
+*.orig
+main_cellular
+*.txt
+main_shrew
+*.md
