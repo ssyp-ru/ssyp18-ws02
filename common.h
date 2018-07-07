@@ -1,6 +1,6 @@
 #pragma once
 #include <ncurses.h>
-#include "hero.h"
+#include "actor.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
@@ -30,11 +30,6 @@ typedef struct feature{
 	chtype symbol;
 } feature_t;
 
-typedef struct level_t {
-	map_t * map;
-//	kdtree_t * features;
-} level_t;
-
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
 
 /**
@@ -50,3 +45,32 @@ typedef struct level_t {
  * }
 */
 
+typedef struct inventory {
+	char* name;
+	unsigned int item_count;
+} inv_t;
+
+typedef struct actor {
+	int hp;
+	chtype symbol;
+	int x, y;
+	inv_t* inventory;
+	int state;  
+	int flags;            
+	int targ_x, targ_y;  
+	struct level* level;
+	int (*behave)(struct actor*);
+} actor_t;
+
+typedef int (*behave_t)(struct actor*);
+
+typedef struct actors_vect {
+	struct actor* all_actors;
+	unsigned int len;
+	unsigned int capacity;
+} avect_t;
+
+typedef struct level {
+	map_t* map;
+	avect_t* actors;
+} level_t;
