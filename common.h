@@ -14,8 +14,8 @@ typedef struct inventory {
 typedef struct actor {
 	unsigned char health;
 	int speed;
-	unsigned char
-	painchance;  // if the bullet hits. Actor with any probability
+	unsigned char painchance;
+	// if the bullet hits. Actor with any probability
 	// runs away (painchance < 256)
 	chtype symbol;
 	unsigned int x, y;
@@ -33,7 +33,7 @@ typedef struct actor {
 typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
-	struct actor* all_actors;
+	struct actor** all_actors;
 	unsigned int len;
 	unsigned int capacity;
 } avect_t;
@@ -57,5 +57,10 @@ typedef struct map {
 
 typedef struct level {
 	map_t* map;
-	avect_t* actors;
 } level_t;
+
+typedef struct level_vector {
+	level_t** data;
+	size_t length;
+	size_t capacity;
+} level_vector_t;
