@@ -1,4 +1,5 @@
 #pragma once
+
 #include <ncurses.h>
 #include "actor.h"
 #define FLAG_SOLID 0x1
@@ -14,12 +15,6 @@ typedef struct tile{
 	chtype symbol;
   int flags;
 } tile_t;
-
-typedef struct map{
-	tile_t * buffer;
-	int height;
- 	int width;
-} map_t;	
 
 typedef struct feature{
 	struct inventory * inventory;
@@ -53,7 +48,27 @@ typedef struct actors_vect {
 	unsigned int capacity;
 } avect_t;
 
+typedef struct room {
+	int x, y;
+	int height, width;
+} room_t;
+
+
+typedef struct room_vector {
+	room_t* data;
+	size_t length;
+	size_t capacity;
+} room_vector_t;
+
+
+typedef struct map {
+	tile_t* buffer;
+	room_vector_t * rooms;
+	int height, width;
+} map_t;
+
 typedef struct level {
 	map_t* map;
 	avect_t* actors;
 } level_t;
+

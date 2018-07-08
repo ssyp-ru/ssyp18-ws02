@@ -1,6 +1,6 @@
 #include "feature.h"
 #include "common.h"
-#include "hero.h"
+#include "actor.h"
 #include <ncurses.h>
 
 void pick_up(actor_t * actor, feature_t feature){
