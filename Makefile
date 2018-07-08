@@ -1,9 +1,9 @@
 LD=ld
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wpedantic -c -g -O0 -Werror
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror
 lab: tree.c
-LDLIBS=-lncurses
-SOURCES=main.c tree.c
+LDLIBS=-lncurses -lm
+SOURCES= kdtree.c collect.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=main
 
@@ -19,4 +19,5 @@ $(EXECUTABLE): $(OBJECTS)
 
 clean:
 	rm -rf *.o all
-	
+
+kdtreetest: kdtreetest.o $(OBJECTS)	
