@@ -54,7 +54,12 @@ pvector_t * find_path(actor_t actor, int x, int y){
 	int x_f = x, x_n;
 	int y_f = y, y_n;
 	int min = 999;
-	int way[100][2];
+	for(int k = 0; k < size_x; k++){
+		for(int i = 0; i < size_y; i++){
+			if(set_map[k][i] == -1)
+				set_map[k][i] = 999;
+		}
+	}
 	bool visible = (x >= x1 - vr && x <= x1 + vr &&
 			y >= y1 - vr && y <= y1 + vr);
 	while(ind < 100 && visible){

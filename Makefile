@@ -1,17 +1,19 @@
 LD=ld
 CC=gcc
 CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror
-lab: tree.c
 LDLIBS=-lncurses -lm
-SOURCES= kdtree.c collect.c
+
+GUI_test: GUI_test.o GUI.o feature.o find_path.o genmap.o\
+					shrew_map.o roomvector.o
+SOURCES=genmap.c shrew_map.c cellular_map.c\
+				mapgen.c level.c actor.c main.c\
+				roomvector.c behave.c 
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=main
 
 all: $(SOURCES) $(EXECUTABLE)
 
 build: all
-
-kdtreetest: kdtree.o kdtreetest.o
 
 run: all
 	./$(EXECUTABLE)

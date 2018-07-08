@@ -28,35 +28,35 @@ void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret) {
 	
 	if (axis == 1) {
 		if (curr) {
-			if (curr->x > room.left) {
-				if (curr->x < room.right) {
+			if (curr->x > room.x) {
+				if (curr->x < room.x + room.width) {
 					ret->buffer[ret->last++] = curr;
 					if (right)
-						if (right->node->x < room.right)
+						if (right->node->x < room.x + room.width)
 							collect_rec (right, num+1, room, ret);
 					if (left)
-						if (left->node->x > room.left)
+						if (left->node->x > room.x)
 							collect_rec (left, num+1, room, ret);
 		} else
 			if (left)
-				if (left->node->x > room.left)
+				if (left->node->x > room.x)
 					collect_rec (right, num+1, room, ret);
 			}
 		}
 	} else {
 		if (curr) {
-			if (curr->y > room.top) {
-				if (curr->y < room.bottom) {
+			if (curr->y > room.y) {
+				if (curr->y < room.y + room.height) {
 					ret->buffer[ret->last++] = curr;
 					if (right)
-						if (right->node->y < room.bottom)
+						if (right->node->y < room.y + room.height)
 							collect_rec (right, num+1, room, ret);
 					if (left)
-						if (left->node->y > room.top)
+						if (left->node->y > room.y)
 							collect_rec (left, num+1, room, ret);
 				} else
 					if (left)
-						if (left->node->y > room.top)
+						if (left->node->y > room.y)
 							collect_rec (left, num+1, room, ret);
 			}
 		}

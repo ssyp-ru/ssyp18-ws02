@@ -6,6 +6,8 @@
 #include "actor.h"
 #include "feature.h"
 #include "find_path.h"
+#include "genmap.h"
+#include "time.h"
 
 int main(){
 	initscr();
@@ -15,6 +17,7 @@ int main(){
 	keypad(stdscr,true);
 	halfdelay(100);
 	curs_set(0);
+	srand(time(NULL));
 	feature_t * features;
 	actor_t * actor = calloc(2, sizeof(actor_t));
 	actor->inventory = calloc(1, sizeof(inventory_t));
@@ -35,23 +38,23 @@ int main(){
 	getmaxyx(stdscr, size_y, size_x);
 	size_x = 150;
 	size_y = 150;
-	map_t * _map = calloc(1, sizeof(map_t));
-	_map->buffer = calloc(size_x * size_y, sizeof(tile_t));
-	_map->width = size_x - 30;
-	_map->height = size_y;
+	map_t * _map = create_map(size_x, size_y);
+	_map = mapgen_shrew(_map);
+	_map = mapgen_rooms_shrew(_map);
+	_map = make_walls_shrew(_map);
 	level_t * level = calloc(1, sizeof(level_t));
 	level->map = _map;
 	actor[0].level = level;
 	actor[1].level = level;
 	actor[1].view_radius = 4;
-	UNPACK(map, _map);
 	noecho();
+	/*UNPACK(map, _map);
 	for(int i = 0; i < size_x; i++){
 		for(int k = 0; k < size_y; k++){
 			map[k][i].flags &= FLAG_SOLID;
 			map[k][i].symbol = '-';
 		}
-	}
+	}*/
 	msgs_t * msgs = calloc(1, sizeof(msgs_t));
 	msgs->max_size = 1000;
 	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
@@ -105,22 +108,25 @@ int main(){
 		}
 		x = actor[0].x;
 		y = actor[0].y;
+		int x1 = actor[1].x;
+		int y1 = actor[1].y;
 		if(x > box.width/2 && x < size_x - box.width/2)
 			box.x = x - box.width/2;
 		if(y > box.height/2 && y < size_y - box.height/2)
 			box.y = y - box.height/2;
-
+		way = find_path(actor[1], actor[0].x, actor[0].y);
 		refresh();
 		if(tick){
 			clear();
-			way = find_path(actor[1], actor[0].x, actor[0].y);
 			fx = way->buffer[0].x;
 			fy = way->buffer[0].y;
 			len = way->length;
-			if(way->length > 0){
-				actor[1].x = way->buffer[way[0].length - 1].x;
-				actor[1].y = way->buffer[way[0].length - 1].y;				
-			}else{
+			if(len > 0){
+				actor[1].x = way->buffer[len].x;
+				actor[1].y = way->buffer[len].y;
+			}
+			//mvprintw(3,1,"%d  %d", actor[1].x, actor[1].y);
+			if(actor[0].x == actor[1].x && actor[0].y == actor[1].y){
 				actor[0].hp--;
 				msgs->buffer[msgs->size].line = "A cruel goblin hits you!";
 				msgs->size++;

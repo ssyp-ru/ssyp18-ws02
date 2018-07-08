@@ -76,8 +76,9 @@ typedef struct kdtree {
 	feature_t * node;
 } kdtree_t;
 
-typedef struct box {
-	int left, right, top, bottom;
+typedef struct box{
+	int x,y;
+	int width, height;
 } box_t;
 
 typedef struct features_vec {
