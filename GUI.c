@@ -8,7 +8,7 @@ struct GUI {
 	WINDOW * inv_field;
 	WINDOW * mes_field;
 } GUI;
-void draw_map(map_t * _map){
+void draw_map(map_t * _map, box_t box){
 	int size_x = _map->width;
 	int size_y = _map->height;
 	UNPACK(map, _map);
@@ -19,7 +19,8 @@ void draw_map(map_t * _map){
 	}
 }
 
-void draw_view(int x2, int y2, int view_radius, map_t * _map){
+void draw_view(int x2, int y2, int view_radius,
+	 	map_t * _map, box_t box){
 	UNPACK(map, _map);
 	int index = 0;
 	float angle = 0;
@@ -110,6 +111,7 @@ void draw_borded(WINDOW * window){
 	}
 }
 void draw_text(char * line){
+	mvwprintw(GUI.mes_field,2 , 2, "                           ");
 	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
@@ -158,13 +160,14 @@ void close_windows(){
 
 }
 
-void render(map_t * _map, actor_t * actor, feature_t * features){
+void render(map_t * _map, actor_t * actor, feature_t * features,
+	 	msgs_t * msgs, box_t box){
 	int x = actor->x;
 	int y = actor->y;
-	draw_map(_map);
-	draw_view(x, y, 4, _map);
+	draw_map(_map, box);
+	draw_view(x, y, 4, _map, box);
 	draw_inv(actor);
-	draw_text("There is nothing here!");
+	draw_text(msgs->buffer[msgs->cur].line);
 	draw_stats(actor);
 	drawFeatures(features);
 	draw_actor(actor);
