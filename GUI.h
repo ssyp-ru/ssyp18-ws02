@@ -25,7 +25,7 @@ typedef struct messages{
 }	msgs_t;
 
 typedef struct box{
-	int x,y;
+	int x, y; //Top left corner
 	int width, height;
 } box_t;
 
@@ -34,8 +34,10 @@ typedef struct box{
 void draw_map(map_t * _map, box_t box);
 
 // Function for drawing a field of view
-void draw_view(int x, int y, int view_radius,
-	 	map_t * _map, box_t box);
+void draw_view(int x, int y,
+               int view_radius,
+	 	           map_t * _map,
+               box_t box);
 
 //Function for drawing an inventory
 void draw_inv(actor_t * actor);
@@ -54,11 +56,12 @@ void draw_features(feature_t * features);
 void draw_text(char * line);
 
 //Function for initialisation
-void init_GUI(box_t box);
+void init_GUI();
 
 //Main function
 //Every function above is called inside render()
-void render(map_t * _map, actor_t * actor,
-	 	feature_t * features, msgs_t * msgs, box_t box);
+void render(actor_t     * hero,
+            actors_vt   * actors,
+	 	        msgs_t      * msgs);
 
 void close_windows();

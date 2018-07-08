@@ -10,15 +10,6 @@ typedef enum feature_type {
 	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
 } ftype_t;
 
-typedef struct feature{
-	struct inventory * inventory;
-	ftype_t type;
-	int x, y;
-	int flags;
-	char * description;
-	chtype symbol;
-	void (*interact)(struct feature *, struct actor *);
-} feature_t;
 
 typedef struct tile{
 	chtype symbol;
@@ -35,9 +26,9 @@ typedef struct item {
 } item_t;
 
 typedef struct inventory{
-	item_t * item;
-	int amount;
-	int max_amount;
+	item_t * data;
+	size_t length;
+	size_t capacity;
 } inventory_t;
 
 typedef struct actor{
@@ -56,7 +47,41 @@ typedef struct actor{
 	chtype symbol;
 } actor_t;	
 
+typedef struct feature{
+	struct inventory * inventory;
+	ftype_t type;
+	int x, y;
+	int flags;
+	char * description;
+	chtype symbol;
+	void (*interact)(struct feature *, struct actor *);
+} feature_t;
 
+typedef int (*behave_t)(struct actor*);
+
+typedef struct actors_vect {
+	struct actor** data;
+	size_t length;
+	size_t capacity;
+} actors_vt;
+
+typedef struct room {
+	int x, y;
+	int height, width;
+} room_t;
+
+typedef struct room_vector {
+	room_t* data;
+	size_t length;
+	size_t capacity;
+} rooms_vt;
+
+
+typedef struct map {
+	tile_t* buffer;
+	rooms_vt * rooms;
+	int height, width;
+} map_t;
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
 
 /**
@@ -72,40 +97,15 @@ typedef struct actor{
  * }
 */
 
-typedef int (*behave_t)(struct actor*);
-
-typedef struct actors_vect {
-	struct actor** all_actors;
-	unsigned int len;
-	unsigned int capacity;
-} avect_t;
-
-typedef struct room {
-	int x, y;
-	int height, width;
-} room_t;
-
-
-typedef struct room_vector {
-	room_t* data;
-	size_t length;
-	size_t capacity;
-} room_vector_t;
-
-
-typedef struct map {
-	tile_t* buffer;
-	room_vector_t * rooms;
-	int height, width;
-} map_t;
-
 typedef struct level {
 	map_t* map;
+  struct actors_vect * actors;
+  feature_t * features; //FIXME: replace with an actual vector
 } level_t;
 
 typedef struct level_vector {
 	level_t** data;
 	size_t length;
 	size_t capacity;
-} level_vector_t;
+} levels_vt;
 

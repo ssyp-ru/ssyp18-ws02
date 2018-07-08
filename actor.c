@@ -4,19 +4,31 @@
 #include "roomvector.h"
 #include <stdlib.h>
 
-avect_t* create_new_vector(int num) {
-	avect_t* newVect = (avect_t*)malloc(sizeof(avect_t));
-	newVect->all_actors = (actor_t**)calloc(num,
+actors_vt* create_new_vector(int num) {
+	actors_vt* newVect = (actors_vt*)malloc(sizeof(actors_vt));
+	newVect->data = (actor_t**)calloc(num,
 	                                        sizeof(actor_t*));
-	newVect->len = 0;
+	newVect->length = 0;
 	newVect->capacity = num;
 	return newVect;
 }
 
-avect_t* init_actors(level_t* level,
+actor_t * make_player() {
+	actor_t* player = calloc(1, sizeof(actor_t));
+	player->symbol = '@' | COLOR_PAIR(2);
+	player->flags |= FLAG_ISPLAYER;
+	player->behave = behave_player;
+  player->inventory = calloc(1, sizeof(inventory_t));
+  player->inventory->data = calloc(10, sizeof(item_t));
+  player->inventory->capacity = 10;
+  return player;
+}
+//FIXME: Should it realy be here?
+actors_vt* init_actors(level_t* level,
                      int amount_of_entities) {
-	avect_t* actors = create_new_vector(amount_of_entities + 1);
-	actor_t* player = malloc(sizeof(actor_t));
+	actors_vt* actors = create_new_vector(amount_of_entities + 1);
+  actor_t * player = make_player();
+	player->level = level;
 	if ( level->map->rooms) {
 		int room_number = rand() % level->map->rooms->length;
 
@@ -28,49 +40,41 @@ avect_t* init_actors(level_t* level,
 		player->x = 10;
 		player->y = 10;
 	}
-	player->symbol = '@' | COLOR_PAIR(2);
-	player->flags |= FLAG_ISPLAYER;
-	player->behave = behave_player;
-	player->level = level;
 	add_vector_elem(actors, player);
 	return actors;
 }
 
-void draw_actors(avect_t* actors) {
-	for (int i = 0; i < actors->len; i++) {
-		actor_t * actor = actor_get(actors, i);
-		mvaddch(actor->y, actor->x, actor->symbol);
-	}
-}
 
-void resize_vector(avect_t* vect) {
-	vect->all_actors = (actor_t**)realloc(vect->all_actors,
-	                                      sizeof(actor_t*)*vect->capacity * 2);
+void resize_vector(actors_vt* vect) {
+	vect->data = (actor_t**)realloc(vect->data,
+	              sizeof(actor_t*)*vect->capacity * 2);
 	vect->capacity = vect->capacity * 2;
 }
 
-void add_vector_elem(avect_t* vect, actor_t* newActor) {
-	if (vect->capacity - vect->len == 0)
+void add_vector_elem(actors_vt* vect, actor_t* newActor) {
+	if (vect->capacity - vect->length == 0)
 		resize_vector(vect);
-	vect->all_actors[vect->len] = newActor;
-	vect->len += 1;
+	vect->data[vect->length] = newActor;
+	vect->length += 1;
 }
 
-actor_t* actor_get(avect_t* vect, int num) {
-	return vect->all_actors[num];
+actor_t* actor_get(actors_vt* vect, int num) {
+	return vect->data[num];
 }
 
-void free_actors(avect_t* vect, bool isFull) {
-	// Who will kill them?
+void free_actor(actor_t *); //FIXME: Write me!!!
+
+void free_actors(actors_vt* vect, bool isFull) {
+	// FIXME: Who will kill them?
 	if(isFull)
-		for(int i = 0; i < vect -> len; i++)
-			free(vect->all_actors[i]);
-	free(vect->all_actors);
+		for(int i = 0; i < vect -> length; i++)
+			free(vect->data[i]);
+	free(vect->data);
 	free(vect);
 }
 
-bool update_actors(avect_t* vect) {
-	for (int i = 0; i < vect->len; i++) {
+bool update_actors(actors_vt* vect) {
+	for (int i = 0; i < vect->length; i++) {
 		actor_t* current_actor = actor_get(vect, i);
 		if (current_actor->behave(current_actor) == 0) {
 			return false;

@@ -20,13 +20,6 @@ level_t* init_level(int width,
 	return level;
 }
 
-void draw_level(level_t* level,box_t box, actor_t * actor,
-	 	feature_t * features,	msgs_t * msgs) {
-	render(level->map, actor, features, msgs, box);
-	refresh();
-}
-
-
 void free_level(level_t* level) {
 	free_map(level->map);
 }

@@ -3,13 +3,13 @@
 #include <stdlib.h>
 #include "level.h"
 
-level_t* lvector_get(level_vector_t* v, int i) {
+level_t* lvector_get(levels_vt* v, int i) {
 	return v->data[i];
 }
 
-level_vector_t* lvector_init(int L) {
-	level_vector_t* v = (level_vector_t*)malloc(sizeof(
-	                        level_vector_t));
+levels_vt* lvector_init(int L) {
+	levels_vt* v = (levels_vt*)malloc(sizeof(
+	                        levels_vt));
 
 	v->data = (level_t**) calloc(L, sizeof(level_t*));
 	v->length = 0;
@@ -18,7 +18,7 @@ level_vector_t* lvector_init(int L) {
 	return v;
 }
 
-void lvector_add(level_vector_t* v, level_t* val) {
+void lvector_add(levels_vt* v, level_t* val) {
 	v->data[v->length] = val;
 
 	if (++v->length == v->capacity) {
@@ -27,7 +27,7 @@ void lvector_add(level_vector_t* v, level_t* val) {
 	}
 }
 
-void lvector_free(level_vector_t* v) {
+void lvector_free(levels_vt* v) {
 	// We should destroy all maps here.
 	for(int i = 0; i < v->length; i++) {
 		free_level(lvector_get(v, i));

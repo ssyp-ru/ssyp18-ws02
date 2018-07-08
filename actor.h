@@ -10,18 +10,18 @@
 #include "behave.h"
 
 
-void draw_actors(avect_t* vect);
+void draw_actors(actors_vt* vect);
 
-avect_t* init_actors(level_t* level,
+actors_vt* init_actors(level_t* level,
                      int amount_of_entities);
 
-avect_t* create_new_vector(int num);
+actors_vt* create_new_vector(int num);
 
-void add_vector_elem(avect_t* vect, actor_t* newActor);
+void add_vector_elem(actors_vt* vect, actor_t* newActor);
 
-actor_t* actor_get(avect_t* vect, int num);
+actor_t* actor_get(actors_vt* vect, int num);
 
-void free_actors(avect_t* vect, bool isFull);
+void free_actors(actors_vt* vect, bool isFull);
 
 
 
