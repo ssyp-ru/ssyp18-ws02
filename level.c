@@ -4,7 +4,6 @@
 #include <time.h>
 #include "actor.h"
 #include "genmap.h"
-#include "mapgen.h"
 
 level_t* init_level(int width,
                     int height) {

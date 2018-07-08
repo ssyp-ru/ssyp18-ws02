@@ -1,5 +1,4 @@
 #include "behave.h"
-#include "mapgen.h"
 
 int behave_player(actor_t* self) {
 	UNPACK(map, self->level->map);
