@@ -25,140 +25,140 @@ void generate_room_recdev(map_t* map_packed, int width,
 void build_wall_recdev(map_t* map_packed,
                        int width,
                        int height,
-                       bool isHorizontal,
+                       bool is_horizontal,
                        int x,
                        int y) {
 	UNPACK(map, map_packed);
 
-	if (isHorizontal) {
-		int wallLoc;
+	if (is_horizontal) {
+		int wall_Loc;
 
 		if (height == 3)
-			wallLoc = y + 1;
+			wall_Loc = y + 1;
 		else
-			wallLoc = rand() % (height - 2) + 1 + y;
+			wall_Loc = rand() % (height - 2) + 1 + y;
 
 		for (int i = x; i < x + width; i++) {
-			map[wallLoc][i].symbol = '#' | COLOR_PAIR(1);
-			map[wallLoc][i].flags |= FLAG_SOLID;
+			map[wall_Loc][i].symbol = '#' | COLOR_PAIR(1);
+			map[wall_Loc][i].flags |= FLAG_SOLID;
 		}
 
-		if (width > 2 && wallLoc - y > 2) {
+		if (width > 2 && wall_Loc - y > 2) {
 			if (rand() % 10 < 9
 			        || width > map_packed->width / 4 ||
-			        wallLoc - y > map_packed->height / 4) {
-				build_wall_recdev(map_packed, width, wallLoc - y,
-				                  wallLoc - y >= width, x, y);
+			        wall_Loc - y > map_packed->height / 4) {
+				build_wall_recdev(map_packed, width, wall_Loc - y,
+				                  wall_Loc - y >= width, x, y);
 			} else if (width > map_packed->width / 20 ||
-			           wallLoc - y > map_packed->height / 20)
-				generate_room_recdev(map_packed, width, wallLoc - y, x, y);
-		} else if (width >= 2 && wallLoc - y >= 2)
-			generate_room_recdev(map_packed, width, wallLoc - y, x, y);
+			           wall_Loc - y > map_packed->height / 20)
+				generate_room_recdev(map_packed, width, wall_Loc - y, x, y);
+		} else if (width >= 2 && wall_Loc - y >= 2)
+			generate_room_recdev(map_packed, width, wall_Loc - y, x, y);
 
-		if (width > 2 && height - wallLoc + y - 1 > 2) {
+		if (width > 2 && height - wall_Loc + y - 1 > 2) {
 			if (rand() % 10 < 9
 			        || width > map_packed->width / 4 ||
-			        height - wallLoc + y - 1 > map_packed->height / 4)
+			        height - wall_Loc + y - 1 > map_packed->height / 4)
 				build_wall_recdev(map_packed, width,
-				                  height - wallLoc + y - 1,
-				                  height - wallLoc + y - 1 >= width, x,
-				                  wallLoc + 1);
+				                  height - wall_Loc + y - 1,
+				                  height - wall_Loc + y - 1 >= width, x,
+				                  wall_Loc + 1);
 			else if (width > map_packed->width / 20 ||
-			         height - wallLoc + y - 1 > map_packed->height / 20)
+			         height - wall_Loc + y - 1 > map_packed->height / 20)
 				generate_room_recdev(map_packed, width,
-				                     height - wallLoc + y - 1, x,
-				                     wallLoc + 1);
+				                     height - wall_Loc + y - 1, x,
+				                     wall_Loc + 1);
 		} else if (width >= 2
-		           && height - wallLoc + y - 1 >= 2)
+		           && height - wall_Loc + y - 1 >= 2)
 			generate_room_recdev(map_packed, width,
-			                     height - wallLoc + y - 1, x, wallLoc + 1);
+			                     height - wall_Loc + y - 1, x, wall_Loc + 1);
 
-		int gateLoc;
+		int gate_Loc;
 		int it = 0;
-		int possibleHoleSpots[width];
+		int possible_Hole_Spots[width];
 
 		for (int i = x; i < x + width; i++)
-			if ((map[wallLoc - 1][i].flags & FLAG_SOLID) == 0
+			if ((map[wall_Loc - 1][i].flags & FLAG_SOLID) == 0
 			        &&
-			        (map[wallLoc + 1][i].flags & FLAG_SOLID) == 0) {
-				possibleHoleSpots[it] = i;
+			        (map[wall_Loc + 1][i].flags & FLAG_SOLID) == 0) {
+				possible_Hole_Spots[it] = i;
 				it++;
 			}
 
 		if (it == 1)
-			gateLoc = possibleHoleSpots[0];
+			gate_Loc = possible_Hole_Spots[0];
 		else
-			gateLoc = possibleHoleSpots[rand() % it];
+			gate_Loc = possible_Hole_Spots[rand() % it];
 
-		map[wallLoc][gateLoc].symbol = '.' | COLOR_PAIR(
+		map[wall_Loc][gate_Loc].symbol = '.' | COLOR_PAIR(
 		                                   1);
-		map[wallLoc][gateLoc].flags &= ~FLAG_SOLID;
+		map[wall_Loc][gate_Loc].flags &= ~FLAG_SOLID;
 	} else {
-		int wallLoc;
+		int wall_Loc;
 
 		if (width == 3)
-			wallLoc = x + 1;
+			wall_Loc = x + 1;
 		else
-			wallLoc = rand() % (width - 2) + 1 + x;
+			wall_Loc = rand() % (width - 2) + 1 + x;
 
 		for (int i = y; i < y + height; i++) {
-			map[i][wallLoc].symbol = '#' | COLOR_PAIR(1);
-			map[i][wallLoc].flags ^= FLAG_SOLID;
+			map[i][wall_Loc].symbol = '#' | COLOR_PAIR(1);
+			map[i][wall_Loc].flags ^= FLAG_SOLID;
 		}
-		if (wallLoc - x > 2 && height > 2) {
+		if (wall_Loc - x > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || wallLoc - x > map_packed->width / 4 ||
+			        || wall_Loc - x > map_packed->width / 4 ||
 			        height > map_packed->height / 4)
-				build_wall_recdev(map_packed, wallLoc - x, height,
-				                  height >= wallLoc - x, x, y);
-			else if (wallLoc - x > map_packed->width / 20 ||
+				build_wall_recdev(map_packed, wall_Loc - x, height,
+				                  height >= wall_Loc - x, x, y);
+			else if (wall_Loc - x > map_packed->width / 20 ||
 			         height > map_packed->height / 20)
-				generate_room_recdev(map_packed, wallLoc - x, height, x,
+				generate_room_recdev(map_packed, wall_Loc - x, height, x,
 				                     y);
-		} else if (wallLoc - x >= 2 && height >= 2)
-			generate_room_recdev(map_packed, wallLoc - x, height, x,
+		} else if (wall_Loc - x >= 2 && height >= 2)
+			generate_room_recdev(map_packed, wall_Loc - x, height, x,
 			                     y);
 
-		if (width - wallLoc + x - 1 > 2 && height > 2) {
+		if (width - wall_Loc + x - 1 > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || width - wallLoc + x - 1 > map_packed->width / 4
+			        || width - wall_Loc + x - 1 > map_packed->width / 4
 			        ||
 			        height > map_packed->height / 4)
-				build_wall_recdev(map_packed, width - wallLoc + x - 1,
+				build_wall_recdev(map_packed, width - wall_Loc + x - 1,
 				                  height,
-				                  height >= width - wallLoc + x - 1, wallLoc + 1,
+				                  height >= width - wall_Loc + x - 1, wall_Loc + 1,
 				                  y);
-			else if (width - wallLoc + x - 1 >
+			else if (width - wall_Loc + x - 1 >
 			         map_packed->width / 20 ||
 			         height > map_packed->height / 20)
-				generate_room_recdev(map_packed, width - wallLoc + x - 1,
-				                     height, wallLoc + 1,
+				generate_room_recdev(map_packed, width - wall_Loc + x - 1,
+				                     height, wall_Loc + 1,
 				                     y);
-		} else if (width - wallLoc + x - 1 >= 2
+		} else if (width - wall_Loc + x - 1 >= 2
 		           && height > 2)
-			generate_room_recdev(map_packed, width - wallLoc + x - 1,
-			                     height, wallLoc + 1, y);
+			generate_room_recdev(map_packed, width - wall_Loc + x - 1,
+			                     height, wall_Loc + 1, y);
 
-		int gateLoc;
+		int gate_Loc;
 		int it = 0;
-		int possibleHoleSpots[height];
+		int possible_Hole_Spots[height];
 
 		for (int i = y; i < y + height; i++)
-			if ((map[i][wallLoc - 1].flags & FLAG_SOLID) == 0
+			if ((map[i][wall_Loc - 1].flags & FLAG_SOLID) == 0
 			        &&
-			        (map[i][wallLoc + 1].flags & FLAG_SOLID) == 0) {
-				possibleHoleSpots[it] = i;
+			        (map[i][wall_Loc + 1].flags & FLAG_SOLID) == 0) {
+				possible_Hole_Spots[it] = i;
 				it++;
 			}
 
 		if (it == 1)
-			gateLoc = possibleHoleSpots[0];
+			gate_Loc = possible_Hole_Spots[0];
 		else
-			gateLoc = possibleHoleSpots[rand() % it];
+			gate_Loc = possible_Hole_Spots[rand() % it];
 
-		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(
+		map[gate_Loc][wall_Loc].symbol = '.' | COLOR_PAIR(
 		                                   1);
-		map[gateLoc][wallLoc].flags &= ~FLAG_SOLID;
+		map[gate_Loc][wall_Loc].flags &= ~FLAG_SOLID;
 	}
 }
 

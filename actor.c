@@ -5,12 +5,12 @@
 #include <stdlib.h>
 
 actors_vt* create_new_vector(int num) {
-	actors_vt* newVect = (actors_vt*)malloc(sizeof(actors_vt));
-	newVect->data = (actor_t**)calloc(num,
+	actors_vt* new_Vect = (actors_vt*)malloc(sizeof(actors_vt));
+	new_Vect->data = (actor_t**)calloc(num,
 	                                        sizeof(actor_t*));
-	newVect->length = 0;
-	newVect->capacity = num;
-	return newVect;
+	new_Vect->length = 0;
+	new_Vect->capacity = num;
+	return new_Vect;
 }
 
 actor_t * make_player() {
@@ -51,10 +51,10 @@ void resize_vector(actors_vt* vect) {
 	vect->capacity = vect->capacity * 2;
 }
 
-void add_vector_elem(actors_vt* vect, actor_t* newActor) {
+void add_vector_elem(actors_vt* vect, actor_t* new_Actor) {
 	if (vect->capacity - vect->length == 0)
 		resize_vector(vect);
-	vect->data[vect->length] = newActor;
+	vect->data[vect->length] = new_Actor;
 	vect->length += 1;
 }
 
@@ -64,9 +64,9 @@ actor_t* actor_get(actors_vt* vect, int num) {
 
 void free_actor(actor_t *); //FIXME: Write me!!!
 
-void free_actors(actors_vt* vect, bool isFull) {
+void free_actors(actors_vt* vect, bool is_Full) {
 	// FIXME: Who will kill them?
-	if(isFull)
+	if(is_Full)
 		for(int i = 0; i < vect -> length; i++)
 			free(vect->data[i]);
 	free(vect->data);
