@@ -57,6 +57,19 @@ typedef struct feature{
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 
+typedef struct features_vec {
+	feature_t * buffer;
+	int last;
+size_t capacity;
+} features_vt;
+
+typedef struct kdtree {
+	struct kdtree * rbranch;
+	struct kdtree * lbranch;
+	feature_t * node;
+} kdtree_t;
+
+
 typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {

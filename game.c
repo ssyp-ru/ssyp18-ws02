@@ -49,7 +49,7 @@ void start_game() {
   // FIXME: The same here
 	time_t t;
 	srand((unsigned)time(&t));
-	feature_t * features;
+	feature_t * features = NULL;
 	msgs_t * msgs = calloc(1, sizeof(msgs_t));
 	msgs->max_size = 1000;
 	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
