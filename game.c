@@ -36,14 +36,17 @@ void destroy_the_world(actors_vt* actors,
 	lvector_free(levels);
 	free_actors(actors, true);
 	for(int i = 0; i < qlen; i++)
-		free_actors(queue[i], false);
+		free_actors(queue[i], false); // Double free()? Are you crazy?
 	free(queue);
 }
 
 void start_game() {
+  // FIXME:  Move ncurses initialization to main. Or to init_GUI()
 	start_color();
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
+  init_pair(3, COLOR_BLACK, COLOR_BLUE);
+  // FIXME: The same here
 	time_t t;
 	srand((unsigned)time(&t));
 	feature_t * features;
@@ -53,13 +56,17 @@ void start_game() {
 	msgs->size = 1;
 	msgs->cur = 0;
 	msgs->buffer[0].line = "There is nothing here!";
+  // FIXME: Why the hell would you need it here?
+  //        In single player box is uniquely defined by
+  //        hero.
 	box_t box;
 	box.x = 0;
 	box.y = 0;
 	box.width = 70;
-	box.height = 37;	
-	init_GUI(box);
-	levels_vt* levels = lvector_init(1);
+	box.height = 37;
+
+	init_GUI(); // init_GUI no longer needs box to initialize
+	levels_vt* levels = lvector_init(1); // Seriously? One?
 	lvector_add(levels, init_level(200, 200));
 	actors_vt* actors = init_actors(lvector_get(levels, 0), 0);
 	actors_vt ** queue = calloc(100, sizeof(actors_vt*));

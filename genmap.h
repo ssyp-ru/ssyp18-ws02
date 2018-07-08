@@ -28,8 +28,8 @@ map_t * simulation_step_cellular(map_t * _map,
 //generation using shrews algorithm (shrew_map.c)
 map_t * mapgen_shrew(map_t *_map);
 
+// What the hell does it do?
 map_t * mapgen_rooms_shrew(map_t *_map);
-
 map_t * make_walls_shrew(map_t * _map);
 
 //generation using recursive devision (recursive_devision_map.c)

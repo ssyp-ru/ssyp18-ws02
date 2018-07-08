@@ -11,12 +11,16 @@
 
 #define MAP_SIZE 1000
 
+// XXX XXX XXX XXX XXX XXX XXX XXX
+//  This file will be deleted ASAP
+// XXX XXX XXX XXX XXX XXX XXX XXX
+
 int main(){
 	initscr();
-	int size_x,size_y;
+	int size_x, size_y;
 	int x = 10;
 	int y = 10;
-	keypad(stdscr,true);
+	keypad(stdscr, true);
 	halfdelay(100);
 	curs_set(0);
 	srand(time(NULL));

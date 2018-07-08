@@ -2,7 +2,7 @@
 #include "genmap.h"
 #include "common.h"
 
-map_t * create_map(int height,int width) {
+map_t * create_map(int height, int width) {
 	map_t *map  = calloc(1, sizeof(map_t));
 	map->buffer = calloc(width*height, sizeof(tile_t));
 	map->height = height;

@@ -34,6 +34,8 @@ void draw_map(map_t * _map, box_t box) {
 
 void draw_view(int x2, int y2, int view_radius,
 	 	map_t * _map, box_t box){
+  //TODO: Split this into view calculator and
+  // view renderer.
 	UNPACK(map, _map);
 	int index = 0;
 	float angle = 0;
