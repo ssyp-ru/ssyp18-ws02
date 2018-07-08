@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "common.h"
 
 int behave_monster(actor_t* self);

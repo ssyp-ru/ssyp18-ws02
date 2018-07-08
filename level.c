@@ -1,45 +1,39 @@
 #include "level.h"
-#include <time.h>
-#include <stdlib.h>
 #include <ncurses.h>
-#include "mapgen.h"
+#include <stdlib.h>
+#include <time.h>
 #include "actor.h"
+#include "mapgen.h"
 
-level_t* initLevel(int amountOfEntities, int width, int height)
-{
-	start_color();	
+level_t* init_level(int amount_of_entities, int width,
+                   int height) {
+	start_color();
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 
 	time_t t;
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
-	level_t* level = (level_t*) malloc(sizeof(level_t));
-	level->map = generateMap(width, height);
-	level->actors = initActors(level, amountOfEntities);
+	level_t* level = (level_t*)malloc(sizeof(level_t));
+	level->map = generate_map(width, height);
+	level->actors = init_actors(level, amount_of_entities);
 
 	return level;
 }
 
+void draw_level(level_t* level) {
+	draw_map(level->map);
+	draw_actors(level->actors);
 
-void drawLevel(level_t* level)
-{
-	drawMap(level->map);
-	drawActors(level->actors);
-
-	refresh();		
+	refresh();
 }
 
-
-bool updateLevel(level_t* level)
-{
-	drawLevel(level);
-	return updateActors(level->actors);
+bool update_level(level_t* level) {
+	draw_level(level);
+	return update_actors(level->actors);
 }
 
-
-void freeLevel(level_t* level)
-{
-	freeMap(level->map);
-	freeActors(level->actors);
+void free_level(level_t* level) {
+	free_map(level->map);
+	free_actors(level->actors);
 	free(level);
 }
