@@ -6,6 +6,10 @@
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
+
+#define FLAG_FEATURE_PERSISTENT 0x1
+#define FLAG_FEATURE_EDIBILITY   0x2
+
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
 	DOOR, DEAD_BADGER, STAIR
@@ -23,6 +27,7 @@ typedef struct feature{
 	int flags;
 	char * description;
 	chtype symbol;
+	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
