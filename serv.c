@@ -18,8 +18,6 @@
 #define PORT 5555
 #define MAX_MSG 128
 
-
-
 typedef struct list_t{
 	void * data;
 	struct list_t * next;
@@ -111,10 +109,10 @@ int set_nonblock(int fd){
 	return ioctl(fd, FIONBIO, &flags);
 #endif
 }*/
-msg_t * mesg_empty() {
+msg_t * mesg_empty(int fd) {
 	msg_t * new_msg = malloc(sizeof(msg_t));
 	new_msg->len = 0;
-	new_msg->fd = -1;
+	new_msg->fd = fd;
 	return new_msg;
 }
 
@@ -123,14 +121,28 @@ msg_t * mesg_parse(int fd, const char * Recv, int len, msg_t * buf, list ** list
 	for(i = 0; i < len; i++){
 		switch (Recv[i]) {
 			case CHAR_BEGIN:
-				buf = mesg_empty();
+				if(buf != NULL) {
+					perror("buffer_begin");
+					free(buf);
+				}
+				buf = mesg_empty(fd);
 			break;
 			case CHAR_END:
-				*list_ref = list_prepend(*list_ref, mesg_empty());
+				if(buf == NULL) {
+					perror("buffer_end");
+				} else {
+					(*list_ref) = list_prepend(*list_ref, buf);
+					buf = NULL;
+				}
 			break;
 			default:
-				if(buf != NULL)
-					buf->str[buf->len++] = Recv[i];
+				if(buf == NULL)
+					perror("buffer_none");
+				else
+					if(buf->len < MAX_MSG)
+						buf->str[buf->len++] = Recv[i];
+					else
+						perror("buf_big");
 			break;
 		}
 	}
@@ -145,7 +157,13 @@ server * server_create(uint16_t port){
 		perror("socket");
 		exit(EXIT_FAILURE);
 	}
+	int on = 1;
+	if(-1 == setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on))) {
+		perror("socketsockopt");
+		exit(EXIT_FAILURE);
+	}
 	struct sockaddr_in name;
+	memset(&name, 0, sizeof(name));
 	name.sin_family = AF_INET;
 	name.sin_port = htons(port);
 	name.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -159,7 +177,10 @@ server * server_create(uint16_t port){
 		exit(EXIT_FAILURE);
 	}
 	server * new_server = malloc(sizeof(server));
-	new_server->fds = calloc(FD_SETSIZE, sizeof(server));
+	new_server->fds = calloc(SOMAXCONN, sizeof(int));
+	for(int i = 0; i < SOMAXCONN; i++) new_server->fds[i] = -1;
+	new_server->buffers = calloc(SOMAXCONN, sizeof(msg_t*));
+	new_server->fd_count = 1;
 	new_server->fds[0] = fd;
 	new_server->status = 0;
 	return new_server;
@@ -167,55 +188,54 @@ server * server_create(uint16_t port){
 
 list * server_read(server * new_server) {
 	list * curr = NULL;
-	fd_set active_fd_set, read_fd_set;
-	FD_ZERO(&active_fd_set);
-	struct sockaddr_in clientname;
+	fd_set read_fd_set;
+	FD_ZERO(&read_fd_set);
 	size_t size;
 	int i;
-	read_fd_set = active_fd_set;
-	for(i = 0; i < FD_SETSIZE; i++){
-		FD_SET(new_server->fds[0], &active_fd_set);
+	for(i = 0; i < new_server->fd_count; i++) if(new_server->fds[i] != -1) {
+		FD_SET(new_server->fds[i], &read_fd_set);
 	}
 
 	if(select(FD_SETSIZE, &read_fd_set, NULL, NULL, NULL) < 0){
 		perror("select");
 		exit(EXIT_FAILURE);
 	}
-	for(i = 1; i < FD_SETSIZE; i++){
-		if(FD_ISSET(new_server->fds[0], &active_fd_set) && new_server->fd_count){
+	if(FD_ISSET(new_server->fds[0], &read_fd_set)){
+		struct sockaddr_in clientname;
 			size = sizeof(clientname);
-			int new = accept(new_server->fds[0], 
-					(struct sockaddr *)&clientname, &size);
-			if(new < 0){
-				perror("accept");
-				exit(EXIT_FAILURE);	
-				printf("Server: connect from host %s, port %d\n", 
-					inet_ntoa(clientname.sin_addr), ntohs(clientname.sin_port));
-				if(new_server->recycled){
-					i = new_server->recycled->data;
-					new_server->recycled = list_delete(new_server->recycled);
-				}	
-				else{
-					i = new_server->fd_count++;
-				}
-				new_server->fds[i] = new;
+		int new = accept(new_server->fds[0],
+				(struct sockaddr *)&clientname, (socklen_t*)&size);	
+		if(new < 0 && errno != EWOULDBLOCK) {
+			perror("accept");
+			exit(EXIT_FAILURE);
+		}
+		printf("Server: connect from host %s, port %d\n", 
+			inet_ntoa(clientname.sin_addr), ntohs(clientname.sin_port));
+		if(new_server->recycled){
+			i = new_server->recycled->data;
+			new_server->recycled = list_delete(new_server->recycled);
+		}	
+		else if(new_server->fd_count < SOMAXCONN) i = new_server->fd_count++;
+		else i = -1;
+		if(i > 0) {
+			new_server->fds[i] = new;
 			if(new_server->buffers[i]) 
 				free(new_server->buffers[i]);
 			new_server->buffers[i] = NULL;
-			}
 		}
 	}
-	for(i = 1; i < FD_SETSIZE; i++){
-		int RecvSize = recv(new_server->fds[0], new_server->buffers[i], MAX_MSG, MAX_MSG);
-		if((RecvSize <= 0) && (errno != EAGAIN)){
+	for(i = 1; i < new_server->fd_count; i++) if(FD_ISSET(new_server->fds[i], &read_fd_set)){
+		char buffer[MAX_MSG + 3];
+		int RecvSize = recv(new_server->fds[i], buffer, MAX_MSG, 0);
+		if(RecvSize <= 0 && errno != EAGAIN){
 			new_server->recycled = list_prepend(new_server->recycled, i);
 			shutdown(new_server->fds[i], SHUT_RDWR);
 			close(new_server->fds[i]);
-			new_server->status = i;
+			new_server->fds[i] = -1;
 		}
 		else {
-			new_server->buffers[i] = mesg_parse(new_server->fds[i], new_server->recycled->data, RecvSize,
-				 																	new_server->buffers[i], &curr);
+			new_server->buffers[i] = mesg_parse(new_server->fds[i], buffer, RecvSize,
+				 									new_server->buffers[i], &curr);
 		}
 	}
 		return curr;
@@ -251,7 +271,8 @@ int main(){
 		list * mesg = server_read(servachock);
 		while(mesg){
 			server_broadcast(servachock, mesg->data);
-			mesg = mesg->next;
+			printf("%*s\n", ((msg_t*)mesg->data)->len, ((msg_t*)mesg->data)->str);
+			mesg = list_delete(mesg);
 		}
 	}
 //	server_delete(servachock);

@@ -2,7 +2,7 @@ CC=gcc
 LD=ld
 CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0
 LDLIBS=-lncurses
-SOURCES=main.c serv.c
+SOURCES=serv.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=serv
 
