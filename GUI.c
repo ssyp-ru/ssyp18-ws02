@@ -9,12 +9,12 @@ struct GUI {
 	WINDOW * mes_field;
 } GUI;
 void draw_map(map_t * _map, box_t box){
-	int size_x = _map->width;
-	int size_y = _map->height;
+	int size_x = box.width;
+	int size_y = box.height;
 	UNPACK(map, _map);
 	for(int i = 0; i < size_x; i++){
 		for(int k = 0; k < size_y; k++){
-			mvwaddch(GUI.map_field, k, i, map[k][i].symbol);
+			mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
 		}
 	}
 }
@@ -83,7 +83,7 @@ void draw_view(int x2, int y2, int view_radius,
 	for(int i = 0; i < index; i++){
 			int x = vision->view[i].x;
 			int y = vision->view[i].y;
-			mvwaddch(GUI.map_field, y, x, '.');
+			mvwaddch(GUI.map_field, y - box.y, x - box.x, '.');
 		}	
 }
 void draw_borded(WINDOW * window){
@@ -144,11 +144,14 @@ void draw_stats(actor_t * actor){
 	mvwprintw(GUI.stat_field, 8, 2, "Stamina: %d", stamina);
 }
 
-void draw_actor(actor_t * actor){
+void draw_actor(actor_t * actor, box_t box){
 	for(int i = 0; i < 2; i++){
 		int x = actor[i].x;
 		int y = actor[i].y;
-		mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
+		if(i != 0)
+			mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
+		else
+			mvwaddch(GUI.map_field, y - box.y, x - box.x, actor[i].symbol);
 	}
 }
 
@@ -170,7 +173,7 @@ void render(map_t * _map, actor_t * actor, feature_t * features,
 	draw_text(msgs->buffer[msgs->cur].line);
 	draw_stats(actor);
 	drawFeatures(features);
-	draw_actor(actor);
+	draw_actor(actor, box);
 	draw_borded(GUI.map_field);
 	draw_borded(GUI.mes_field);
 	draw_borded(GUI.inv_field);
@@ -181,9 +184,9 @@ void render(map_t * _map, actor_t * actor, feature_t * features,
 	wrefresh(GUI.stat_field);
 }
 
-void init_GUI(map_t * _map){
-	int size_x = _map->width;
-	int size_y = _map->height;
+void init_GUI(map_t * _map, box_t box){
+	int size_x = box.width;
+	int size_y = box.height;
 	int step = 30;
 	int yText = 6;
 	int yInv = 20;
