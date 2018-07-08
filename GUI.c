@@ -148,9 +148,9 @@ void draw_actor(actor_t * actor, box_t box){
 	for(int i = 0; i < 2; i++){
 		int x = actor[i].x;
 		int y = actor[i].y;
-		if(i != 0)
-			mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
-		else
+	//	if(i != 0)
+	//		mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
+	//	else
 			mvwaddch(GUI.map_field, y - box.y, x - box.x, actor[i].symbol);
 	}
 }

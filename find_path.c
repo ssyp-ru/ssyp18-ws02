@@ -26,8 +26,8 @@ pvector_t * find_path(actor_t actor, int x, int y){
 	set_map[y1][x1] = 0;
 	int ra1 = 0;
 	while(ra1 < 200){
-		for(int k = 1; k <= size_y - 1; k++){
-			for(int i = 1; i <= size_x - 1; i++){
+		for(int k = y1 - vr; k <= y1 + vr; k++){
+			for(int i = x1 - vr; i <= x1 + vr; i++){
 				if(set_map[k][i] != - 1){
 					if(set_map[k - 1][i] == -1 &&
 						!(map[k - 1][i].flags & FLAG_SOLID))
@@ -55,7 +55,9 @@ pvector_t * find_path(actor_t actor, int x, int y){
 	int y_f = y, y_n;
 	int min = 999;
 	int way[100][2];
-	while(ind < 100){
+	bool visible = (x >= x1 - vr && x <= x1 + vr &&
+			y >= y1 - vr && y <= y1 + vr);
+	while(ind < 100 && visible){
 		if(y_f + 1 < size_y){
 			min = set_map[y_f + 1][x_f];
 			x_n = x_f;
@@ -85,6 +87,8 @@ pvector_t * find_path(actor_t actor, int x, int y){
 		if(x_n == x1 && y_n == y1)
 			break;
 		if(min == 999){
+			ind = 0;
+			vector->length = ind;
 			break;
 		}
 		else{
