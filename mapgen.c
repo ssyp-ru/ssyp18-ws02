@@ -1,7 +1,7 @@
 #include "mapgen.h"
 
 void generate_room(map_t* map_packed, int width,
-                  int height, int x, int y) {
+                   int height, int x, int y) {
 	UNPACK(map, map_packed);
 
 	for (int i = x; i < x + width; i++) {
@@ -21,11 +21,11 @@ void generate_room(map_t* map_packed, int width,
 }
 
 void build_wall(map_t* map_packed,
-               int width,
-               int height,
-               bool isHorizontal,
-               int x,
-               int y) {
+                int width,
+                int height,
+                bool isHorizontal,
+                int x,
+                int y) {
 	UNPACK(map, map_packed);
 
 	if (isHorizontal) {
@@ -46,9 +46,9 @@ void build_wall(map_t* map_packed,
 			        || width > map_packed->width / 4 ||
 			        wallLoc - y > map_packed->height / 4) {
 				build_wall(map_packed, width, wallLoc - y,
-				          wallLoc - y >= width, x, y);
-			} else if (width > map_packed->width / 20 ||
-			           wallLoc - y > map_packed->height / 20)
+				           wallLoc - y >= width, x, y);
+			} 
+			else
 				generate_room(map_packed, width, wallLoc - y, x, y);
 		} else if (width >= 2 && wallLoc - y >= 2)
 			generate_room(map_packed, width, wallLoc - y, x, y);
@@ -58,18 +58,17 @@ void build_wall(map_t* map_packed,
 			        || width > map_packed->width / 4 ||
 			        height - wallLoc + y - 1 > map_packed->height / 4)
 				build_wall(map_packed, width,
-				          height - wallLoc + y - 1,
-				          height - wallLoc + y - 1 >= width, x,
-				          wallLoc + 1);
-			else if (width > map_packed->width / 20 ||
-			         height - wallLoc + y - 1 > map_packed->height / 20)
+				           height - wallLoc + y - 1,
+				           height - wallLoc + y - 1 >= width, x,
+				           wallLoc + 1);
+			else 
 				generate_room(map_packed, width,
-				             height - wallLoc + y - 1, x,
-				             wallLoc + 1);
+				              height - wallLoc + y - 1, x,
+				              wallLoc + 1);
 		} else if (width >= 2
 		           && height - wallLoc + y - 1 >= 2)
 			generate_room(map_packed, width,
-			             height - wallLoc + y - 1, x, wallLoc + 1);
+			              height - wallLoc + y - 1, x, wallLoc + 1);
 
 		int gateLoc;
 		int it = 0;
@@ -108,14 +107,13 @@ void build_wall(map_t* map_packed,
 			        || wallLoc - x > map_packed->width / 4 ||
 			        height > map_packed->height / 4)
 				build_wall(map_packed, wallLoc - x, height,
-				          height >= wallLoc - x, x, y);
-			else if (wallLoc - x > map_packed->width / 20 ||
-			         height > map_packed->height / 20)
+				           height >= wallLoc - x, x, y);
+			else
 				generate_room(map_packed, wallLoc - x, height, x,
-				             y);
+				              y);
 		} else if (wallLoc - x >= 2 && height >= 2)
 			generate_room(map_packed, wallLoc - x, height, x,
-			             y);
+			              y);
 
 		if (width - wallLoc + x - 1 > 2 && height > 2) {
 			if (rand() % 10 < 9
@@ -123,19 +121,17 @@ void build_wall(map_t* map_packed,
 			        ||
 			        height > map_packed->height / 4)
 				build_wall(map_packed, width - wallLoc + x - 1,
-				          height,
-				          height >= width - wallLoc + x - 1, wallLoc + 1,
-				          y);
-			else if (width - wallLoc + x - 1 >
-			         map_packed->width / 20 ||
-			         height > map_packed->height / 20)
+				           height,
+				           height >= width - wallLoc + x - 1, wallLoc + 1,
+				           y);
+			else 
 				generate_room(map_packed, width - wallLoc + x - 1,
-				             height, wallLoc + 1,
-				             y);
+				              height, wallLoc + 1,
+				              y);
 		} else if (width - wallLoc + x - 1 >= 2
 		           && height > 2)
 			generate_room(map_packed, width - wallLoc + x - 1,
-			             height, wallLoc + 1, y);
+			              height, wallLoc + 1, y);
 
 		int gateLoc;
 		int it = 0;
@@ -154,8 +150,7 @@ void build_wall(map_t* map_packed,
 		else
 			gateLoc = possibleHoleSpots[rand() % it];
 
-		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(
-		                                   1);
+		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(1);
 		map[gateLoc][wallLoc].flags &= ~FLAG_SOLID;
 	}
 }
@@ -163,7 +158,7 @@ void build_wall(map_t* map_packed,
 map_t* generate_map(int width, int height) {
 	map_t* map_packed = (map_t*)malloc(sizeof(map_t));
 	map_packed->buffer = (tile_t*)calloc(
-	                        width * height, sizeof(tile_t));
+	                         width * height, sizeof(tile_t));
 	map_packed->width = width;
 	map_packed->height = height;
 	map_packed->rooms = vector_init(1);
@@ -177,7 +172,7 @@ map_t* generate_map(int width, int height) {
 		}
 
 	build_wall(map_packed, width, height, rand() % 2, 0,
-	          0);
+	           0);
 
 	return map_packed;
 }
