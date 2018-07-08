@@ -1,26 +1,7 @@
 #pragma once
+#include "common.h"
 #include <stdlib.h>
 #include <math.h>
-
-typedef struct feature{
-	int x, y;
-} feature_t;
-
-typedef struct kdtree {
-	struct kdtree * rbranch;
-	struct kdtree * lbranch;
-	feature_t * node;
-} kdtree_t;
-
-typedef struct box {
-	int left, right, top, bottom;
-} box_t;
-
-typedef struct features_vec {
-	feature_t ** buffer;
-	int last;
-	size_t capacity;
-} fvec_t;
 
 void buf (fvec_t * ret, feature_t * node);
 fvec_t * collect(kdtree_t * root, box_t room);
