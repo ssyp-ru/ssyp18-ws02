@@ -48,7 +48,7 @@ void draw_hero(actor_t * actor);
 
 // Function for drawing features which lay on a terrain
 // collect()'s items in a box and draws them in the correct places
-void drawFeatures(feature_t * features);
+void draw_features(feature_t * features);
 
 // Function which introduces messages and their history
 void draw_text(char * line);

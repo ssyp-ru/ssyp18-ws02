@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ncurses.h>
-#include "actor.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
@@ -11,11 +10,6 @@ typedef enum feature_type {
 	DOOR, DEAD_BADGER, STAIR
 } ftype_t;
 
-typedef struct tile{
-	chtype symbol;
-  int flags;
-} tile_t;
-
 typedef struct feature{
 	struct inventory * inventory;
 	ftype_t type;
@@ -24,6 +18,43 @@ typedef struct feature{
 	char * description;
 	chtype symbol;
 } feature_t;
+
+typedef struct tile{
+	chtype symbol;
+	int flags;
+} tile_t;
+
+typedef struct item {
+	chtype type;
+	float weight;
+	int flags;
+	char * description;
+	int quality;
+	int amount;
+} item_t;
+
+typedef struct inventory{
+	item_t * item;
+	int amount;
+	int max_amount;
+} inventory_t;
+
+typedef struct actor{
+	struct inventory * inventory;
+	int flags;
+	int hp;
+	int state;
+	int targ_x, targ_y;
+	int strength;
+	int agility;
+	int stamina;
+	int view_radius;
+	int x, y;
+	struct level * level;
+	int (*begave)(struct actor*);
+	chtype symbol;
+} actor_t;	
+
 
 #define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
 
@@ -43,7 +74,7 @@ typedef struct feature{
 typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
-	struct actor* all_actors;
+	struct actor** all_actors;
 	unsigned int len;
 	unsigned int capacity;
 } avect_t;
@@ -69,6 +100,11 @@ typedef struct map {
 
 typedef struct level {
 	map_t* map;
-	avect_t* actors;
 } level_t;
+
+typedef struct level_vector {
+	level_t** data;
+	size_t length;
+	size_t capacity;
+} level_vector_t;
 

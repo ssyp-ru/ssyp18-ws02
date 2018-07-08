@@ -9,11 +9,13 @@
 #include "genmap.h"
 #include "time.h"
 
+#define MAP_SIZE 1000
+
 int main(){
 	initscr();
 	int size_x,size_y;
-	int x = 20;
-	int y = 20;
+	int x = 10;
+	int y = 10;
 	keypad(stdscr,true);
 	halfdelay(100);
 	curs_set(0);
@@ -29,16 +31,16 @@ int main(){
 	actor[0].agility = 8;
 	actor[0].stamina = 6;
 	actor[0].symbol = '@';
-	actor[0].x = x;
-	actor[0].y = y;
+	actor[0].x = MAP_SIZE-10;
+	actor[0].y = MAP_SIZE-10;
 	actor[1].symbol = 'V';
 	actor[1].hp = 2;
 	actor[1].x = x + 15;
 	actor[1].y = y + 5;
 	getmaxyx(stdscr, size_y, size_x);
-	size_x = 150;
-	size_y = 150;
-	map_t * _map = create_map(size_x, size_y);
+	size_x = MAP_SIZE;
+	size_y = MAP_SIZE;
+	map_t * _map = create_map(size_y, size_x);
 	_map = mapgen_shrew(_map);
 	_map = mapgen_rooms_shrew(_map);
 	_map = make_walls_shrew(_map);
@@ -62,21 +64,37 @@ int main(){
 	msgs->cur = 0;
 	msgs->buffer[0].line = "There is nothing here!";
 	box_t box;
-	box.x = 0;
-	box.y = 0;
+	box.x = MAP_SIZE-70;
+	box.y = MAP_SIZE-37;
 	box.width = 70;
 	box.height = 37;
 	init_GUI(level->map, box);
 	int input = 0;
 	pvector_t * way = calloc(4, sizeof(pvector_t));
 	way = find_path((actor[1]), x, y);
+	way->buffer = calloc(MAP_SIZE*2,sizeof(coord_t));
 	refresh();
 	int fx, fy, len = 0;
 	fx = 0;
 	fy = 0;
+	char str[9999] = {0};
+	FILE * file;
+	file = fopen("loss.txt", "r");
 	while(input != 'q'){
 		bool tick = false;
-		render(level->map, actor, features, msgs, box);
+		if(actor[0].hp > 0)
+			render(level->map, actor, features, msgs, box);
+		else if(file){
+			move(0,0);
+			while(!feof(file)) {	
+				if(!feof(file))
+					printw("%s", str);
+				fgets(str,100, file);
+			} 
+			fclose(file);
+			getch();
+			break;
+		}
 	//	for(int i = 1; i < way->length - 1; i++)
 		//	mvaddch(way->buffer[i].y, way->buffer[i].x + 30, '+');
 		input = getch();

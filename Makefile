@@ -1,6 +1,6 @@
 CC=gcc
 
-CFLAGS=-std=c11 -Wall -Wpedantic -g -O0
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 
 LDLIBS=-lncurses
 
 GUI_test: GUI_test.o GUI.o feature.o find_path.o genmap.o\
@@ -8,7 +8,7 @@ GUI_test: GUI_test.o GUI.o feature.o find_path.o genmap.o\
 LD=ld
 SOURCES=genmap.c shrew_map.c cellular_map.c\
 				mapgen.c level.c actor.c main.c\
-				roomvector.c behave.c 
+				roomvector.c behave.c game.c levelvector.c
 OBJECTS=$(SOURCES:.c=.o)
 
 build: all

@@ -7,7 +7,7 @@ room_t vector_get(room_vector_t* v, int i) {
 
 room_vector_t* vector_init(int L) {
 	room_vector_t* v = (room_vector_t*)malloc(sizeof(
-	        room_vector_t));
+	                       room_vector_t));
 
 	v->data = (room_t*)calloc(L, sizeof(room_t));
 	v->length = 0;

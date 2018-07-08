@@ -12,7 +12,8 @@ map_t * create_map(int height,int width) {
 }
 
 void free_map(map_t * map) {
-	vector_free(map->rooms);
+	if(map->rooms)
+		vector_free(map->rooms);
 	free(map->buffer);
 	free(map);
 }

@@ -11,8 +11,8 @@ map_t * mapgen_shrew(map_t *_map) {
 	UNPACK(map, _map);
 	int originX, originY, index = 1;
 	int rand4, countCells = 0.5 * sizeX * sizeY;
-	for(int i = 0; i < sizeX; i++) {
-		for(int k = 0; k < sizeY; k++) {
+	for(int k = 0; k < sizeY; k++) {
+		for(int i = 0; i < sizeX; i++) {
 			map[k][i].flags |= FLAG_SOLID;
 		}
 	}
@@ -109,11 +109,11 @@ map_t * make_walls_shrew(map_t * _map) {
 	int sizeX = _map->width;
 	int sizeY = _map->height;
 	UNPACK(map, _map);
-	for(int i = 0; i < sizeX; i++) {
-		for(int k = 0; k < sizeY; k++) {
+	for(int i = 1; i < sizeX - 1; i++) {
+		for(int k = 1; k < sizeY - 1; k++) {
 			if(map[k][i].flags & FLAG_SOLID) {
-				if(k == 0 || k == sizeY - 1 ||
-				        i == 0 || i == sizeX - 1) {
+				if(k == 1 || k == sizeY - 2 ||
+				        i == 1 || i == sizeX - 2) {
 					map[k][i].symbol = '#' | COLOR_PAIR(1);
 				} else {
 					if(!(map[k - 1][i].flags & FLAG_SOLID) &&
@@ -125,7 +125,7 @@ map_t * make_walls_shrew(map_t * _map) {
 					        && map[k + 1][i].flags & FLAG_SOLID
 					        && map[k][i - 1].flags & FLAG_SOLID
 					        && map[k][i + 1].flags & FLAG_SOLID)
-						map[k][i].symbol = '#' | COLOR_PAIR(6);
+						map[k][i].symbol = '+' | COLOR_PAIR(6);
 				}
 			} else
 				map[k][i].symbol = ' ';

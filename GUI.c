@@ -1,6 +1,7 @@
 #include "GUI.h"
 #include <ncurses.h>
 #include <stdlib.h>
+#include "common.h"
 
 struct GUI {
 	WINDOW * map_field;
@@ -13,9 +14,14 @@ void draw_map(map_t * _map, box_t box){
 	int size_x = box.width;
 	int size_y = box.height;
 	UNPACK(map, _map);
-	for(int k = 0; k < size_y; k++){
-		for(int i = 0; i < size_x; i++){
-			mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
+	if(size_x > _map->width)
+		size_x = _map->width;
+	if(size_y > _map->height)
+		size_y = _map->height;
+	for(int k = 1; k < size_y - 1; k++){
+		for(int i = 1; i < size_x - 1; i++){
+			if(k + box.y < _map->height && i + box.x < _map->width)
+				mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
 		}
 	}
 }
@@ -29,7 +35,7 @@ void draw_view(int x2, int y2, int view_radius,
 	vision->view = calloc(10000, sizeof(coord_t));
 	for(angle = -view_radius; angle <= view_radius; angle += 0.2){
 		for(float x = 0; x >= -view_radius; x -= 0.2){	
-			int y1 = angle * x + y2 - 0.5;
+			int y1 = angle * x + y2;
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
 			int rad_y = y1 - y2;
@@ -44,7 +50,7 @@ void draw_view(int x2, int y2, int view_radius,
 			}			
 		}
 		for(float x = 0; x <= view_radius; x += 0.2){
-			int y1 = angle * x + y2 - 0.5;
+			int y1 = angle * x + y2;
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
 			int rad_y = y1 - y2;
