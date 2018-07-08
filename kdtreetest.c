@@ -1,6 +1,7 @@
 #include "kdtree.h"
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
 
 feature_t nearest (feature_t * point, feature_t red){
 	feature_t curr = point[1];
@@ -16,8 +17,8 @@ int main () {
 	find.x = 0;
  	find.y = 0;
 	for (int i = 0; i < 20; i++) {		
-		point[i].x = i;
-		point[i].y = 5-i;
+		point[i].x = rand();
+		point[i].y = rand();
 	}
 	feature_t *ppoint[20];
 	for(int i = 0; i < 20; i++) {

@@ -11,6 +11,8 @@ all: $(SOURCES) $(EXECUTABLE)
 
 build: all
 
+kdtreetest: kdtree.o kdtreetest.o
+
 run: all
 	./$(EXECUTABLE)
 
