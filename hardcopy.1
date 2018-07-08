@@ -1,0 +1,37 @@
+  1 #include "GUI.h"
+  2 #include <ncurses.h>
+  3
+  4 void drawMap(map_t * _map, WINDOW * window){
+  5   int sizeX = _map->width;
+  6   int sizeY = _map->height;
+  7   UNPACK(map, _map);
+  8   for(int i = 0; i < sizeX; i++){
+  9     for(int k = 0; k < sizeY; k++){
+ 10       mvaddch(window k, i + STEP, map[k][i].s);
+ 11     }
+ 12   }
+ 13 }
+ 14
+ 15 void drawView(int xPos, int yPos, int viewRadius, map_t * _map){
+ 16   UNPACK(map, _map);
+ 17   int index = 0;
+ 18   float angle = 0;
+ 19   vision_t * vision = calloc(1, sizeof(vision_t));
+ 20   vision->view = calloc(10000, sizeof(coord_t));
+ 21   for(angle = -4; angle <= 4; angle += 0.2){
+ 22     for(float x = 0; x >= -4; x -= 0.2){
+ 23       int x1 = x + xPos + 0.5;
+ 24       int y1 = angle * x + yPos;
+ 25       int radX = x1 - xPos;
+ 26       int radY = y1 - yPos;
+ 27       if(radX * radX + radY * radY <= viewRadius * viewRadius){
+ 28         if(map[y1][x1].flags & FLAG_SOLID){
+ 29             break;
+ 30         }else{
+ 31           vision->view[index].yPos = y1;
+ 32           vision->view[index].xPos = x1;
+ 33           index++;
+ 34         }
+ 35       }
+ 36     }
+                                                                                  1,1       025@EC

@@ -18,11 +18,11 @@ void free_map(map_t * map) {
 	free(map);
 }
 
-void print_map(map_t * _map) {
+/*void print_map(map_t * _map) {
 	UNPACK(land, _map); // Defines 2D-array of tile_t named map
 	for(int i = 0; i < _map->height; i++) {
 		for(int j = 0; j < _map->width; j++)
 			mvaddch(i, j, land[i][j].symbol);
 	}
 	refresh();
-}
+}*/

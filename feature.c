@@ -39,5 +39,12 @@ void pick_up(actor_t * actor, feature_t feature){
 void throw_away(item_t * item, level_t * level, int x, int y){
 
 }
+/*void interract(actor_t actor, feature_t feature){
+	switch(feature.ftype_t){
+		case UPSTAIRS:
+			actor->
+			break;
 
-
+	}
+}
+*/

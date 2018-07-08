@@ -1,6 +1,8 @@
 #include "actor.h"
 #include "behave.h"
 #include "common.h"
+#include "roomvector.h"
+#include <stdlib.h>
 
 avect_t* create_new_vector(int num) {
 	avect_t* newVect = (avect_t*)malloc(sizeof(avect_t));
@@ -14,14 +16,19 @@ avect_t* create_new_vector(int num) {
 avect_t* init_actors(level_t* level,
                      int amount_of_entities) {
 	avect_t* actors = create_new_vector(amount_of_entities + 1);
-
-	int room_number = rand() % level->map->rooms->length;
 	actor_t* player = malloc(sizeof(actor_t));
+	if ( level->map->rooms) {
+		int room_number = rand() % level->map->rooms->length;
+
+		player->x = vector_get(level->map->rooms, room_number).x +
+								vector_get(level->map->rooms, room_number).width / 2;
+		player->y = vector_get(level->map->rooms, room_number).y +
+								vector_get(level->map->rooms, room_number).height / 2;
+	} else {
+		player->x = 10;
+		player->y = 10;
+	}
 	player->symbol = '@' | COLOR_PAIR(2);
-	player->x = vector_get(level->map->rooms, room_number).x +
-	            vector_get(level->map->rooms, room_number).width / 2;
-	player->y = vector_get(level->map->rooms, room_number).y +
-	            vector_get(level->map->rooms, room_number).height / 2;
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
 	player->level = level;

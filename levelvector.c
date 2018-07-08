@@ -28,7 +28,7 @@ void lvector_add(level_vector_t* v, level_t* val) {
 }
 
 void lvector_free(level_vector_t* v) {
-	// XXX: We should destroy all maps here.
+	// We should destroy all maps here.
 	for(int i = 0; i < v->length; i++) {
 		free_level(lvector_get(v, i));
 		free(v->data[i]);

@@ -54,7 +54,7 @@ void draw_features(feature_t * features);
 void draw_text(char * line);
 
 //Function for initialisation
-void init_GUI(map_t * _map, box_t box);
+void init_GUI(box_t box);
 
 //Main function
 //Every function above is called inside render()

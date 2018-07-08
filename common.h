@@ -7,7 +7,7 @@
 
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
-	DOOR, DEAD_BADGER, STAIR
+	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
 } ftype_t;
 
 typedef struct feature{
@@ -17,6 +17,7 @@ typedef struct feature{
 	int flags;
 	char * description;
 	chtype symbol;
+	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 
 typedef struct tile{
@@ -51,7 +52,7 @@ typedef struct actor{
 	int view_radius;
 	int x, y;
 	struct level * level;
-	int (*begave)(struct actor*);
+	int (*behave)(struct actor*);
 	chtype symbol;
 } actor_t;	
 

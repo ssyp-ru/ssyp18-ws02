@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #define FLAG_FRIENDLY 0x1
 #define FLAG_STACKABLE 0x1
+#define FLAG_ISPLAYER 0x1
 #include "common.h"
 #include <stdint.h>
 #include <stdlib.h>

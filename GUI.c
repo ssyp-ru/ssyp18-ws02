@@ -153,11 +153,8 @@ void draw_stats(actor_t * actor){
 
 void draw_actor(actor_t * actor, box_t box){
 	for(int i = 0; i < 2; i++){
-		int x = actor[i].x;
-		int y = actor[i].y;
-	//	if(i != 0)
-	//		mvwaddch(GUI.map_field, y, x, actor[i].symbol);	
-	//	else
+			int x = actor[i].x;
+			int y = actor[i].y;
 			mvwaddch(GUI.map_field, y - box.y, x - box.x, actor[i].symbol);
 	}
 }
@@ -191,7 +188,7 @@ void render(map_t * _map, actor_t * actor, feature_t * features,
 	wrefresh(GUI.stat_field);
 }
 
-void init_GUI(map_t * _map, box_t box){
+void init_GUI(box_t box){
 	int size_x = box.width;
 	int size_y = box.height;
 	int step = 30;

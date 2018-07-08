@@ -25,7 +25,7 @@ int main(){
 	actor->inventory = calloc(1, sizeof(inventory_t));
 	actor->inventory->max_amount = 15;
 	actor->inventory->item = 
-		calloc(actor->inventory->max_amount, sizeof(item_t));
+	calloc(actor->inventory->max_amount, sizeof(item_t));
 	actor[0].hp = 4;
 	actor[0].strength = 10;
 	actor[0].agility = 8;
@@ -40,34 +40,19 @@ int main(){
 	getmaxyx(stdscr, size_y, size_x);
 	size_x = MAP_SIZE;
 	size_y = MAP_SIZE;
-	map_t * _map = create_map(size_y, size_x);
-	_map = mapgen_shrew(_map);
-	_map = mapgen_rooms_shrew(_map);
-	_map = make_walls_shrew(_map);
+	map_t * _map = gen_map(size_x, size_y);
 	level_t * level = calloc(1, sizeof(level_t));
 	level->map = _map;
 	actor[0].level = level;
 	actor[1].level = level;
 	actor[1].view_radius = 4;
 	noecho();
-	/*UNPACK(map, _map);
-	for(int i = 0; i < size_x; i++){
-		for(int k = 0; k < size_y; k++){
-			map[k][i].flags &= FLAG_SOLID;
-			map[k][i].symbol = '-';
-		}
-	}*/
 	msgs_t * msgs = calloc(1, sizeof(msgs_t));
 	msgs->max_size = 1000;
 	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
 	msgs->size = 1;
 	msgs->cur = 0;
 	msgs->buffer[0].line = "There is nothing here!";
-	box_t box;
-	box.x = MAP_SIZE-70;
-	box.y = MAP_SIZE-37;
-	box.width = 70;
-	box.height = 37;
 	init_GUI(level->map, box);
 	int input = 0;
 	pvector_t * way = calloc(4, sizeof(pvector_t));

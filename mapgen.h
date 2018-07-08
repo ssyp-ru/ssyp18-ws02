@@ -10,12 +10,6 @@
 #include "common.h"
 #include "roomvector.h"
 
-#define UNPACK(varname, map_ptr)       \
-  tile_t(*varname)[(map_ptr)->width] = \
-      (tile_t(*)[(map_ptr)->width])map_ptr->buffer
-
-void draw_map(map_t* map);
-
 map_t* generate_map(int width, int height);
 
 void free_map(map_t* map);

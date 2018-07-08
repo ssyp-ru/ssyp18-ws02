@@ -177,7 +177,7 @@ map_t* generate_map(int width, int height) {
 	return map_packed;
 }
 
-void draw_map(map_t* map_packed) {
+/*void draw_map(map_t* map_packed) {
 	UNPACK(map, map_packed);
 
 	for (int i = 0; i < map_packed->width; i++) {
@@ -191,4 +191,4 @@ void free_map(map_t* map) {
 	vector_free(map->rooms);
 	free(map->buffer);
 	free(map);
-}
+}*/
