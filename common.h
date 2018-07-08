@@ -1,14 +1,16 @@
 #pragma once
 
 #include <ncurses.h>
-#include "actor.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
-
 #define FLAG_FEATURE_PERSISTENT 0x1
-#define FLAG_FEATURE_EDIBILITY   0x2
+#define FLAG_FEATURE_EDIBILITY  0x2
+#define FLAG_FEATURE_CLOTHES    0x4
+#define FLAG_FEATURE_WEAPON     0x8
+
+
 
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
@@ -45,7 +47,6 @@ typedef struct feature{
  * }
 */
 
-typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
 	struct actor* all_actors;
@@ -77,3 +78,19 @@ typedef struct level {
 	avect_t* actors;
 } level_t;
 
+typedef struct kdtree {
+	struct kdtree * rbranch;
+	struct kdtree * lbranch;
+	feature_t * node;
+} kdtree_t;
+
+typedef struct box{
+	int x,y;
+	int width, height;
+} box_t;
+
+typedef struct features_vec {
+	feature_t ** buffer;
+	int last;
+	size_t capacity;
+} fvec_t;

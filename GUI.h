@@ -60,3 +60,5 @@ void init_GUI(map_t * _map, box_t box);
 //Every function above is called inside render()
 void render(map_t * _map, actor_t * actor,
 	 	feature_t * features, msgs_t * msgs, box_t box);
+
+void close_windows();

@@ -8,12 +8,13 @@ struct GUI {
 	WINDOW * inv_field;
 	WINDOW * mes_field;
 } GUI;
+
 void draw_map(map_t * _map, box_t box){
 	int size_x = box.width;
 	int size_y = box.height;
 	UNPACK(map, _map);
-	for(int i = 0; i < size_x; i++){
-		for(int k = 0; k < size_y; k++){
+	for(int k = 0; k < size_y; k++){
+		for(int i = 0; i < size_x; i++){
 			mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
 		}
 	}
@@ -86,7 +87,7 @@ void draw_view(int x2, int y2, int view_radius,
 			mvwaddch(GUI.map_field, y - box.y, x - box.x, '.');
 		}	
 }
-void draw_borded(WINDOW * window){
+void draw_borders(WINDOW * window){
 	int x,y;
 	getmaxyx(window, y, x);
 	for(int i = 0; i < y; i++){
@@ -115,7 +116,7 @@ void draw_text(char * line){
 	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
-void drawFeatures(feature_t * features){	
+void draw_features(feature_t * features){	
 	//	mvwaddch(GUI.map_field, features[i].y, features[i].x, features[i].symbol);	
 }
 
@@ -172,12 +173,12 @@ void render(map_t * _map, actor_t * actor, feature_t * features,
 	draw_inv(actor);
 	draw_text(msgs->buffer[msgs->cur].line);
 	draw_stats(actor);
-	drawFeatures(features);
+	draw_features(features);
 	draw_actor(actor, box);
-	draw_borded(GUI.map_field);
-	draw_borded(GUI.mes_field);
-	draw_borded(GUI.inv_field);
-	draw_borded(GUI.stat_field);
+	draw_borders(GUI.map_field);
+	draw_borders(GUI.mes_field);
+	draw_borders(GUI.inv_field);
+	draw_borders(GUI.stat_field);
 	wrefresh(GUI.map_field);
 	wrefresh(GUI.mes_field);
 	wrefresh(GUI.inv_field);
