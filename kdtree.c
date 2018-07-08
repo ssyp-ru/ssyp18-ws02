@@ -125,3 +125,26 @@ void kd_delete (kdtree_t * root) {
 	free (root);
 	}
 }
+
+kdtree_t * kd_remove {kdtree_t * root, feature_t * node, int depth) {
+	int axis = depth%2;
+	if (root->node != node)
+		if (axis == 1)
+			if (node.x > root.x)
+				if (root->rbranch)
+					root = kd_remove (root->rbranch, node);
+			else
+				if (root->lbranch)
+					root = kd_remove (root->lbranch, node);
+		else		
+			if (node.y > root.y)
+				if (root->rbranch)
+					root = kd_remove (root->rbranch, node);
+			else
+				if (root->lbranch)
+					root = kd_remove (root->lbranch, node);
+	kdtree_t * rem = root;
+	if (!root->rbranch && !root->lbranch)
+		free (root);
+		if (root->lbranch)
+}
