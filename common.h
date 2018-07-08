@@ -1,7 +1,6 @@
 #pragma once
 
 #include <ncurses.h>
-#include "actor.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
@@ -40,7 +39,6 @@ typedef struct feature{
  * }
 */
 
-typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
 	struct actor* all_actors;
