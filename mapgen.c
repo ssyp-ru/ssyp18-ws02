@@ -47,8 +47,8 @@ void build_wall(map_t* map_packed,
 			        wallLoc - y > map_packed->height / 4) {
 				build_wall(map_packed, width, wallLoc - y,
 				           wallLoc - y >= width, x, y);
-			} else if (width > map_packed->width / 20 ||
-			           wallLoc - y > map_packed->height / 20)
+			} 
+			else
 				generate_room(map_packed, width, wallLoc - y, x, y);
 		} else if (width >= 2 && wallLoc - y >= 2)
 			generate_room(map_packed, width, wallLoc - y, x, y);
@@ -61,8 +61,7 @@ void build_wall(map_t* map_packed,
 				           height - wallLoc + y - 1,
 				           height - wallLoc + y - 1 >= width, x,
 				           wallLoc + 1);
-			else if (width > map_packed->width / 20 ||
-			         height - wallLoc + y - 1 > map_packed->height / 20)
+			else 
 				generate_room(map_packed, width,
 				              height - wallLoc + y - 1, x,
 				              wallLoc + 1);
@@ -109,8 +108,7 @@ void build_wall(map_t* map_packed,
 			        height > map_packed->height / 4)
 				build_wall(map_packed, wallLoc - x, height,
 				           height >= wallLoc - x, x, y);
-			else if (wallLoc - x > map_packed->width / 20 ||
-			         height > map_packed->height / 20)
+			else
 				generate_room(map_packed, wallLoc - x, height, x,
 				              y);
 		} else if (wallLoc - x >= 2 && height >= 2)
@@ -126,9 +124,7 @@ void build_wall(map_t* map_packed,
 				           height,
 				           height >= width - wallLoc + x - 1, wallLoc + 1,
 				           y);
-			else if (width - wallLoc + x - 1 >
-			         map_packed->width / 20 ||
-			         height > map_packed->height / 20)
+			else 
 				generate_room(map_packed, width - wallLoc + x - 1,
 				              height, wallLoc + 1,
 				              y);
@@ -154,8 +150,7 @@ void build_wall(map_t* map_packed,
 		else
 			gateLoc = possibleHoleSpots[rand() % it];
 
-		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(
-		                                   1);
+		map[gateLoc][wallLoc].symbol = '.' | COLOR_PAIR(1);
 		map[gateLoc][wallLoc].flags &= ~FLAG_SOLID;
 	}
 }
