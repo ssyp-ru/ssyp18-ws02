@@ -123,7 +123,7 @@ int behave_searchtarget(actor_t* self){
 			case 0:
 				if (self->x + 1 >= self->level->map->width)
 					break;
-				if(map[self->y + 1][self->x].flags & FLAG_SOLID)
+				if(map[self->y][self->x + 1].flags & FLAG_SOLID)
 					break;
 				self->x += 1;
 				self->direct = 0;
