@@ -1,29 +1,38 @@
 #pragma once
-
-#ifndef _ACTOR_05_07_18_11_21
-#define _ACTOR_05_07_18_11_21
-
-#define FLAG_ISPLAYER 0x1
-#define FLAG_DEAD 0x2
-
-#include <math.h>
 #include <ncurses.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include "behave.h"
-#include "mapgen.h"
+#define FLAG_FRIENDLY 0x1
+#define FLAG_STACKABLE 0x1
+#include "common.h"
 
-void draw_actors(avect_t* vect);
+typedef struct item {
+	chtype type;
+	float weight;
+	int flags;
+	char * description;
+	int quality;
+	int amount;
+} item_t;
 
-avect_t* init_actors(level_t* level, int amount_of_entities);
+typedef struct inventory{
+	item_t * item;
+	int amount;
+	int max_amount;
+} inventory_t;
 
-void add_vector_elem(avect_t* vect, actor_t newActor);
+typedef struct actor{
+	struct inventory * inventory;
+	int flags;
+	int hp;
+	int state;
+	int targ_x, targ_y;
+	int strength;
+	int agility;
+	int stamina;
+	int view_radius;
+	int x, y;
+	struct level * level;
+	int (*begave)(struct actor*);
+	chtype symbol;
+} actor_t;	
 
-actor_t* actor_get(avect_t* vect, int num);
 
-void free_actors(avect_t* vect);
-
-bool update_actors(avect_t* vect);
-
-#endif

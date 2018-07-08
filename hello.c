@@ -13,7 +13,7 @@ map_t * genLab(map_t *_map){
 	int sizeY = _map->height;
 	UNPACK(map, _map);
 	int originX, originY, index = 1; 
-	int rand4, countCells = 1500;
+	int rand4, countCells = 1200;
 	for(int i = 0; i < sizeX; i++){
 		for(int k = 0; k < sizeY; k++){
 			map[k][i].flags |= FLAG_SOLID;
@@ -125,11 +125,12 @@ void initScr(){
 	halfdelay(100);
 	curs_set(0);
 }
-void drawView(int index, hero_t *hero){
+void drawView(int index, hero_t * hero, item_t * item){
 	for(int i = 0; i < index; i++){
 			int x = hero->view[i].xPos;
 			int y = hero->view[i].yPos;
 			mvaddch(y, x + STEP, '.');
+
 		}	
 }
 int checkView(int viewRadius, map_t *_map, hero_t *hero){
@@ -211,6 +212,10 @@ hero_t * initHero(int xPos, int yPos, int inventorySize, int maxView){
 	hero->look = '@' | COLOR_PAIR(2);
 	return hero;
 }
+item_t * initItem(int sizeX, int sizeY){
+	item_t * item = calloc(sizeX * sizeY, sizeof(item_t));
+	return item;
+}
 void drawMap(map_t *_map){
 	int sizeX = _map->width;
 	int sizeY = _map->height;
@@ -221,13 +226,13 @@ void drawMap(map_t *_map){
 		}
 	}
 }
-void behave(hero_t * hero, map_t * _map){
+void behave(hero_t * hero, map_t * _map, int input){
 	UNPACK(map, _map);
 	int x = hero->xPos;
 	int y = hero->yPos;
 	int moveX = 0; 
 	int moveY = 0;
-	switch(getch()){
+	switch(input){
 		case KEY_UP:
 			moveY = -1;
 			break;
@@ -303,7 +308,7 @@ void act(){
 	int sizeX = 0;
 	int sizeY = 0, viewRadius = 4;
 	int xPos , step = 20;
-	int yPos;
+	int yPos,int amount = 5;
 	//Initialisation of colors
 	initColors();
 	srand(time(NULL));
@@ -321,9 +326,16 @@ void act(){
 	//Introduce some walls and a testing room
 	_map = makeWalls(_map);	
 	_map = genTestRoom(_map, xPos, yPos);
+	//Creating items on a map
+	item_t * item = initItem(sizeX, sizeY);	
+	for(int i = 0; i < amount; i++)}
+		item[i]->xPos = xPos + i;
+		item[i]->yPos = yPos + i;
+		item[i]->chtype = 'P';
+	}
 	bool ex = false;
 	//Interactive part
-	while(!ex){   
+	while(!ex){  	
 		//Text messages	
 		drawText(_map, hero->xPos, hero->yPos);
 		//Output of a map
@@ -333,7 +345,13 @@ void act(){
 		//Draw a hero ( not a function until future additions )
 		mvaddch(hero->yPos, hero->xPos + STEP, hero->look);
 		//Input and act
-		behave(hero, _map);
+		int input = getch();
+		behave(hero, _map, input);
+		//Leave if "q" is pressed
+		if(input == 113){
+			ex = true;
+			clear();
+		}
 		refresh();
 	}
 	getch();

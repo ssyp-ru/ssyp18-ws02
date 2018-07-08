@@ -1,34 +1,44 @@
 #pragma once
 
 #include <ncurses.h>
-
+#include "actor.h"
 #define FLAG_SOLID 0x1
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
-typedef struct inventory {
-	char* name;
-	unsigned int item_count;
-} inv_t;
+typedef enum feature_type {
+	NOTHING, DROPPED_ITEM, CONTAINER,
+	DOOR, DEAD_BADGER, STAIR
+} ftype_t;
 
-typedef struct actor {
-	unsigned char health;
-	int speed;
-	unsigned char
-	painchance;  // if the bullet hits. Actor with any probability
-	// runs away (painchance < 256)
+typedef struct tile{
 	chtype symbol;
-	unsigned int x, y;
-	inv_t* inventory;
-	unsigned char
-	state;  // current state.For example monster search monster
-	int flags;            // features of actor(maybe check actor is player)
-	unsigned int targx,
-	         targy;  //-|____position of target of this actor(player,
-	//item, other actor)
-	struct level* level;
-	int (*behave)(struct actor*);
-} actor_t;
+  int flags;
+} tile_t;
+
+typedef struct feature{
+	struct inventory * inventory;
+	ftype_t type;
+	int x, y;
+	int flags;
+	char * description;
+	chtype symbol;
+} feature_t;
+
+#define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer 
+
+/**
+ * This macros defines a new variable which allows to access map_t.buffer
+ * as a two-dimensional array with width of map_t.width.
+ * 
+ * Example:
+ * void map_foo(map_t* map_, int x, int y) {
+ * 		UNPACK(map, map_);
+ * 		if(map[x][y] == '@') {
+ * 			...
+ * 		}
+ * }
+*/
 
 typedef int (*behave_t)(struct actor*);
 
@@ -50,10 +60,6 @@ typedef struct room_vector {
 	size_t capacity;
 } room_vector_t;
 
-typedef struct tile {
-	chtype symbol;
-	int flags;
-} tile_t;
 
 typedef struct map {
 	tile_t* buffer;
@@ -66,18 +72,3 @@ typedef struct level {
 	avect_t* actors;
 } level_t;
 
-
-#define UNPACK(varname, map_ptr) tile_t (*varname)[(map_ptr)->width] = (tile_t (*)[(map_ptr)->width]) map_ptr->buffer
-
-/**
- * This macros defines a new variable which allows to access map_t.buffer
- * as a two-dimensional array with width of map_t.width.
- *
- * Example:
- * void map_foo(map_t* map_, int x, int y) {
- * 		UNPACK(map, map_);
- * 		if(map[x][y] == '@') {
- * 			...
- * 		}
- * }
-*/
