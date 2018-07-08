@@ -17,11 +17,12 @@ typedef struct box {
 } box_t;
 
 typedef struct features_vec {
-	feature_t * buffer;
+	feature_t ** buffer;
 	int last;
-size_t capacity;
+	size_t capacity;
 } fvec_t;
 
+void buf (fvec_t * ret, feature_t * node);
 fvec_t * collect(kdtree_t * root, box_t room);
 void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret);
 feature_t * findNN (kdtree_t* kdtree, feature_t * red, int num); 
