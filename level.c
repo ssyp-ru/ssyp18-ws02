@@ -4,7 +4,6 @@
 #include <time.h>
 #include "actor.h"
 #include "genmap.h"
-
 level_t* init_level(int width,
                     int height) {
 	level_t * level = (level_t*) malloc(sizeof(level_t));

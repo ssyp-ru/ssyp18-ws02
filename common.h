@@ -58,9 +58,9 @@ typedef struct feature{
 } feature_t;
 
 typedef struct features_vec {
-	feature_t * buffer;
-	int last;
-size_t capacity;
+	feature_t ** data;
+	size_t size;
+  size_t capacity;
 } features_vt;
 
 typedef struct kdtree {
@@ -70,7 +70,6 @@ typedef struct kdtree {
 } kdtree_t;
 
 
-typedef int (*behave_t)(struct actor*);
 
 typedef struct actors_vect {
 	struct actor** data;
@@ -113,7 +112,7 @@ typedef struct map {
 typedef struct level {
 	map_t* map;
   struct actors_vect * actors;
-  feature_t * features; //FIXME: replace with an actual vector
+  kdtree_t * features; 
 } level_t;
 
 typedef struct level_vector {
@@ -121,4 +120,9 @@ typedef struct level_vector {
 	size_t length;
 	size_t capacity;
 } levels_vt;
+
+typedef struct box{
+	int x, y;
+	int width, height;
+} box_t;
 

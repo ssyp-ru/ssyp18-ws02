@@ -45,6 +45,12 @@ int main(){
 	size_x = MAP_SIZE;
 	size_y = MAP_SIZE;
 	map_t * _map = gen_map(size_x, size_y);
+	size_x = 150;
+	size_y = 150;
+	map_t * _map = create_map(size_x, size_y);
+	_map = mapgen_shrew(_map);
+	_map = mapgen_rooms_shrew(_map);
+	_map = make_walls_shrew(_map);
 	level_t * level = calloc(1, sizeof(level_t));
 	level->map = _map;
 	actor[0].level = level;

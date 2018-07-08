@@ -10,8 +10,6 @@
 #include "behave.h"
 
 
-void draw_actors(actors_vt* vect);
-
 actors_vt* init_actors(level_t* level,
                      int amount_of_entities);
 

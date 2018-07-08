@@ -1,6 +1,7 @@
 #pragma once
 #include "common.h"
 #include "actor.h"
+#include "kdtree.h"
 
 // Structure of coordinates
 typedef struct coord{
@@ -24,11 +25,6 @@ typedef struct messages{
 	int cur;
 }	msgs_t;
 
-typedef struct box{
-	int x, y; //Top left corner
-	int width, height;
-} box_t;
-
 // Map-drawing function
 // Renders a chunk of _map bounded by a box;
 void draw_map(map_t * _map, box_t box);
@@ -50,7 +46,7 @@ void draw_hero(actor_t * actor);
 
 // Function for drawing features which lay on a terrain
 // collect()'s items in a box and draws them in the correct places
-void draw_features(feature_t * features);
+void draw_features(features_vt * features);
 
 // Function which introduces messages and their history
 void draw_text(char * line);

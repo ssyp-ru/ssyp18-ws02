@@ -132,9 +132,8 @@ void draw_text(char * line){
 	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
-void draw_features(feature_t * features){	
-  // FIXME: Use kdtree_t;
-	//	mvwaddch(GUI.map_field, features[i].y, features[i].x, features[i].symbol);	
+void draw_features(features_vt * features){	
+
 }
 
 void draw_inv(actor_t * actor){
@@ -198,26 +197,26 @@ void render(actor_t   * hero,
   if(box.y+h > map->height)
     box.y = map->height - h;
 
-  //FIXME: Replace this with kdtree
-  feature_t * features = level->features;
-	
+  features_vt * fvec = collect(level->features, box);
+
   draw_map(map, box);
 	draw_view(hero->x, hero->y, 4, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
-	draw_stats(hero);
-	draw_features(features);
+	
+  draw_stats(hero);
+	draw_features(fvec);
 	draw_actor(hero, box);
 
   for(int i = 0; i < actors->length; i++)
     draw_actor(actors->data[i], box);
 
-	draw_borders(GUI.map_field);
+  draw_borders(GUI.map_field);
 	draw_borders(GUI.mes_field);
 	draw_borders(GUI.inv_field);
 	draw_borders(GUI.stat_field);
-
-	wrefresh(GUI.map_field);
+	
+  wrefresh(GUI.map_field);
 	wrefresh(GUI.mes_field);
 	wrefresh(GUI.inv_field);
 	wrefresh(GUI.stat_field);
