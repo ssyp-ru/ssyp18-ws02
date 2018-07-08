@@ -1,0 +1,6 @@
+syntax: glob
+main
+*.o
+.vscode/*
+*log.txt
+.vscode
