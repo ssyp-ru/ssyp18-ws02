@@ -42,7 +42,7 @@ void draw_inv(actor_t * actor);
 void draw_stat(actor_t * actor);
 
 //Function of drawing a actor;
-void draw_hero(actor_t * actor);
+void draw_actors(actors_vt * actors, box_t box);
 
 // Function for drawing features which lay on a terrain
 // collect()'s items in a box and draws them in the correct places

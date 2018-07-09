@@ -15,6 +15,6 @@ clean:
 	rm -rf *.o all
 single: GUI.o game.o behave.o kdtree.o collect.o\
 			actor.o level.o levelvector.o roomvector.o feature.o\
-			genmap.o genmap_shrew.o genmap_cellular.o genmap_recdev.o
+			genmap.o find_path.o genmap_shrew.o genmap_cellular.o genmap_recdev.o
 
 kdtreetest: kdtree.o kdtreetest.o collect.o

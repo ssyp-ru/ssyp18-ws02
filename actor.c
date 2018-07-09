@@ -13,9 +13,9 @@ actors_vt* create_new_vector(int num) {
 }
 
 actor_t * make_player() {
-	actor_t* player = calloc(1, sizeof(actor_t));
+	actor_t * player = calloc(1, sizeof(actor_t));
 	player->symbol = '@' | COLOR_PAIR(2);
-	player->flags |= FLAG_ISPLAYER;
+	//player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
 	player->view_radius = 4;
   player->inventory = calloc(1, sizeof(inventory_t));
@@ -23,6 +23,18 @@ actor_t * make_player() {
   player->inventory->capacity = 10;
  	player->name = "Player";
  	return player;
+}
+
+actor_t * make_goblin(){
+	actor_t * goblin = calloc(1, sizeof(actor_t));
+	goblin->symbol = '9' | COLOR_PAIR(4);
+	goblin->behave = behave_goblin;
+	goblin->view_radius = 10;
+	goblin->inventory = calloc(1, sizeof(inventory_t));
+	goblin->inventory->data = calloc(3, sizeof(item_t));
+	goblin->inventory->capacity = 3;
+	goblin->name = "Goblin";
+	return goblin;
 }
 
 actors_vt* init_actors(level_t* level,
@@ -42,6 +54,15 @@ actors_vt* init_actors(level_t* level,
 		player->y = 10;
 	}
 	add_vector_elem(actors, player);
+	for(int k = 0; k < amount_of_entities; k++){
+		actor_t * goblin = make_goblin();
+		goblin->level = level;
+		goblin->level->actors = actors;
+		goblin->x = rand() % level->map->width;
+		goblin->y = rand() % level->map->height;
+		add_vector_elem(actors, goblin);
+	}
+	player->level->actors = actors;
 	return actors;
 }
 
@@ -52,10 +73,10 @@ void resize_vector(actors_vt* vect) {
 	vect->capacity = vect->capacity * 2;
 }
 
-void add_vector_elem(actors_vt* vect, actor_t* new_Actor) {
+void add_vector_elem(actors_vt* vect, actor_t* new_actor) {
 	if (vect->capacity - vect->length == 0)
 		resize_vector(vect);
-	vect->data[vect->length] = new_Actor;
+	vect->data[vect->length] = new_actor;
 	vect->length += 1;
 }
 

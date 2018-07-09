@@ -58,7 +58,7 @@ void start_game() {
 	msgs_t * msgs = init_mes();
 	levels_vt* levels = lvector_init(1); // Seriously? One?
 	lvector_add(levels, init_level(200, 200));
-	actors_vt* actors = init_actors(lvector_get(levels, 0), 0);
+	actors_vt* actors = init_actors(lvector_get(levels, 0), 10000);
 	actors_vt ** queue = calloc(100, sizeof(actors_vt*));
 	for(int i = 0; i < 100; i++)
 		queue[i] = create_new_vector(1);

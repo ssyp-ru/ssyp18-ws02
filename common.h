@@ -111,7 +111,7 @@ typedef struct map {
 */
 
 typedef struct level {
-	map_t* map;
+		map_t* map;
   	struct actors_vect * actors;
   	kdtree_t * features; 
 } level_t;

@@ -10,6 +10,6 @@ typedef struct point_vector_t{
 } pvector_t;
 
 //Find a path from actor to a position
-pvector_t * find_path(actor_t actor, int x, int y);
+pvector_t * find_path(actor_t * actor, int x, int y);
 
 

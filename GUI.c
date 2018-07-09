@@ -2,7 +2,7 @@
 #include <ncurses.h>
 #include <stdlib.h>
 #include "common.h"
-
+#include "actor.h"
 struct GUI {
 	WINDOW * map_field;
 	WINDOW * stat_field;
@@ -186,10 +186,13 @@ void draw_stats(actor_t * hero) {
 	mvwprintw(GUI.stat_field, 10, 2, "Stamina: %d", stamina);
 }
 
-void draw_actor(actor_t * actor, box_t box) {
-  int x = actor->x;
-  int y = actor->y;
-  mvwaddch(GUI.map_field, y - box.y, x - box.x, actor->symbol);
+void draw_actors(actors_vt * actors, box_t box) {
+	for(int i = 0; i < actors->length; i++){
+  	actor_t * actor = actor_get(actors, i);
+		int x = actor->x;
+  	int y = actor->y;
+  	mvwaddch(GUI.map_field, y - box.y, x - box.x, actor->symbol);
+	}
 }
 
 void close_windows() {
@@ -219,26 +222,18 @@ void render(actor_t   * hero,
     box.y = 0;
   if(box.y+h > map->height)
     box.y = map->height - h;
-
   features_vt * fvec = collect(level->features, box);
-
   draw_map(map, box);
 	calculate_view(hero->x, hero->y, hero->view_radius, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
-	
   draw_stats(hero);
 	draw_features(fvec);
-	draw_actor(hero, box);
-
-  for(int i = 0; i < actors->length; i++)
-    draw_actor(actors->data[i], box);
-
+	draw_actors(actors, box);
   draw_borders(GUI.map_field);
 	draw_borders(GUI.mes_field);
 	draw_borders(GUI.inv_field);
-	draw_borders(GUI.stat_field);
-	
+	draw_borders(GUI.stat_field);	
   wrefresh(GUI.map_field);
 	wrefresh(GUI.mes_field);
 	wrefresh(GUI.inv_field);
