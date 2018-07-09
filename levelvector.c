@@ -8,8 +8,8 @@ level_t* lvector_get(levels_vt* v, int i) {
 }
 
 levels_vt* lvector_init(int L) {
-	levels_vt* v = (levels_vt*)malloc(sizeof(
-	                        levels_vt));
+	levels_vt* v = calloc(1, sizeof(levels_vt));// (levels_vt*)malloc(sizeof(
+	                //        levels_vt));
 
 	v->data = (level_t**) calloc(L, sizeof(level_t*));
 	v->length = 0;
@@ -31,8 +31,8 @@ void lvector_free(levels_vt* v) {
 	// We should destroy all maps here.
 	for(int i = 0; i < v->length; i++) {
 		free_level(lvector_get(v, i));
-		free(v->data[i]);
 	}
 	free(v->data);
 	free(v);
 }
+

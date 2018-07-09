@@ -18,8 +18,8 @@ void draw_map(map_t * _map, box_t box) {
 		size_x = _map->width;
 	if(size_y > _map->height)
 		size_y = _map->height;
-	for(int k = 1; k < size_y - 1; k++){
-		for(int i = 1; i < size_x - 1; i++){
+	for(int k = 0; k < size_y; k++){
+		for(int i = 0; i < size_x; i++){
 			if(k + box.y < _map->height && i + box.x < _map->width)
 				mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
 		}
@@ -32,9 +32,19 @@ void draw_map(map_t * _map, box_t box) {
 #endif /* DEBUG */
 }
 
-void draw_view(int x2, int y2, int view_radius,
+bool match_size(map_t * _map, int x, int y){
+	bool is_true = false;
+	int size_x = _map->width;
+	int size_y = _map->height;
+	if(x > 0 && x < size_x - 1 
+			&& y > 0 && y < size_y - 1)
+		is_true = true;
+	return is_true;
+}
+
+void calculate_view(int x2, int y2, int view_radius,
 	 	map_t * _map, box_t box){
-  //TODO: Split this into view calculator and
+  // Split this into view calculator and
   // view renderer.
 	UNPACK(map, _map);
 	int index = 0;
@@ -47,7 +57,8 @@ void draw_view(int x2, int y2, int view_radius,
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
 			int rad_y = y1 - y2;
-			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius){
+			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius 
+					&& match_size(_map, x1, y1) ){
 				if(map[y1][x1].flags & FLAG_SOLID){
 						break;
 				}else{
@@ -62,7 +73,8 @@ void draw_view(int x2, int y2, int view_radius,
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
 			int rad_y = y1 - y2;
-			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius){
+			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius
+					&& match_size(_map, x1, y1)){
 				if(map[y1][x1].flags & FLAG_SOLID){
 						break;
 				}else{
@@ -76,23 +88,28 @@ void draw_view(int x2, int y2, int view_radius,
 	for(int y = 0; y >= -view_radius; y--){
 		int y1 = y + y2;
 		int x1 = x2;
-		if(map[y1][x1].flags & FLAG_SOLID){
-			break;
-		}else{
-			vision->view[index].y = y1;
-			vision->view[index].x = x1;
-			index++;
+		if(match_size(_map, x1, y1)){
+			if(map[y1][x1].flags & FLAG_SOLID){
+				break;
+			}
+			else{
+				vision->view[index].y = y1;
+				vision->view[index].x = x1;
+				index++;
+			}
 		}
 	}	
 	for(int y = 0; y <= view_radius; y++){
 		int y1 = y + y2;
 		int x1 = x2;
-		if(map[y1][x1].flags & FLAG_SOLID){
-			break;
-		}else{
-			vision->view[index].y = y1;
-			vision->view[index].x = x1;
-			index++;
+		if(match_size(_map, x1, y1)){
+			if(map[y1][x1].flags & FLAG_SOLID){
+				break;
+			}else{
+				vision->view[index].y = y1;
+				vision->view[index].x = x1;
+				index++;
+			}
 		}
 	}	
 	for(int i = 0; i < index; i++){
@@ -100,6 +117,13 @@ void draw_view(int x2, int y2, int view_radius,
 			int y = vision->view[i].y;
 			mvwaddch(GUI.map_field, y - box.y, x - box.x, '.');
 		}	
+	free(vision->view);
+	free(vision);
+}
+
+vision_t * get_view(vision_t * vision){
+
+	return vision;
 }
 
 void draw_borders(WINDOW * window){
@@ -155,10 +179,11 @@ void draw_stats(actor_t * hero) {
 	int strength = hero->strength;
 	int agility = hero->agility;
 	int stamina = hero->stamina;
-	mvwprintw(GUI.stat_field, 2, 2, "HP: %d", hp);
-	mvwprintw(GUI.stat_field, 4, 2, "Strength: %d", strength);
-	mvwprintw(GUI.stat_field, 6, 2, "Agility: %d", agility);
-	mvwprintw(GUI.stat_field, 8, 2, "Stamina: %d", stamina);
+	mvwprintw(GUI.stat_field, 2, 2, "Name: %s", hero->name);
+	mvwprintw(GUI.stat_field, 4, 2, "HP: %d", hp);
+	mvwprintw(GUI.stat_field, 6, 2, "Strength: %d", strength);
+	mvwprintw(GUI.stat_field, 8, 2, "Agility: %d", agility);
+	mvwprintw(GUI.stat_field, 10, 2, "Stamina: %d", stamina);
 }
 
 void draw_actor(actor_t * actor, box_t box) {
@@ -182,8 +207,6 @@ void render(actor_t   * hero,
   level_t * level = hero->level;
   map_t * map = level->map;
   getmaxyx(GUI.map_field, h, w);
-  h -= 2;
-  w -= 2;
   box_t box = {.x = hero->x - w/2,
                .y = hero->y - h/2,
                .width = w,
@@ -200,7 +223,7 @@ void render(actor_t   * hero,
   features_vt * fvec = collect(level->features, box);
 
   draw_map(map, box);
-	draw_view(hero->x, hero->y, 4, map, box);
+	calculate_view(hero->x, hero->y, hero->view_radius, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
 	
@@ -228,7 +251,7 @@ void init_GUI() {
   getmaxyx(stdscr, screen_height, screen_width);
   const int HUD_width = 30; 
 	const int text_height = 6;
-	const int stats_height = 8;
+	const int stats_height = 12;
 	GUI.map_field = newwin(screen_height,
                          screen_width-HUD_width,
                          0, HUD_width);

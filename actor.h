@@ -5,7 +5,7 @@
 #define FLAG_CANWALK 0x4
 #define FLAG_MELEE 0x8
 #define FLAG_FRIENDLY 0x10
-#define FLAG_PROJECTALE 0x20
+#define FLAG_PROJECTILE 0x20
 #define FLAG_STACKABLE 0x1
 #include "common.h"
 #include <stdint.h>

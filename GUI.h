@@ -30,7 +30,7 @@ typedef struct messages{
 void draw_map(map_t * _map, box_t box);
 
 // Function for drawing a field of view
-void draw_view(int x, int y,
+void calculate_view(int x, int y,
                int view_radius,
 	 	           map_t * _map,
                box_t box);

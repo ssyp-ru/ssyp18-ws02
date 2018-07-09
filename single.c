@@ -8,6 +8,7 @@
 actor_t * make_player() {
 	actor_t* player = calloc(1, sizeof(actor_t));
 	player->symbol = '@' | COLOR_PAIR(2);
+	player->id = 1;
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
   player->inventory = calloc(1, sizeof(inventory_t));
@@ -19,8 +20,10 @@ actor_t * make_player() {
 actor_t * make_monster() {
 	actor_t* monster = calloc(1, sizeof(actor_t));
 	monster->symbol = 'O' | COLOR_PAIR(2);
+	monster->id = 2;
 	monster->flags |= FLAG_CANWALK;
 	monster->behave = behave_monster;
+	monster->view_radius = 4;
   monster->inventory = calloc(1, sizeof(inventory_t));
   monster->inventory->data = calloc(10, sizeof(item_t));
   monster->inventory->capacity = 10;
@@ -33,8 +36,9 @@ actors_vt* init_actors(level_t* level,
 	actors_vt* actors = create_new_vector(amount_of_entities + 1);
   actor_t * player = make_player();
 	player->level = level;
+	int room_number;
 	if ( level->map->rooms) {
-		int room_number = rand() % level->map->rooms->length;
+		room_number = rand() % level->map->rooms->length;
 
 		player->x = vector_get(level->map->rooms, room_number).x +
 								vector_get(level->map->rooms, room_number).width / 2;
@@ -48,8 +52,8 @@ actors_vt* init_actors(level_t* level,
 	actor_t* monster = make_monster();
 	monster->level = level;
 	if ( level->map->rooms) {
-		int room_number = rand() % level->map->rooms->length;
-
+		//int room_number = rand() % level->map->rooms->length;
+		room_number++;
 		monster->x = vector_get(level->map->rooms, room_number).x +
 								vector_get(level->map->rooms, room_number).width / 2;
 		monster->y = vector_get(level->map->rooms, room_number).y +
@@ -64,11 +68,21 @@ actors_vt* init_actors(level_t* level,
 	return actors;
 }
 
+void init_colors(){
+start_color();
+init_color(COLOR_MAGENTA, 300, 300,300);
+init_pair(1, COLOR_MAGENTA, COLOR_BLACK);
+init_pair(2, COLOR_RED, COLOR_BLACK);
+init_pair(3, COLOR_BLACK, COLOR_BLUE);
+}
+
 int main() {
 	initscr();
 	noecho();
 	curs_set(0);
 	keypad(stdscr, true);
+	init_GUI();
+	init_colors();
 	start_game();
 	endwin();
 }

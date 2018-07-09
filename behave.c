@@ -56,7 +56,8 @@ int behave_fire(actor_t* self){
 		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id + 1;
 	bullet->targ_x = 0;
 	bullet->targ_y = 0;
-	bullet->flags |= FLAG_PROJECTALE;
+	bullet->flags = 0;
+	bullet->flags |= FLAG_PROJECTILE;
 	bullet->level = self->level;
 	add_vector_elem(self->level->actors, bullet);
 	self->state = 0;
@@ -85,7 +86,7 @@ int behave_projectiles(actor_t* self){
 			if (self->level->actors->data[i]->x == self->x
 				&& self->level->actors->data[i]->y == self-> y
 				&& self->id != self->level->actors->data[i]->id
-				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTILE)){
 			//------------------------------------------------------
 				self->level->actors->data[i]->hp -= 3;
 				if (self->level->actors->data[i]->hp <= 0){
@@ -112,10 +113,10 @@ int behave_searchtarget(actor_t* self){
 	if (self->level->actors != NULL){
 		for (int i = 0; i < self->level->actors->length; i++){
 			//------------------------------------------------------
-			if(abs(self->level->actors->data[i]->x - self->x) <= 3
-			&& abs(self->level->actors->data[i]->y - self->y) <= 3
+			if(abs(self->level->actors->data[i]->x - self->x) <= self->view_radius
+			&& abs(self->level->actors->data[i]->y - self->y) <= self->view_radius
 			&& self->id != self->level->actors->data[i]->id
-			&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
+			&& !(self->level->actors->data[i]->flags & FLAG_PROJECTILE)){
 			//------------------------------------------------------
 				self->targ_x = self->level->actors->data[i]->x;
 				self->targ_y = self->level->actors->data[i]->y;
@@ -123,7 +124,7 @@ int behave_searchtarget(actor_t* self){
 				flag = 1;
 			}
 		}
-//	}
+	}
 	if (flag != 1 && (self->flags & FLAG_CANWALK)){
 		int i = rand() % 4;
 		switch(i){
@@ -171,7 +172,7 @@ int behave_meleeattack(actor_t* self){
 			if (abs(self->level->actors->data[i]->x - self->x) <= 1
 				&& abs(self->level->actors->data[i]->y - self->y) <= 1
 				&& self->id != self->level->actors->data[i]->id
-				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTILE)){
 			//------------------------------------------------------
 				self->level->actors->data[i]->hp -= 1;
 				if (self->level->actors->data[i]->hp <= 0){
@@ -223,10 +224,10 @@ int behave_chasetarget(actor_t* self){
 	if (self->level->actors){
 		for (int i = 0; i < self->level->actors->length; i++){
 			//------------------------------------------------------
-			if (abs(self->level->actors->data[i]->x - self->x) <= 3
-				&& abs(self->level->actors->data[i]->y - self->y) <= 3
+			if (abs(self->level->actors->data[i]->x - self->x) <= self->view_radius
+				&& abs(self->level->actors->data[i]->y - self->y) <= self->view_radius
 				&& self->id != self->level->actors->data[i]->id
-				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTILE)){
 			//------------------------------------------------------
 				self->targ_x = self->level->actors->data[i]->x;
 				self->targ_y = self->level->actors->data[i]->y;

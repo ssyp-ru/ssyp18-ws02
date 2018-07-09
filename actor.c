@@ -6,8 +6,7 @@
 
 actors_vt* create_new_vector(int num) {
 	actors_vt* new_Vect = (actors_vt*)malloc(sizeof(actors_vt));
-	new_Vect->data = (actor_t**)calloc(num,
-	                                        sizeof(actor_t*));
+	new_Vect->data = (actor_t**)calloc(num, sizeof(actor_t*));
 	new_Vect->length = 0;
 	new_Vect->capacity = num;
 	return new_Vect;
@@ -18,12 +17,15 @@ actor_t * make_player() {
 	player->symbol = '@' | COLOR_PAIR(2);
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
+	player->view_radius = 4;
   player->inventory = calloc(1, sizeof(inventory_t));
   player->inventory->data = calloc(10, sizeof(item_t));
   player->inventory->capacity = 10;
-  return player;
+ 	player->name = "Player";
+ 	return player;
 }
 
+<<<<<<< HEAD
 actor_t * make_monster() {
 	actor_t* monster = calloc(1, sizeof(actor_t));
 	monster->symbol = 'O' | COLOR_PAIR(2);
@@ -38,6 +40,8 @@ actor_t * make_monster() {
 */
 /*
 //FIXME: Should it realy be here?
+=======
+>>>>>>> 74e7e48a716724d2230318568af908f18920191e
 actors_vt* init_actors(level_t* level,
                      int amount_of_entities) {
 	actors_vt* actors = create_new_vector(amount_of_entities + 1);
@@ -112,9 +116,13 @@ void free_actors(actors_vt* vect, bool is_Full) {
 	// FIXME: Who will kill them?
 	if(is_Full){
 		for(int i = 0; i < vect -> length; i++)
+		{
+			free(vect->data[i]->inventory->data);
+			free(vect->data[i]->inventory);
 			free(vect->data[i]);
-		free(vect->data);
-		free(vect);
+		}	
+	free(vect->data);
+	free(vect);
 	}
 }
 

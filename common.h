@@ -34,6 +34,7 @@ typedef struct inventory{
 
 typedef struct actor{
 	unsigned int id;
+	char * name;
 	int hp;
 	int direct;
 	chtype symbol; 
