@@ -19,6 +19,7 @@ int main () {
 	for (int i = 0; i < 200; i++) {		
 		point[i].x = rand() % 20;
 		point[i].y = rand() % 20;
+		point[i].fid = i;
 		ppoint[i] = &(point[i]);
 	}
 
@@ -41,10 +42,17 @@ int main () {
 	box.width = 10;
 
 	features_vt * buf = collect(tree, box);
-	printf("\n %d \n", buf->size);
 	for (int i = 0; i < buf->size; i++)
 		printf ("%d, %d \n", buf->data[i]->x, buf->data[i]->y);
-	kd_delete (tree);
 
+	if (buf->size > 1) {
+		printf ("\n-------\n\n");
+		tree = kd_remove (tree, buf->data[buf->size], 1); //
+		buf = collect(tree, box);
+		for (int i = 0; i < buf->size; i++)
+			printf ("%d, %d \n", buf->data[i]->x, buf->data[i]->y);
+	}
+	kd_delete (tree);
+	features_vector_destroy(buf);
 	return 0;
 }

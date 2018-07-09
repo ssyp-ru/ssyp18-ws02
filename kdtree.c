@@ -1,6 +1,6 @@
+#include <malloc.h>
 #include <math.h>
 #include "kdtree.h"
-#include <malloc.h>
 
 feature_t * findNN (kdtree_t * kdtree, feature_t * red, int num)
 {
@@ -72,36 +72,39 @@ kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth) {
 	kdtree_t * parent = tree;
 	kdtree_t * child = kd_create_node(point);
 	do {
-		if (depth%2) {
-			if (parent->node->x > point->x)
-				if (parent->lbranch)
+		if (depth++%2) {
+			if (parent->node->x > point->x) {
+				if (parent->lbranch) {
 					parent = parent->lbranch;
-				else {
+          continue;
+        } else {
 					parent->lbranch = child;
 					return tree;
 				}
-			else
+      } else {
 				if (parent->rbranch)
 					parent = parent->rbranch;
 				else {
 					parent->rbranch = child;
 					return tree;
 				}
+      }
 		} else {
-			if (parent->node->y > point->y)
+			if (parent->node->y > point->y) {
 				if (parent->lbranch)
 					parent = parent->lbranch;
 				else {
 					parent->lbranch = child;
 					return tree;
 				}
-			else
+			} else {
 				if (parent->rbranch)
 					parent = parent->rbranch;
 				else {
 					parent->rbranch = child;
 					return tree;
 				}
+      }
 		}
 	} while(1);
 }
@@ -126,23 +129,14 @@ void kd_delete (kdtree_t * root) {
 	}
 }
 
-void kdrem (kdtree_t * rem, kdtree_t * root) {
-	if (!root->rbranch && !root->lbranch)
-  {
-		free (root);
-  } 
-  if (root->lbranch)
-    kdrem (rem, root->lbranch);
-  else
-    rem = root;
-	free (root);
-}
-
 kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth) {
 	int axis = depth%2;
-	if (root->node != node) {
-		if (axis == 1) {
-			if (node->x > root->node->x) {
+	if (!root) {
+		return NULL;
+	}
+if (root->node->fid != node->fid) {
+	if (axis == 1) {
+			if (node->x > root->node->x) { //valgrind error
 				if (root->rbranch)
 					root = kd_remove (root->rbranch, node, depth++);
 			} else {
@@ -159,6 +153,16 @@ kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth) {
 			}
 		}
 	}
-	kdrem (root, root);
-	return (root);
+	kdtree_t * rem = root;
+	if (root->lbranch) {
+	 if (root->rbranch)
+		 kd_remove (root->rbranch, node, depth++);
+	} else {
+		if (root->lbranch)
+			kd_remove (root->lbranch, node, depth++);
+	}
+	rem = root;
+	free (root);
+	return rem;
 }
+

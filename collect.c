@@ -5,6 +5,7 @@ void append(features_vt * ret, feature_t * node) {
 		ret->data[ret->size++] = node;
 	} else {
 		ret->data = realloc(ret->data, sizeof(feature_t *)*ret->capacity*2);
+    ret->capacity *= 2;
 		ret->data[ret->size++] = node;
 	}
 }
@@ -14,8 +15,8 @@ void features_vector_destroy(features_vt * vec)
   free(vec->data);
   free(vec);
 }
-
-void collect_rec (kdtree_t * tree, int num, box_t room, features_vt * ret) {
+/*
+void collect_rec_old (kdtree_t * tree, int num, box_t room, features_vt * ret) {
 	
 	kdtree_t * right = tree->rbranch;
 	kdtree_t * left = tree->lbranch;
@@ -57,7 +58,30 @@ void collect_rec (kdtree_t * tree, int num, box_t room, features_vt * ret) {
 			}
 		}
 	}
-}	
+}*/
+void collect_rec(kdtree_t * root, int depth, box_t room, features_vt * ret) {
+	kdtree_t * right = root->rbranch;
+	kdtree_t * left = root->lbranch;
+	feature_t * node = root->node;
+ 	int axis = depth%2;	
+
+  if ((room.x <= node->x && (room.x + room.width)  >= node->x) &&
+      (room.y <= node->y && (room.y + room.height) >= node->y)) {
+    append(ret, node);
+  }
+  if (axis == 1) {
+    if (right && node->x < room.x+room.width)
+      collect_rec(right, depth+1, room, ret);
+    if (left && room.x  <= node->x)
+      collect_rec(left, depth+1, room, ret);
+  } else {
+    if (right && node->y < room.y+room.height)
+      collect_rec(right, depth+1, room, ret);
+    if (left && room.y <= node->y)
+      collect_rec(left, depth+1, room, ret);
+  }
+}
+
 
 features_vt * collect(kdtree_t * root, box_t room) {
 	features_vt * ret = calloc(1, sizeof(features_vt));
@@ -65,6 +89,6 @@ features_vt * collect(kdtree_t * root, box_t room) {
 	ret->capacity = 16;
 	ret->data = calloc(16, sizeof(feature_t *));
   if (root)
-	  collect_rec (root, 1, room, ret);
+	  collect_rec(root, 1, room, ret);
 	return ret;
 }

@@ -79,6 +79,7 @@ typedef struct feature{
 	struct level * level;
 	struct feature * crutch;
 	void (*interact)(struct feature *, struct actor *);
+	int fid;
 } feature_t;
 
 typedef struct kdtree {

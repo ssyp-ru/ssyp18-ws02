@@ -158,9 +158,16 @@ void draw_text(char * line){
 
 void draw_features(features_vt * features, box_t box){	
 	for(int i = 0; i < features->size; i++) {
-		mvaddch(features->data[i]->y -box.y, features->data[i]->x - box.x,
-				features->data[i]->symbol|COLOR_PAIR(3));
+		mvwaddch(GUI.map_field, features->data[i]->y - box.y,
+                            features->data[i]->x - box.x,
+				                    features->data[i]->symbol|COLOR_CYAN);
 	}	
+#ifdef DEBUG
+char buffer[100];
+snprintf(buffer, 100, " Found %lu features.\n",
+                    features->size);
+mvwprintw(GUI.mes_field, 1, 1, buffer);
+#endif /* DEBUG */
 }
 
 void draw_inv(actor_t * actor){
