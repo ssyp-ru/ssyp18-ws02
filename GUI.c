@@ -133,7 +133,9 @@ void draw_text(char * line){
 }
 
 void draw_features(features_vt * features){	
-
+	for(int i = 0; i < features->size; i++) {
+		mvaddch(features->data[i]->y, features->data[i]->x, features->data[i]->symbol);
+	}	
 }
 
 void draw_inv(actor_t * actor){
@@ -203,7 +205,6 @@ void render(actor_t   * hero,
 	draw_view(hero->x, hero->y, 4, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
-<<<<<<< HEAD
 	
   draw_stats(hero);
 	draw_features(fvec);
