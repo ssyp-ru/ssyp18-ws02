@@ -10,7 +10,7 @@
 
 features_vt * prototypes = NULL;
 
-void free_protofeature();
+void free_protofeatures();
 
 void init_protofeatures();
 	

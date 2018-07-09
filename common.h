@@ -21,7 +21,7 @@ typedef struct item {
 
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
-	DOOR, DEAD_BADGER, STAIR
+	DOOR, DEAD_BADGER, STAIRS
 } ftype_t;
 
 typedef struct tile{

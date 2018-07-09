@@ -26,9 +26,7 @@ typedef enum feature_type {
 */
 
 
-features_vt * prototypes = NULL;
-
-void free_protofeature() {
+void free_protofeatures() {
 	free(prototypes->data);
 	free(prototypes);
 }
