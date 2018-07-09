@@ -86,8 +86,7 @@ void throw_away(item_t * item, actor_t * actor) {
 
 void interact(actor_t * actor, feature_t * feature){
 	switch(feature->type){
-		case UPSTAIRS:
-		case DOWNSTAIRS:
+		case STAIR:
 			actor->level = feature->crutch->level;
 			break;
 		case CONTAINER:
