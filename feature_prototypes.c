@@ -2,6 +2,7 @@
 #include "levelvector.h"
 #include "kdtree.h"
 #include "time.h"
+#include "genmap.h"
 
 /*typedef struct feature{
 	struct inventory * inventory;
@@ -18,6 +19,8 @@
 #define FLAG_FEATURE_CLOTHES    0x4
 #define FLAG_FEATURE_WEAPON     0x8
 
+features_vt * prototypes = NULL;
+
 void free_protofeatures() {
 	free(prototypes->data);
 	free(prototypes);
@@ -25,50 +28,55 @@ void free_protofeatures() {
 
 void init_protofeatures() {
 
-	init_pair(1, COLOR_GREEN,   COLOR_CYAN);
-	init_pair(2, COLOR_GREEN,   COLOR_BLACK);
-	init_pair(3, COLOR_WHITE,   COLOR_CYAN);
-	init_pair(4, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(5, COLOR_CYAN,    COLOR_BLACK);
-	init_pair(6, COLOR_RED,     COLOR_BLACK);
+	init_pair(5, COLOR_GREEN,   COLOR_BLACK);
+	init_pair(6, COLOR_WHITE,   COLOR_CYAN);
+	init_pair(7, COLOR_MAGENTA, COLOR_BLACK);
 	
 	features_vt * lib = calloc(1, sizeof(features_vt));
 	
 	lib->capacity = 10;
-	lib->data	= calloc(lib->capacity, sizeof(feature_t));
-	
+	lib->data	= calloc(lib->capacity, sizeof(feature_t *));
+
+	lib->data[0] = calloc(1, sizeof(feature_t));
 	lib->data[0]->type = NOTHING;
 	lib->data[0]->description = "Stone statue of Cthulhu";
-	lib->data[0]->symbol='&' | COLOR_PAIR(1);
+	lib->data[0]->symbol='&' | COLOR_PAIR(5);
 
+	lib->data[1] = calloc(1, sizeof(feature_t));
 	lib->data[1]->type = NOTHING;
 	lib->data[1]->description = "Goblin corpse";
-	lib->data[1]->symbol='%' | COLOR_PAIR(2);
+	lib->data[1]->symbol='%' | COLOR_PAIR(5);
 	lib->data[1]->flags = FLAG_FEATURE_EDIBILITY; 
 
+	lib->data[2] = calloc(1, sizeof(feature_t));
 	lib->data[2]->type = NOTHING;
 	lib->data[2]->description = "Mammoth skeleton";
-	lib->data[2]->symbol='/' | COLOR_PAIR(3);
+	lib->data[2]->symbol='/' | COLOR_PAIR(6);
 
+	lib->data[3] = calloc(1, sizeof(feature_t));
 	lib->data[3]->type = NOTHING;
 	lib->data[3]->description = "Battle axe";
-	lib->data[3]->symbol='L' | COLOR_PAIR(4);
+	lib->data[3]->symbol='L' | COLOR_PAIR(7);
 	lib->data[3]->flags = FLAG_FEATURE_WEAPON;
 
+	lib->data[4] = calloc(1, sizeof(feature_t));
 	lib->data[4]->type = NOTHING;
 	lib->data[4]->description = "Leaky chain mail pants";
-	lib->data[4]->symbol='v' | COLOR_PAIR(5);
+	lib->data[4]->symbol='v' | COLOR_PAIR(6);
 	lib->data[4]->flags = FLAG_FEATURE_CLOTHES;
 
+	lib->data[5] = calloc(1, sizeof(feature_t));
 	lib->data[5]->type = NOTHING;
 	lib->data[5]->description = "The tron of skulls";
-	lib->data[5]->symbol='H' | COLOR_PAIR(6);
+	lib->data[5]->symbol='H' | COLOR_PAIR(2);
 //изолента, красные демоны, подбирающие черепа, трон из черепов, лужа крови
 
+	lib->data[6] = calloc(1, sizeof(feature_t));
 	lib->data[6]->type = CONTAINER;
 	lib->data[6]->description = "Oak chest";
 	lib->data[6]->symbol='[';
 	
+	lib->data[7] = calloc(1, sizeof(feature_t));
 	lib->data[7]->type = CONTAINER;
 	lib->data[7]->description = "Cardboard box";
 	lib->data[7]->symbol=']';
@@ -91,7 +99,7 @@ void gen_feature(level_t * level, int num) {
 		} while(_map[x][y].flags & FLAG_SOLID);
 
 	 	feature_t * feat = calloc(1, sizeof(feature_t));
-		feat = prototypes->data[feat_num];
+		*feat = *(prototypes->data[feat_num]);
 		feat->x = x;
 		feat->y = y;
 		feat->level = level;
@@ -122,14 +130,14 @@ void gen_stair(levels_vt * levels, int num) {
 		}while(map2[x2][y2].flags & FLAG_SOLID);
 
 		feature_t * stair1 = calloc(1, sizeof(feature_t));
-		stair1->type = STAIR;
+		stair1->type = STAIRS;
 		stair1->description = "Stair";
 		stair1->x = x1;
 		stair1->y = y1;
 		stair1->level = levels->data[lev1];
 
 		feature_t * stair2 = calloc(1, sizeof(feature_t));
-		stair2->type = STAIR;
+		stair2->type = STAIRS;
 		stair2->description = "Stair";
 		stair2->x = x2;
 		stair2->y = y2;

@@ -46,7 +46,7 @@ void draw_actors(actors_vt * actors, box_t box);
 
 // Function for drawing features which lay on a terrain
 // collect()'s items in a box and draws them in the correct places
-void draw_features(features_vt * features);
+void draw_features(features_vt * features, box_t box);
 
 // Function which introduces messages and their history
 void draw_text(char * line);

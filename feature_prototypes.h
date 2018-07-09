@@ -8,7 +8,7 @@
 #define FLAG_FEATURE_CLOTHES    0x4
 #define FLAG_FEATURE_WEAPON     0x8
 
-features_vt * prototypes = NULL;
+extern features_vt * prototypes;
 
 void free_protofeatures();
 

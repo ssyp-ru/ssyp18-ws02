@@ -156,9 +156,10 @@ void draw_text(char * line){
 	mvwprintw(GUI.mes_field, 2, 2, line);
 }
 
-void draw_features(features_vt * features){	
+void draw_features(features_vt * features, box_t box){	
 	for(int i = 0; i < features->size; i++) {
-		mvaddch(features->data[i]->y, features->data[i]->x, features->data[i]->symbol);
+		mvaddch(features->data[i]->y -box.y, features->data[i]->x - box.x,
+				features->data[i]->symbol|COLOR_PAIR(3));
 	}	
 }
 
@@ -230,7 +231,8 @@ void render(actor_t   * hero,
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
   draw_stats(hero);
-	draw_features(fvec);
+	draw_features(fvec, box);
+	features_vector_destroy(fvec);
 	draw_actors(actors, box);
   draw_borders(GUI.map_field);
 	draw_borders(GUI.mes_field);
