@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include "actor.h"
 #include "behave.h"
-#include "mapgen.h"
-#include "find_path.h"
 
 int behave_monster(actor_t* self){
 	int funcreturn = 0;
@@ -27,37 +25,38 @@ int behave_monster(actor_t* self){
 }
 
 int behave_fire(actor_t* self){
-	actor_t bullet;
-	bullet.hp = 1;
-	bullet.symbol = '*';
+	actor_t* bullet = (actor_t*)calloc(1, sizeof(actor_t));
+	bullet->hp = 1;
+	bullet->symbol = '*' | COLOR_PAIR(2);
 	switch(self->direct){
 		case 0:
-			bullet.x = self->x + 1;
-			bullet.y = self->y;
-			bullet.direct = 0;
+			bullet->x = self->x + 1;
+			bullet->y = self->y;
+			bullet->direct = 0;
 		break;
 		case 1:
-			bullet.x = self->x + 1;
-			bullet.y = self->y;
-			bullet.direct = 1;
+			bullet->x = self->x + 1;
+			bullet->y = self->y;
+			bullet->direct = 1;
 		break;
 		case 2:
-			bullet.x = self->x;
-			bullet.y = self->y + 1;
-			bullet.direct = 2;
+			bullet->x = self->x;
+			bullet->y = self->y + 1;
+			bullet->direct = 2;
 		break;
 		case 3:
-			bullet.x = self->x;
-			bullet.y = self->y - 1;
-			bullet.direct = 3;
+			bullet->x = self->x;
+			bullet->y = self->y - 1;
+			bullet->direct = 3;
 		break;
 	}
-	bullet.inventory = NULL;
-	bullet.behave = behave_projectiles;
-	bullet.id = self->level->actors->all_actors[self->level->actors->len - 1].id + 1;
-	bullet.targ_x = 0;
-	bullet.targ_y = 0;
-	bullet.level = self->level;
+	bullet->inventory = NULL;
+	bullet->behave = behave_projectiles;
+	if (self->level->actors != NULL)
+		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id + 1;
+	bullet->targ_x = 0;
+	bullet->targ_y = 0;
+	bullet->level = self->level;
 	add_vector_elem(self->level->actors, bullet);
 	self->state = 1;
 	return 1;
@@ -79,17 +78,19 @@ int behave_projectiles(actor_t* self){
 			self->y -= 1;
 		break;
 	}
-	for (int i = 0; i < self->level->actors->len; i++){
-		//------------------------------------------------------
-		if (self->level->actors->all_actors[i].x == self->x
-				&& self->level->actors->all_actors[i].y == self-> y
-				&& self->id != self->level->actors->all_actors[i].id){
-		//------------------------------------------------------
-			self->level->actors->all_actors[i].hp -= 3;
-			if (self->level->actors->all_actors[i].hp <= 0){
-				self->level->actors->all_actors[i].flags |= FLAG_DEAD;
+	if (self->level->actors != NULL){
+		for (int i = 0; i < self->level->actors->length; i++){
+			//------------------------------------------------------
+			if (self->level->actors->data[i]->x == self->x
+				&& self->level->actors->data[i]->y == self-> y
+				&& self->id != self->level->actors->data[i]->id){
+			//------------------------------------------------------
+				self->level->actors->data[i]->hp -= 3;
+				if (self->level->actors->data[i]->hp <= 0){
+					self->level->actors->data[i]->flags |= FLAG_DEAD;
+				}
+				self->flags |= FLAG_DEAD;			
 			}
-			self->flags |= FLAG_DEAD;			
 		}
 	}
 	if (self->x < 0 || self->y < 0 || self->x > self->level->map->width
@@ -106,20 +107,22 @@ int behave_projectiles(actor_t* self){
 int behave_searchtarget(actor_t* self){
 	UNPACK(map, self->level->map);
 	char flag = 'a';
-	for (int i = 0; i < self->level->actors->len; i++){
-		//------------------------------------------------------
-		if(abs(self->level->actors->all_actors[i].x - self->x) <= self->view_radius
-		&& abs(self->level->actors->all_actors[i].y - self->y) <= self->view_radius
-		&& self->id != self->level->actors->all_actors[i].id){
-		//------------------------------------------------------
-			self->targ_x = self->level->actors->all_actors[i].x;
-			self->targ_y = self->level->actors->all_actors[i].y;
-			self->state = 1;
-			flag = 'b';
+	if (self->level->actors != NULL){
+		for (int i = 0; i < self->level->actors->length; i++){
+			//------------------------------------------------------
+			if(abs(self->level->actors->data[i]->x - self->x) <= self->view_radius
+			&& abs(self->level->actors->data[i]->y - self->y) <= self->view_radius
+			&& self->id != self->level->actors->data[i]->id){
+			//------------------------------------------------------
+				self->targ_x = self->level->actors->data[i]->x;
+				self->targ_y = self->level->actors->data[i]->y;
+				self->state = 1;
+				flag = 'b';
+			}
 		}
 	}
-	if (flag != 'b' && (self->flags & FLAG_CANWALK)){//and flag can "walking" //if target not found
-		int i = rand() % 4;	//actor walks and search target
+	if (flag != 'b' && (self->flags & FLAG_CANWALK)){
+		int i = rand() % 4;
 		switch(i){
 			case 0:
 				if (self->x + 1 >= self->level->map->width)
@@ -159,18 +162,20 @@ int behave_searchtarget(actor_t* self){
 }
 
 int behave_meleeattack(actor_t* self){
-	for (int i = 0; i < self->level->actors->len; i++){
-		//------------------------------------------------------
-		if (abs(self->level->actors->all_actors[i].x - self->x) <= 1
-				&& abs(self->level->actors->all_actors[i].y - self->y) <= 1
-				&& self->id != self->level->actors->all_actors[i].id){
-		//------------------------------------------------------
-			self->level->actors->all_actors[i].hp -= 1;
-			if (self->level->actors->all_actors[i].hp <= 0){
-				self->level->actors->all_actors[i].flags |= FLAG_DEAD;
+	if(self->level->actors != NULL){
+		for (int i = 0; i < self->level->actors->length; i++){
+			//------------------------------------------------------
+			if (abs(self->level->actors->data[i]->x - self->x) <= 1
+				&& abs(self->level->actors->data[i]->y - self->y) <= 1
+				&& self->id != self->level->actors->data[i]->id){
+			//------------------------------------------------------
+				self->level->actors->data[i]->hp -= 1;
+				if (self->level->actors->data[i]->hp <= 0){
+					self->level->actors->data[i]->flags |= FLAG_DEAD;
+				}
+				self->state = 1;
+				return 4;
 			}
-			self->state = 1;
-			return 4;
 		}
 	}
 	self->state = 3;
@@ -211,21 +216,23 @@ int behave_chasetarget(actor_t* self){
 		}
 	}
 	char flag = 'a';
-	for (int i = 0; i < self->level->actors->len; i++){
-		//------------------------------------------------------
-		if (abs(self->level->actors->all_actors[i].x - self->x) <= 3
-				&& abs(self->level->actors->all_actors[i].y - self->y) <= 3
-				&& self->id != self->level->actors->all_actors[i].id){
-		//------------------------------------------------------
-			self->targ_x = self->level->actors->all_actors[i].x;
-			self->targ_y = self->level->actors->all_actors[i].y;
-		//------------------------------------------------------
-			if (self->flags & FLAG_MELEE){
-				self->state = 2;
-			} else {
-				self->state = 3;
+	if (self->level->actors->length){
+		for (int i = 0; i < self->level->actors->length; i++){
+			//------------------------------------------------------
+			if (abs(self->level->actors->data[i]->x - self->x) <= 3
+				&& abs(self->level->actors->data[i]->y - self->y) <= 3
+				&& self->id != self->level->actors->data[i]->id){
+			//------------------------------------------------------
+				self->targ_x = self->level->actors->data[i]->x;
+				self->targ_y = self->level->actors->data[i]->y;
+			//------------------------------------------------------
+				if (self->flags & FLAG_MELEE){
+					self->state = 2;
+				} else {
+					self->state = 3;
+				}
+				flag = 'b';
 			}
-			flag = 'b';
 		}
 	}
 	if (flag == 'a'){

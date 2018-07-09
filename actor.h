@@ -6,33 +6,22 @@
 #define FLAG_MELEE 0x8
 #define FLAG_FRIENDLY 0x10
 #define FLAG_STACKABLE 0x1
-
-#include <ncurses.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include "common.h"
 #include <stdint.h>
-#include "mapgen.h"
+#include <stdlib.h>
+#include <time.h>
 #include "behave.h"
 
-void draw_actors(avect_t* vect);
 
-avect_t* init_actors(level_t* level, int amountOfEntities);
+actors_vt* init_actors(level_t* level,
+                     int amount_of_entities);
 
-avect_t* create_new_vector(int num);
+actors_vt* create_new_vector(int num);
 
-void resize_vector(avect_t* vect);
+void add_vector_elem(actors_vt* vect, actor_t* newActor);
 
-void add_vector_elem(avect_t* vect, actor_t newActor);
+actor_t* actor_get(actors_vt* vect, int num);
 
-void delete_elem(avect_t* vect, int num);
+actors_vt* free_actor(actors_vt* vect, int num);
 
-actor_t* actor_get(avect_t* vect, int num);
-
-void free_actors(avect_t* vect);
-
-bool update_actors(avect_t* vect);
-
-actor_t work_with_keyboard(actor_t actp);
-
-actor_t monster_state(actor_t monster, avect_t* vect, int num);
+void free_actors(actors_vt* vect, bool isFull);
