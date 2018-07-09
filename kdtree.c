@@ -1,6 +1,6 @@
+#include <malloc.h>
 #include <math.h>
 #include "kdtree.h"
-#include <malloc.h>
 
 feature_t * findNN (kdtree_t * kdtree, feature_t * red, int num)
 {
@@ -126,37 +126,39 @@ void kd_delete (kdtree_t * root) {
 	}
 }
 
-void kdrem (kdtree_t * rem, kdtree_t * root) {
-	if (!root->rbranch && !root->lbranch)
-		free (root);
-		if (root->lbranch)
-			kdrem (rem, root->lbranch);
-		else
-			rem = root;
-	free (root);
-}
-
 kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth) {
 	int axis = depth%2;
-	if (root->node != node) {
-		if (axis == 1) {
-			if (node->x > root->node->x) {
-				if (root->rbranch)
-					root = kd_remove (root->rbranch, node, depth++);
-			} else {
-				if (root->lbranch)
-					root = kd_remove (root->lbranch, node, depth++);
-			}
-		}	else {	
-			if (node->y > root->node->y) {
-				if (root->rbranch)
-					root = kd_remove (root->rbranch, node, depth++);
-			}	else {
-				if (root->lbranch)
-					root = kd_remove (root->lbranch, node, depth++);
+	if (root) {
+		if (root->node != node) {
+			if (axis == 1) {
+				if (node->x > root->node->x) {
+					if (root->rbranch)
+						root = kd_remove (root->rbranch, node, depth++);
+				} else {
+					if (root->lbranch)
+						root = kd_remove (root->lbranch, node, depth++);
+				}
+			}	else {	
+				if (node->y > root->node->y) {
+					if (root->rbranch)
+						root = kd_remove (root->rbranch, node, depth++);
+				}	else {
+					if (root->lbranch)
+						root = kd_remove (root->lbranch, node, depth++);
+				}
 			}
 		}
 	}
-	kdrem (root, root);
-	return (root);
+	if (!root->rbranch && !root->lbranch)
+		free (root);
+	else {
+		kdtree_t * rem = root;
+		if (root->lbranch)
+			kd_remove (root->lbranch, rem->node, depth++);
+		else {
+			rem = root;
+			free (root);
+		}
+	}
+	return root;
 }
