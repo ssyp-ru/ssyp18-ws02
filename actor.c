@@ -12,7 +12,7 @@ actors_vt* create_new_vector(int num) {
 	new_Vect->capacity = num;
 	return new_Vect;
 }
-
+/*
 actor_t * make_player() {
 	actor_t* player = calloc(1, sizeof(actor_t));
 	player->symbol = '@' | COLOR_PAIR(2);
@@ -35,7 +35,8 @@ actor_t * make_monster() {
 	monster->state = 0;
   return monster;
 }
-
+*/
+/*
 //FIXME: Should it realy be here?
 actors_vt* init_actors(level_t* level,
                      int amount_of_entities) {
@@ -69,9 +70,10 @@ actors_vt* init_actors(level_t* level,
 	}
 
 	add_vector_elem(actors, monster);
+	level->actors = actors; 
 	return actors;
 }
-
+*/
 void draw_actors(actors_vt* actors) {
 	for (int i = 0; i < actors->length; i++) {
 		if (!(actors->data[i]->flags  & FLAG_DEAD)){

@@ -13,8 +13,8 @@
 #include "behave.h"
 
 
-actors_vt* init_actors(level_t* level,
-                     int amount_of_entities);
+//actors_vt* init_actors(level_t* level,
+//                     int amount_of_entities);
 
 actors_vt* create_new_vector(int num);
 

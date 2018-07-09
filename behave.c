@@ -35,7 +35,7 @@ int behave_fire(actor_t* self){
 			bullet->direct = 0;
 		break;
 		case 1:
-			bullet->x = self->x + 1;
+			bullet->x = self->x - 1;
 			bullet->y = self->y;
 			bullet->direct = 1;
 		break;
@@ -53,12 +53,12 @@ int behave_fire(actor_t* self){
 	bullet->inventory = NULL;
 	bullet->behave = behave_projectiles;
 	if (self->level->actors != NULL)
-		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id + 1;
+		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id;
 	bullet->targ_x = 0;
 	bullet->targ_y = 0;
 	bullet->level = self->level;
 	add_vector_elem(self->level->actors, bullet);
-	self->state = 1;
+	self->state = 0;
 	return 1;
 }
 
@@ -173,12 +173,10 @@ int behave_meleeattack(actor_t* self){
 				if (self->level->actors->data[i]->hp <= 0){
 					self->level->actors->data[i]->flags |= FLAG_DEAD;
 				}
-				self->state = 1;
-				return 4;
 			}
 		}
 	}
-	self->state = 3;
+	self->state = 0;
 	return 4;
 }
 

@@ -40,6 +40,7 @@ void destroy_the_world(actors_vt* actors,
 	free(queue);
 }
 
+actors_vt* init_actors(level_t* level, int amount_of_entities);
 void start_game() {
   // FIXME:  Move ncurses initialization to main. Or to init_GUI()
 	start_color();
@@ -75,7 +76,7 @@ void start_game() {
 	
 	for(int i = 0; i < actors->length; i++)
 		add_vector_elem(queue[0], actor_get(actors, i));
-
+	
 	main_cycle(actors, queue, 100, levels, box, features, msgs);
 	destroy_the_world(actors, levels, queue, 100);
 }
