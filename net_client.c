@@ -10,7 +10,7 @@ client_t* client_create(int PORT, const char* HOST) {
 	int m_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(-1 == m_sock)
 		return NULL;
-	int on;
+	int on = 1;
 	while(1) {
 		if(-1 == setsockopt(m_sock, SOL_SOCKET, SO_REUSEADDR, (const char*)&on, sizeof(on))) {
 			log_err("Could not create server socket(%d). errno(%x)", m_sock, errno);

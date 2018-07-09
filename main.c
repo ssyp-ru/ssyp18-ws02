@@ -1,4 +1,4 @@
-#include <ncurses.h>
+/*#include <ncurses.h>
 
 #include "net_server.h"
 #include "log.h"
@@ -58,4 +58,4 @@ void deinit() {
 
 void mainLoop(int(*main)(int), int delay) {
 	while(!main(getch()));
-}
+}*/

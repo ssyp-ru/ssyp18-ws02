@@ -8,9 +8,10 @@
 int socket_send(int fd, char* str, int len) {
 	log_msg("Sending %d bytes to %d: '%.*s'.", len, fd, len, str);
 	char temp = NET_CHAR_BEGIN;
-	str[len++] = NET_CHAR_TERMINATE;
 	if(send(fd, &temp, 1, MSG_NOSIGNAL) == -1) return -1;
 	if(send(fd, str, len, MSG_NOSIGNAL) == -1) return -1;
+	temp = NET_CHAR_TERMINATE;
+	if(send(fd, &temp, 1, MSG_NOSIGNAL) == -1) return -1;
 	return 0;
 }
 

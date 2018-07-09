@@ -11,7 +11,7 @@ void init_colors(){
 	init_pair(4, COLOR_GREEN, COLOR_BLACK);
 }
 
-int main() {
+void start() {
 	initscr();
 	noecho();
 	curs_set(0);

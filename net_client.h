@@ -8,7 +8,7 @@ typedef struct {
 } client_t;
 
 
-client_t* client_create(int PORT, const char* HOST);
+client_t* client_create(int PORT, const char * HOST);
 int client_send(client_t* which, const char* fmt, ...);
 list_t* client_read(client_t* which);
 
