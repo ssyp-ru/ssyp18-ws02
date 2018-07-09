@@ -14,7 +14,6 @@ level_t* init_level(int width,
 	_map = make_walls_shrew(_map);*/
 	_map = mapgen_recdev(_map);
 	level->map = _map;
-	level->map->rooms = NULL;
 
 	return level;
 }
