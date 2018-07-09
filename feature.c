@@ -11,7 +11,7 @@ void pick_up(actor_t * actor, feature_t * feature){
 	int index = -1;
 	for(int i = 0; i < length && item_count <= max_count; i++){
 		item_t item = feature->inventory->data[i];
-		if(item.flags & FLAG_STACKABLE){
+		if(item.flags & FLAG_ITEM_STACKABLE){
 			for(int k = 0; k < item_count; k++){
 				if(actor->inventory->data[k].description == item.description){
 					index = k;

@@ -4,7 +4,13 @@
 #include "roomvector.h"
 #include <stdlib.h>
 
-actors_vt* create_new_vector(int num) {
+unsigned int last_actor_id  = 0;
+
+unsigned int give_actor_id() {
+  return last_actor_id++;
+}
+
+actors_vt* create_actor_vector(int num) {
 	actors_vt* new_Vect = (actors_vt*)malloc(sizeof(actors_vt));
 	new_Vect->data = (actor_t**)calloc(num, sizeof(actor_t*));
 	new_Vect->length = 0;
@@ -22,6 +28,7 @@ actor_t * make_player() {
   player->inventory->data = calloc(10, sizeof(item_t));
   player->inventory->capacity = 10;
  	player->name = "Player";
+  player->id = give_actor_id();
  	return player;
 }
 
@@ -34,38 +41,24 @@ actor_t * make_goblin(){
 	goblin->inventory->data = calloc(3, sizeof(item_t));
 	goblin->inventory->capacity = 3;
 	goblin->name = "Goblin";
+  goblin->id = give_actor_id();
 	return goblin;
 }
 
-actors_vt* init_actors(level_t* level,
-                     int amount_of_entities) {
-	actors_vt* actors = create_new_vector(amount_of_entities + 1);
-  actor_t * player = make_player();
-	player->level = level;
-	if ( level->map->rooms) {
-		int room_number = rand() % level->map->rooms->length;
-
-		player->x = vector_get(level->map->rooms, room_number).x +
-								vector_get(level->map->rooms, room_number).width / 2;
-		player->y = vector_get(level->map->rooms, room_number).y +
-								vector_get(level->map->rooms, room_number).height / 2;
-	} else {
-		player->x = 10;
-		player->y = 10;
-	}
-	add_vector_elem(actors, player);
-	for(int k = 0; k < amount_of_entities; k++){
-		actor_t * goblin = make_goblin();
-		goblin->level = level;
-		goblin->level->actors = actors;
-		goblin->x = rand() % level->map->width;
-		goblin->y = rand() % level->map->height;
-		add_vector_elem(actors, goblin);
-	}
-	player->level->actors = actors;
-	return actors;
+actor_t * make_monster() {
+	actor_t* monster = calloc(1, sizeof(actor_t));
+	monster->symbol = 'O' | COLOR_PAIR(2);
+	monster->id = give_actor_id();
+	monster->flags |= FLAG_ACTOR_CANWALK;
+	monster->behave = behave_monster;
+	monster->view_radius = 4;
+  monster->inventory = calloc(1, sizeof(inventory_t));
+  monster->inventory->data = calloc(10, sizeof(item_t));
+  monster->inventory->capacity = 10;
+	monster->state = 0;
+  monster->memory = NULL;
+  return monster;
 }
-
 
 void resize_vector(actors_vt* vect) {
 	vect->data = (actor_t**)realloc(vect->data,
@@ -84,17 +77,33 @@ actor_t* actor_get(actors_vt* vect, int num) {
 	return vect->data[num];
 }
 
-void free_actor(actor_t *); //FIXME: Write me!!!
+void delete_actor (actors_vt* vect, int num) {
+  free_actor(vect->data[num]);
+ 	for (int i = num; i < (vect->length - num); i++)
+		vect->data[i] = vect->data[i + 1];
+	vect->length--;	
+}	
 
-void free_actors(actors_vt* vect, bool is_Full) {
-	// FIXME: Who will kill them?
-	if(is_Full)
-		for(int i = 0; i < vect -> length; i++)
-		{
-			free(vect->data[i]->inventory->data);
-			free(vect->data[i]->inventory);
-			free(vect->data[i]);
-		}	
+void free_actor(actor_t * actor) {
+  if (!actor)
+    return;
+  //if(actor->name)
+  //  free(actor->name);
+  if(actor->memory)
+    free(actor->memory);
+  if (actor->inventory) {
+    if (actor->inventory->data)
+      free(actor->inventory->data);
+    free(actor->inventory);
+  }
+  free(actor);
+}
+
+void free_actors(actors_vt* vect) {
+  for(int i = 0; i < vect -> length; i++)
+  {
+    free_actor(vect->data[i]);
+  }	
 	free(vect->data);
 	free(vect);
 }

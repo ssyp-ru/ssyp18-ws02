@@ -1,6 +1,10 @@
 #include "game.h"
-#include "GUI.h"
+#include "common.h"
+#include "level.h"
+#include "actor.h"
+#include "roomvector.h"
 #include <ncurses.h>
+#include "feature_prototypes.h"
 
 void init_colors(){
 	start_color();
@@ -17,8 +21,9 @@ int main() {
 	curs_set(0);
 	keypad(stdscr, true);
 	init_GUI();
+	init_protofeatures();
 	init_colors();
 	start_game();
+	free_protofeatures();
 	endwin();
 }
-

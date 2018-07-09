@@ -14,14 +14,11 @@
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 */
-#define FLAG_FEATURE_PERSISTENT 0x1
-#define FLAG_FEATURE_EDIBILITY  0x2
-#define FLAG_FEATURE_CLOTHES    0x4
-#define FLAG_FEATURE_WEAPON     0x8
-
 features_vt * prototypes = NULL;
 
 void free_protofeatures() {
+  for(int i = 0; i < prototypes->size; i++)
+    free(prototypes->data[i]);
 	free(prototypes->data);
 	free(prototypes);
 }
@@ -40,52 +37,50 @@ void init_protofeatures() {
 	lib->data[0] = calloc(1, sizeof(feature_t));
 	lib->data[0]->type = NOTHING;
 	lib->data[0]->description = "Stone statue of Cthulhu";
-	lib->data[0]->symbol='&' | COLOR_PAIR(5);
+	lib->data[0]->symbol='&' |COLOR_BROWN;
 
 	lib->data[1] = calloc(1, sizeof(feature_t));
 	lib->data[1]->type = NOTHING;
 	lib->data[1]->description = "Goblin corpse";
-	lib->data[1]->symbol='%' | COLOR_PAIR(5);
+	lib->data[1]->symbol='%' | COLOR_BROWN;
 	lib->data[1]->flags = FLAG_FEATURE_EDIBILITY; 
 
 	lib->data[2] = calloc(1, sizeof(feature_t));
 	lib->data[2]->type = NOTHING;
 	lib->data[2]->description = "Mammoth skeleton";
-	lib->data[2]->symbol='/' | COLOR_PAIR(6);
+	lib->data[2]->symbol='/' | COLOR_BROWN;
 
 	lib->data[3] = calloc(1, sizeof(feature_t));
 	lib->data[3]->type = NOTHING;
 	lib->data[3]->description = "Battle axe";
-	lib->data[3]->symbol='L' | COLOR_PAIR(7);
+	lib->data[3]->symbol='L' | COLOR_BROWN;
 	lib->data[3]->flags = FLAG_FEATURE_WEAPON;
 
 	lib->data[4] = calloc(1, sizeof(feature_t));
 	lib->data[4]->type = NOTHING;
 	lib->data[4]->description = "Leaky chain mail pants";
-	lib->data[4]->symbol='v' | COLOR_PAIR(6);
+	lib->data[4]->symbol='v' | COLOR_BROWN;
 	lib->data[4]->flags = FLAG_FEATURE_CLOTHES;
 
 	lib->data[5] = calloc(1, sizeof(feature_t));
 	lib->data[5]->type = NOTHING;
-	lib->data[5]->description = "The tron of skulls";
-	lib->data[5]->symbol='H' | COLOR_PAIR(2);
+	lib->data[5]->description = "The throne of skulls";
+	lib->data[5]->symbol='h' | COLOR_BROWN;
 //изолента, красные демоны, подбирающие черепа, трон из черепов, лужа крови
 
 	lib->data[6] = calloc(1, sizeof(feature_t));
 	lib->data[6]->type = CONTAINER;
 	lib->data[6]->description = "Oak chest";
-	lib->data[6]->symbol='[';
+	lib->data[6]->symbol=']' | COLOR_BROWN;
 	
 	lib->data[7] = calloc(1, sizeof(feature_t));
 	lib->data[7]->type = CONTAINER;
 	lib->data[7]->description = "Cardboard box";
-	lib->data[7]->symbol=']';
+	lib->data[7]->symbol=']' | COLOR_BROWN;
 
 	lib->size = 8;
 	prototypes = lib;
 }
-
-
 	
 void gen_feature(level_t * level, int num) {
 	srand(time(NULL));
@@ -96,15 +91,13 @@ void gen_feature(level_t * level, int num) {
 			feat_num = rand() % prototypes->size;
 			x = rand() % level->map->width;
 			y = rand() % level->map->height; 
-		} while(_map[x][y].flags & FLAG_SOLID);
-
+		} while(_map[x][y].flags & FLAG_TILE_SOLID);
 	 	feature_t * feat = calloc(1, sizeof(feature_t));
 		*feat = *(prototypes->data[feat_num]);
 		feat->x = x;
 		feat->y = y;
 		feat->level = level;
 		level->features = kd_insert(level->features, feat, 1);
-
 	}
 }
 
@@ -122,12 +115,12 @@ void gen_stair(levels_vt * levels, int num) {
 		do {
 			x1 = rand() % levels->data[lev1]->map->width;
 			y1 = rand() % levels->data[lev1]->map->height; 
-		}while(map1[x1][y1].flags & FLAG_SOLID);
+		}while(map1[x1][y1].flags & FLAG_TILE_SOLID);
 		
 		do {
 			x2 = rand() % levels->data[lev2]->map->width;
 			y2 = rand() % levels->data[lev2]->map->height; 
-		}while(map2[x2][y2].flags & FLAG_SOLID);
+		}while(map2[x2][y2].flags & FLAG_TILE_SOLID);
 
 		feature_t * stair1 = calloc(1, sizeof(feature_t));
 		stair1->type = STAIRS;

@@ -31,19 +31,19 @@ pvector_t * find_path(actor_t * actor, int x, int y){
 			for(int i = x1 - vr; i <= x1 + vr && i > 0 && i < size_x - 1; i++){
 				if(set_map[k][i] != - 1){
 					if(set_map[k - 1][i] == -1 &&
-						!(map[k - 1][i].flags & FLAG_SOLID))
+						!(map[k - 1][i].flags & FLAG_TILE_SOLID))
 							set_map[k - 1][i] = set_map[k][i] + 1;
 
 					if(set_map[k + 1][i] == -1 && 
-						!(map[k + 1][i].flags  & FLAG_SOLID))
+						!(map[k + 1][i].flags  & FLAG_TILE_SOLID))
 							set_map[k + 1][i] = set_map[k][i] + 1;	
 
 					if(set_map[k][i - 1] == -1 &&
-						!(map[k][i - 1].flags  & FLAG_SOLID))
+						!(map[k][i - 1].flags  & FLAG_TILE_SOLID))
 							set_map[k][i - 1] = set_map[k][i] + 1;	
 
 					if(set_map[k][i + 1] == -1 &&
-						!(map[k][i + 1].flags  & FLAG_SOLID))
+						!(map[k][i + 1].flags  & FLAG_TILE_SOLID))
 							set_map[k][i + 1] = set_map[k][i] + 1;
 				}
 			}

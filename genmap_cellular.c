@@ -3,9 +3,9 @@
 #include <time.h>
 #include "genmap.h"
 #include "common.h"
-//using flags: FLAG_SOLID 0x1
-//             FLAG_TRANS 0x2
-//             FLAG_DESTR 0x4
+//using flags: FLAG_TILE_SOLID 0x1
+//             FLAG_TILE_TRANSPARENT 0x2
+//             FLAG_TILE_DESTRUCTIBLE 0x4
 
 
 map_t * mapgen_cellular(map_t * _map,
@@ -17,11 +17,11 @@ map_t * mapgen_cellular(map_t * _map,
 			float chance = rand()/(float) RAND_MAX;
 			if(chance < chance_to_be_alive) {
 				land[i][j].symbol = '#';
-				land[i][j].flags |= FLAG_TRANS;
-				land[i][j].flags |= FLAG_SOLID;
+				land[i][j].flags |= FLAG_TILE_TRANSPARENT;
+				land[i][j].flags |= FLAG_TILE_SOLID;
 			} else {
 				land[i][j].symbol = '.';
-				land[i][j].flags |=FLAG_DESTR;
+				land[i][j].flags |=FLAG_TILE_DESTRUCTIBLE;
 			}
 		}
 	}
@@ -31,9 +31,9 @@ map_t * mapgen_cellular(map_t * _map,
 	}
 	for(int i = 1; i < _map->height; i++) {
 		land[i][0].symbol	            = '#';
-		land[i][0].flags             |= FLAG_TRANS;
+		land[i][0].flags             |= FLAG_TILE_TRANSPARENT;
 		land[i][_map->width-1].symbol = '#';
-		land[i][_map->width-1].flags |= FLAG_TRANS;
+		land[i][_map->width-1].flags |= FLAG_TILE_TRANSPARENT;
 	}
 	return _map;
 }
@@ -50,35 +50,35 @@ map_t * simulation_step_cellular(map_t * _map,
 		for(int i = 1; i < _map->height-1; i++) {
 			for(int j = 1; j < _map->width-1; j++) {
 				int neighbour = 0;
-				if(buffer[i+1][j+1].flags & FLAG_SOLID)
+				if(buffer[i+1][j+1].flags & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i+1][j].flags   & FLAG_SOLID)
+				if(buffer[i+1][j].flags   & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i+1][j-1].flags & FLAG_SOLID)
+				if(buffer[i+1][j-1].flags & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i][j+1].flags   & FLAG_SOLID)
+				if(buffer[i][j+1].flags   & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i][j-1].flags   & FLAG_SOLID)
+				if(buffer[i][j-1].flags   & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i-1][j+1].flags & FLAG_SOLID)
+				if(buffer[i-1][j+1].flags & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i-1][j].flags   & FLAG_SOLID)
+				if(buffer[i-1][j].flags   & FLAG_TILE_SOLID)
 					neighbour++;
-				if(buffer[i-1][j+1].flags & FLAG_SOLID)
+				if(buffer[i-1][j+1].flags & FLAG_TILE_SOLID)
 					neighbour++;
 
-				if         ((buffer[i][j].flags & FLAG_SOLID)
+				if         ((buffer[i][j].flags & FLAG_TILE_SOLID)
 				            && (neighbour >= death_limit)) {
 					land[i][j].symbol = '.';
-					land[i][j].flags ^= FLAG_SOLID;
-					land[i][j].flags ^= FLAG_TRANS;
-					land[i][j].flags |= FLAG_DESTR;
-				} else if((!(buffer[i][j].flags & FLAG_SOLID))
+					land[i][j].flags ^= FLAG_TILE_SOLID;
+					land[i][j].flags ^= FLAG_TILE_TRANSPARENT;
+					land[i][j].flags |= FLAG_TILE_DESTRUCTIBLE;
+				} else if((!(buffer[i][j].flags & FLAG_TILE_SOLID))
 				          && (neighbour >= birth_limit)) {
 					land[i][j].symbol = '#';
-					land[i][j].flags |= FLAG_SOLID;
-					land[i][j].flags |= FLAG_TRANS;
-					land[i][j].flags ^= FLAG_DESTR;
+					land[i][j].flags |= FLAG_TILE_SOLID;
+					land[i][j].flags |= FLAG_TILE_TRANSPARENT;
+					land[i][j].flags ^= FLAG_TILE_DESTRUCTIBLE;
 				}
 			}
 		}

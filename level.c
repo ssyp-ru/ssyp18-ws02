@@ -14,10 +14,8 @@ level_t* init_level(int width,
 	_map = make_walls_shrew(_map);*/
 	_map = mapgen_recdev(_map);
 	level->map = _map;
-	init_protofeatures();
 	int num = 200;
 	gen_feature(level, num);
-	free_protofeatures();
 
 	/*extern features_vt * prototypes;
 
@@ -35,5 +33,6 @@ void gen_stair(levels_vt * levels, int num);
 
 void free_level(level_t* level) {
 	free_map(level->map);
+  kd_delete(level->features);
 	free(level);
 }

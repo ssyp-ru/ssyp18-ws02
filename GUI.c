@@ -59,7 +59,7 @@ void calculate_view(int x2, int y2, int view_radius,
 			int rad_y = y1 - y2;
 			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius 
 					&& match_size(_map, x1, y1) ){
-				if(map[y1][x1].flags & FLAG_SOLID){
+				if(map[y1][x1].flags & FLAG_TILE_SOLID){
 						break;
 				}else{
 					vision->view[index].y = y1;
@@ -75,7 +75,7 @@ void calculate_view(int x2, int y2, int view_radius,
 			int rad_y = y1 - y2;
 			if(rad_x * rad_x + rad_y * rad_y <= view_radius * view_radius
 					&& match_size(_map, x1, y1)){
-				if(map[y1][x1].flags & FLAG_SOLID){
+				if(map[y1][x1].flags & FLAG_TILE_SOLID){
 						break;
 				}else{
 					vision->view[index].y = y1;
@@ -89,7 +89,7 @@ void calculate_view(int x2, int y2, int view_radius,
 		int y1 = y + y2;
 		int x1 = x2;
 		if(match_size(_map, x1, y1)){
-			if(map[y1][x1].flags & FLAG_SOLID){
+			if(map[y1][x1].flags & FLAG_TILE_SOLID){
 				break;
 			}
 			else{
@@ -103,7 +103,7 @@ void calculate_view(int x2, int y2, int view_radius,
 		int y1 = y + y2;
 		int x1 = x2;
 		if(match_size(_map, x1, y1)){
-			if(map[y1][x1].flags & FLAG_SOLID){
+			if(map[y1][x1].flags & FLAG_TILE_SOLID){
 				break;
 			}else{
 				vision->view[index].y = y1;
@@ -173,7 +173,7 @@ mvwprintw(GUI.mes_field, 2, 2, buffer);
 void draw_inv(actor_t * actor){
 	 int inv_length = actor->inventory->length;
 	 for(int i = 0; i < inv_length; i++){
-		 if(actor->inventory->data[i].flags & FLAG_STACKABLE){
+		 if(actor->inventory->data[i].flags & FLAG_ITEM_STACKABLE){
 			mvwprintw(GUI.inv_field, i * 2 + 2, 2, "%d. %s: %d", i,
 				 	actor->inventory->data[i].description,
 					actor->inventory->data[i].amount);
@@ -190,6 +190,7 @@ void draw_stats(actor_t * hero) {
 	int agility = hero->agility;
 	int stamina = hero->stamina;
 	mvwprintw(GUI.stat_field, 2, 2, "Name: %s", hero->name);
+	mvwprintw(GUI.stat_field, 4, 2, "            ");
 	mvwprintw(GUI.stat_field, 4, 2, "HP: %d", hp);
 	mvwprintw(GUI.stat_field, 6, 2, "Strength: %d", strength);
 	mvwprintw(GUI.stat_field, 8, 2, "Agility: %d", agility);

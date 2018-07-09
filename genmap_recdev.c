@@ -9,7 +9,7 @@ void generate_room_recdev(map_t* map_packed, int width,
 	for (int i = x; i < x + width; i++) {
 		for (int j = y; j < y + height; j++) {
 			map[j][i].symbol = ' ' | COLOR_PAIR(1);
-			map[j][i].flags &= ~FLAG_SOLID;
+			map[j][i].flags &= ~FLAG_TILE_SOLID;
 		}
 	}
 
@@ -19,7 +19,7 @@ void generate_room_recdev(map_t* map_packed, int width,
 	new_room.width = width;
 	new_room.height = height;
 
-	vector_add(map_packed->rooms, new_room);
+	rooms_vector_add(map_packed->rooms, new_room);
 }
 
 void build_wall_recdev(map_t* map_packed,
@@ -40,7 +40,7 @@ void build_wall_recdev(map_t* map_packed,
 
 		for (int i = x; i < x + width; i++) {
 			map[wall_loc][i].symbol = '#' | COLOR_PAIR(1);
-			map[wall_loc][i].flags |= FLAG_SOLID;
+			map[wall_loc][i].flags |= FLAG_TILE_SOLID;
 		}
 
 		if (width > 2 && wall_loc - y > 2) {
@@ -76,9 +76,9 @@ void build_wall_recdev(map_t* map_packed,
 		int possible_hole_spots[width];
 
 		for (int i = x; i < x + width; i++)
-			if ((map[wall_loc - 1][i].flags & FLAG_SOLID) == 0
+			if ((map[wall_loc - 1][i].flags & FLAG_TILE_SOLID) == 0
 			        &&
-			        (map[wall_loc + 1][i].flags & FLAG_SOLID) == 0) {
+			        (map[wall_loc + 1][i].flags & FLAG_TILE_SOLID) == 0) {
 				possible_hole_spots[it] = i;
 				it++;
 			}
@@ -90,7 +90,7 @@ void build_wall_recdev(map_t* map_packed,
 
 		map[wall_loc][gate_loc].symbol = ' ' | COLOR_PAIR(
 		                                   1);
-		map[wall_loc][gate_loc].flags &= ~FLAG_SOLID;
+		map[wall_loc][gate_loc].flags &= ~FLAG_TILE_SOLID;
 	} else {
 		int wall_loc;
 
@@ -101,7 +101,7 @@ void build_wall_recdev(map_t* map_packed,
 
 		for (int i = y; i < y + height; i++) {
 			map[i][wall_loc].symbol = '#' | COLOR_PAIR(1);
-			map[i][wall_loc].flags ^= FLAG_SOLID;
+			map[i][wall_loc].flags ^= FLAG_TILE_SOLID;
 		}
 		if (wall_loc - x > 2 && height > 2) {
 			if (rand() % 10 < 9
@@ -139,9 +139,9 @@ void build_wall_recdev(map_t* map_packed,
 		int possible_hole_spots[height];
 
 		for (int i = y; i < y + height; i++)
-			if ((map[i][wall_loc - 1].flags & FLAG_SOLID) == 0
+			if ((map[i][wall_loc - 1].flags & FLAG_TILE_SOLID) == 0
 			        &&
-			        (map[i][wall_loc + 1].flags & FLAG_SOLID) == 0) {
+			        (map[i][wall_loc + 1].flags & FLAG_TILE_SOLID) == 0) {
 				possible_hole_spots[it] = i;
 				it++;
 			}
@@ -153,20 +153,20 @@ void build_wall_recdev(map_t* map_packed,
 
 		map[gate_loc][wall_loc].symbol = ' ' | COLOR_PAIR(
 		                                   1);
-		map[gate_loc][wall_loc].flags &= ~FLAG_SOLID;
+		map[gate_loc][wall_loc].flags &= ~FLAG_TILE_SOLID;
 	}
 }
 
 map_t* mapgen_recdev(map_t * map) {
 //	if(map->rooms != NULL)
-	map->rooms = vector_init(1);
+	map->rooms = rooms_vector_init(1);
 
 	UNPACK(map_unpacked, map);
 
 	for (int i = 0; i < map->width; i++)
 		for (int j = 0; j < map->height; j++) {
 			map_unpacked[j][i].symbol = ' ' | COLOR_PAIR(1);
-			map_unpacked[j][i].flags &= ~FLAG_SOLID;
+			map_unpacked[j][i].flags &= ~FLAG_TILE_SOLID;
 		}
 
 	build_wall_recdev(map, map->width, map->height, rand() % 2,
@@ -176,7 +176,7 @@ map_t* mapgen_recdev(map_t * map) {
 			if(i == 0 || j == 0 || i == map->width - 1 || j == map->height - 1)
 			{
 				map_unpacked[j][i].symbol = '#' | COLOR_PAIR(1);
-				map_unpacked[j][i].flags |= FLAG_SOLID;
+				map_unpacked[j][i].flags |= FLAG_TILE_SOLID;
 			}
 		}
 	return map;

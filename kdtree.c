@@ -125,7 +125,8 @@ void kd_delete (kdtree_t * root) {
 			kd_delete (root->rbranch);
 		if (root->lbranch) 
 			kd_delete (root->lbranch);
-	free (root);
+    free(root->node);
+  	free (root);
 	}
 }
 
