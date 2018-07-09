@@ -8,6 +8,11 @@ SOURCES=genmap.c shrew_map.c cellular_map.c\
 				roomvector.c behave.c game.c levelvector.c GUI.c
 OBJECTS=$(SOURCES:.c=.o)
 all: main
+#SOURCES=main.c net_client.c net_server.c net.c log.c datastruct.c
+#EXECUTABLE=serv
+
+all: $(SOURCES) $(EXECUTABLE)
+
 build: all
 run: all
 	./main
