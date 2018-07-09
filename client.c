@@ -17,7 +17,7 @@ void foo(packet_t* msg) {
 			int overhead[4] = mesg_deserialize(msg, sizeof(int)*4);
 			int size = overhead[2]*overhead[3]*sizeof(tile_t) + sizeof(int)*4;
 			update_map_t* chunk = mesg_deserialize(msg, size);
-			map_fulfill(_map, chunk);
+			client_map(_map, chunk);
 			break;
 		case 'c':
 			doExit = TRUE;
@@ -34,6 +34,7 @@ int main(int argc, char * argv[]){
 		printf("No IP was passed!\n");
 		return 0;
 	}
+	_map = create_map(50, 50);
 	initGUI();
 	int port = 30000;
 	client_t * client = client_create(port, argv[1]);
@@ -41,6 +42,7 @@ int main(int argc, char * argv[]){
 		printf("Could not connect to %s!\n", argv[1]);
 		return 0;
 	}
+	UNPACK(map, _map);
 	initscr();
 	noecho();
 	int input;
@@ -56,6 +58,11 @@ int main(int argc, char * argv[]){
 	socket_send(client->p.fd, "Misha lox 3", 11);
 	printf("Reading from server...\n");
 	while(!doExit){
+		for(int i = 0; i < 50; i++){
+			for(int k = 0; k < 50; k++){
+				mvaddch(i, k, map[i][k].symbol);
+			}
+		}
 		input = getch();
 		if(input == KEY_F(2))
 			break;

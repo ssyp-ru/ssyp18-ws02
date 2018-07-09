@@ -51,21 +51,19 @@ msgs_t * init_mes(){
 	return msgs;
 }
 
-void start_game(levels_vt * levels) {
+void start_game() {
 	time_t t;
 	srand((unsigned)time(&t));
 	feature_t * features = NULL;
 	msgs_t * msgs = init_mes();
-	levels_vt* levels = levels;//lvector_init(1); // Seriously? One?
+	levels_vt * levels = lvector_init(1);
 	lvector_add(levels, init_level(200, 200));
-	actors_vt* actors = init_actors(lvector_get(levels, 0), 10000);
+	actors_vt* actors = init_actors(lvector_get(levels, 0), 100);
 	actors_vt ** queue = calloc(100, sizeof(actors_vt*));
 	for(int i = 0; i < 100; i++)
 		queue[i] = create_new_vector(1);
-	
 	for(int i = 0; i < actors->length; i++)
 		add_vector_elem(queue[0], actor_get(actors, i));
-
 	main_cycle(actors, queue, 100, levels, features, msgs);
 	free(msgs->buffer);
 	free(msgs);

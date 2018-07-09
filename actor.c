@@ -18,6 +18,7 @@ actor_t * make_player() {
 	//player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
 	player->view_radius = 4;
+	player->hp = 4;
   player->inventory = calloc(1, sizeof(inventory_t));
   player->inventory->data = calloc(10, sizeof(item_t));
   player->inventory->capacity = 10;
@@ -29,7 +30,7 @@ actor_t * make_goblin(){
 	actor_t * goblin = calloc(1, sizeof(actor_t));
 	goblin->symbol = '9' | COLOR_PAIR(4);
 	goblin->behave = behave_goblin;
-	goblin->view_radius = 10;
+	goblin->view_radius = 8;
 	goblin->inventory = calloc(1, sizeof(inventory_t));
 	goblin->inventory->data = calloc(3, sizeof(item_t));
 	goblin->inventory->capacity = 3;
