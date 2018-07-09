@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <stdbool.h>
+#include <string.h>
 #include "common.h"
 #include "levelvector.h"
 #include "game.h"
@@ -49,6 +50,14 @@ msgs_t * init_mes(){
 	msgs->buffer[0].line = "There is nothing here!";
 	return msgs;
 }
+
+void send_mes(msgs_t * log, char * str) {
+  size_t len = strlen(str);
+  log->buffer[log->cur].line = calloc(len, sizeof(char));
+  strcpy(log->buffer[log->cur].line, str);
+  log->buffer[log->cur].length = len;
+}
+
 
 void start_game() {
 	time_t t;
