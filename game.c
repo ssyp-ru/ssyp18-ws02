@@ -8,7 +8,7 @@
 #include "GUI.h"
 #include "feature.h"
 #define MAP_SIZE 200
-
+#include "networking.h"
 
 //Why the hell do we accept queue as an argument?
 void main_cycle(actors_vt * actors, actors_vt ** queue,
@@ -51,12 +51,12 @@ msgs_t * init_mes(){
 	return msgs;
 }
 
-void start_game() {
+void start_game(levels_vt * levels) {
 	time_t t;
 	srand((unsigned)time(&t));
 	feature_t * features = NULL;
 	msgs_t * msgs = init_mes();
-	levels_vt* levels = lvector_init(1); // Seriously? One?
+	levels_vt* levels = levels;//lvector_init(1); // Seriously? One?
 	lvector_add(levels, init_level(200, 200));
 	actors_vt* actors = init_actors(lvector_get(levels, 0), 10000);
 	actors_vt ** queue = calloc(100, sizeof(actors_vt*));

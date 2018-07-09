@@ -26,6 +26,7 @@ int main(int argc, char * argv[]){
 		printf("No IP was passed!\n");
 		return 0;
 	}
+	initGUI();
 	int port = 30000;
 	client_t * client = client_create(port, argv[1]);
 	if(client == NULL) {
@@ -38,6 +39,8 @@ int main(int argc, char * argv[]){
 	curs_set(0);
 	timeout(20);
 	keypad(stdscr, true);
+	levels_vt* levels = lvector_init(1);
+	lvector_add(levels, level);
 	//start(client);
 	socket_send(client->p.fd, "Misha loh 1", 11);
 	socket_send(client->p.fd, "Misha loh 2", 11);
@@ -49,6 +52,7 @@ int main(int argc, char * argv[]){
 			break;
 		if(input > 0)
 			socket_sendf(client->p.fd,"%c", input);
+		render(actors->data[0], actors, msgs);
 		list_t * list = client_read(client);
 		list_map(list, foo);
 		list_delete(list);
