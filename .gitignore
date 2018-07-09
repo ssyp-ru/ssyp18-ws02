@@ -7,3 +7,5 @@ main_recdev
 main
 *.md
 *.orig
+html/
+latex/
