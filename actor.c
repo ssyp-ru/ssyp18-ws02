@@ -21,7 +21,8 @@ actor_t * make_player() {
   player->inventory = calloc(1, sizeof(inventory_t));
   player->inventory->data = calloc(10, sizeof(item_t));
   player->inventory->capacity = 10;
-  return player;
+ 	player->name = "Player";
+ 	return player;
 }
 
 actors_vt* init_actors(level_t* level,
