@@ -10,26 +10,28 @@
 #include "GUI.h"
 #include "feature.h"
 
+#define GAME_QLEN 128
 struct {
 	actors_vt** queue;
-	int it;
+	int it; 
+  int qlen;
 	int id;
+  msgs_t * log;
 } game_state;
 
 void add_actor(actor_t* self){
 	add_vector_elem(game_state.queue[game_state.it + 1], self);
 }
 
-//Why the hell do we accept queue as an argument?
-void main_cycle(actors_vt * actors, actors_vt ** queue,
-                size_t qlen, levels_vt* levels,
-							 	feature_t * features,msgs_t * msgs) {
+void main_cycle(actors_vt * actors, 
+                levels_vt* levels,
+							 	msgs_t * msgs) {
 	bool exit = false;
-	game_state.queue = queue;
-	for(int it = 0; !exit; it = (it+1)%qlen) {
+	actors_vt ** queue = game_state.queue;
+	for(int it = 0; !exit; it = (it+1)%game_state.qlen) {
+    game_state.it = it;
 		render(actors->data[0], actors, msgs);
 		refresh();
-		game_state.it = it;
 		for(int i = 0; !exit && i < queue[it]->length; i++) {
 			actor_t * current = actor_get(queue[it], i);
 			if (current->flags & FLAG_ACTOR_DEAD){
@@ -38,7 +40,7 @@ void main_cycle(actors_vt * actors, actors_vt ** queue,
 				delete_actor(actors, i);
 				break;
 			}
-			int new_index = (it + current->behave(current)) % qlen;
+			int new_index = (it + current->behave(current)) % game_state.qlen;
 			if(new_index == it)
 				exit = true;
 			add_vector_elem(queue[new_index], current);
@@ -48,15 +50,14 @@ void main_cycle(actors_vt * actors, actors_vt ** queue,
 }
 
 void destroy_the_world(actors_vt* actors,
-                       levels_vt * levels,
-                       actors_vt ** queue, int qlen) {
+                       levels_vt * levels) {
 	lvector_free(levels);
 	free_actors(actors);
-  for(int i = 0; i < qlen; i++) {
-    free(queue[i]->data);
-    free(queue[i]);
+  for(int i = 0; i < game_state.qlen; i++) {
+    free(game_state.queue[i]->data);
+    free(game_state.queue[i]);
   }
-	free(queue);
+	free(game_state.queue);
 }
 
 actors_vt* init_actors(level_t* level,
@@ -88,40 +89,52 @@ actors_vt* init_actors(level_t* level,
 	return actors;
 }
 
-msgs_t * init_mes(){
-	msgs_t * msgs = calloc(1, sizeof(msgs_t));
-	msgs->max_size = 1000;
-	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
-	msgs->size = 1;
-	msgs->cur = 0;
-	msgs->buffer[0].line = "There is nothing here!";
-	return msgs;
+void put_message(char * str) {
+  size_t len = strlen(str)+1;
+  game_state.log->buffer[game_state.log->cur].line = calloc(len, sizeof(char));
+  strcpy(game_state.log->buffer[game_state.log->cur].line, str);
+  game_state.log->buffer[game_state.log->cur].length = len;
+  game_state.log->cur %= game_state.log->size;
 }
 
-void send_mes(msgs_t * log, char * str) {
-  size_t len = strlen(str);
-  log->buffer[log->cur].line = calloc(len, sizeof(char));
-  strcpy(log->buffer[log->cur].line, str);
-  log->buffer[log->cur].length = len;
+void init_messages(){
+	game_state.log = calloc(1, sizeof(msgs_t));
+	game_state.log->max_size = 1000;
+	game_state.log->buffer = calloc(game_state.log->max_size, sizeof(msg_t));
+	game_state.log->size = 1;
+	game_state.log->cur = 0;
+  put_message("There is nothing here!");
 }
 
+
+void close_messages() {
+  for(int i = 0; i < game_state.log->size; i++)
+    if (game_state.log->buffer[i].line)
+      free(game_state.log->buffer[i].line);
+  free(game_state.log->buffer);
+  free(game_state.log);
+}
+
+void init_timequeue(actors_vt * actors) {
+  game_state.qlen = GAME_QLEN;
+	game_state.queue = calloc(game_state.qlen, sizeof(actors_vt*));
+	for(int i = 0; i < game_state.qlen; i++)
+		game_state.queue[i] = create_actor_vector(1);
+	for(int i = 0; i < actors->length; i++)
+		add_vector_elem(game_state.queue[0], actor_get(actors, i));
+}
 
 void start_game() {
 	time_t t;
 	srand((unsigned)time(&t));
-	msgs_t * msgs = init_mes();
+	init_messages();
 	levels_vt* levels = lvector_init(1);
 	lvector_add(levels, init_level(30, 30));
 	actors_vt* actors = init_actors(lvector_get(levels, 0), 1);
-	actors_vt ** queue = calloc(100, sizeof(actors_vt*));
-	for(int i = 0; i < 100; i++)
-		queue[i] = create_actor_vector(1);
-	for(int i = 0; i < actors->length; i++)
-		add_vector_elem(queue[0], actor_get(actors, i));
-	main_cycle(actors, queue, 100, levels, NULL, msgs);
-	free(msgs->buffer);
-	free(msgs);
-	destroy_the_world(actors, levels, queue, 100);
+  init_timequeue(actors);
+	main_cycle(actors, levels, game_state.log);
+  close_messages();
+	destroy_the_world(actors, levels);
 }
 
 

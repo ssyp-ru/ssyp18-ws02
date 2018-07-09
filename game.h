@@ -3,6 +3,6 @@
 
 void start_game();
 
-int give_id();
-
 void add_actor(actor_t* self);
+void put_message(char * str);
+
