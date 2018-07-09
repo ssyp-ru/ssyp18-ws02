@@ -18,8 +18,8 @@ void draw_map(map_t * _map, box_t box) {
 		size_x = _map->width;
 	if(size_y > _map->height)
 		size_y = _map->height;
-	for(int k = 1; k < size_y - 1; k++){
-		for(int i = 1; i < size_x - 1; i++){
+	for(int k = 0; k < size_y; k++){
+		for(int i = 0; i < size_x; i++){
 			if(k + box.y < _map->height && i + box.x < _map->width)
 				mvwaddch(GUI.map_field, k, i, map[k + box.y][i + box.x].symbol);
 		}

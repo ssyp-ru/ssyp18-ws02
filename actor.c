@@ -23,7 +23,7 @@ actor_t * make_player() {
   player->inventory->capacity = 10;
   return player;
 }
-//FIXME: Should it realy be here?
+
 actors_vt* init_actors(level_t* level,
                      int amount_of_entities) {
 	actors_vt* actors = create_new_vector(amount_of_entities + 1);

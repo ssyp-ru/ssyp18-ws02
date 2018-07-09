@@ -41,22 +41,21 @@ void destroy_the_world(actors_vt* actors,
 	free(queue);
 }
 
-void start_game() {
-  // FIXME:  Move ncurses initialization to main. Or to init_GUI()
-	start_color();
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-	init_pair(2, COLOR_GREEN, COLOR_BLACK);
-  init_pair(3, COLOR_BLACK, COLOR_BLUE);
-  // FIXME: The same here
-	time_t t;
-	srand((unsigned)time(&t));
-	feature_t * features = NULL;
+msgs_t * init_mes(){
 	msgs_t * msgs = calloc(1, sizeof(msgs_t));
 	msgs->max_size = 1000;
 	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
 	msgs->size = 1;
 	msgs->cur = 0;
 	msgs->buffer[0].line = "There is nothing here!";
+	return msgs;
+}
+
+void start_game() {
+	time_t t;
+	srand((unsigned)time(&t));
+	feature_t * features = NULL;
+	msgs_t * msgs = init_mes();
 	levels_vt* levels = lvector_init(1); // Seriously? One?
 	lvector_add(levels, init_level(200, 200));
 	actors_vt* actors = init_actors(lvector_get(levels, 0), 0);
@@ -70,7 +69,6 @@ void start_game() {
 	main_cycle(actors, queue, 100, levels, features, msgs);
 	free(msgs->buffer);
 	free(msgs);
-//	free_level(lvector_get(levels,0));
 	destroy_the_world(actors, levels, queue, 100);
 }
 

@@ -11,9 +11,8 @@ int main() {
 	srand(time(NULL));
 
 	int size_x = 50, size_y = 40;
-
 	map_t * map = create_map(size_y, size_x);
-	map         = mapgen_recdev(map);
+	map = mapgen_recdev(map);
 	print_map(map);
 	getch();
 	endwin();
