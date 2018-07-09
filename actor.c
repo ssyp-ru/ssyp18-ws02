@@ -21,7 +21,7 @@ actors_vt* create_actor_vector(int num) {
 actor_t * make_player() {
 	actor_t * player = calloc(1, sizeof(actor_t));
 	player->symbol = '@' | COLOR_PAIR(2);
-	//player->flags |= FLAG_ISPLAYER;
+	player->flags |= FLAG_ACTOR_ISPLAYER;
 	player->behave = behave_player;
 	player->view_radius = 4;
   player->inventory = calloc(1, sizeof(inventory_t));

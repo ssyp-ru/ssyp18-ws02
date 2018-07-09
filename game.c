@@ -9,6 +9,7 @@
 #include "actor.h"
 #include "GUI.h"
 #include "feature.h"
+#include "kdtree.h"
 
 #define GAME_QLEN 128
 struct {
@@ -40,9 +41,21 @@ void main_cycle(actors_vt * actors,
 				delete_actor(actors, i);
 				break;
 			}
+      // FIXME: An abominable crutch for feature display.
 			int new_index = (it + current->behave(current)) % game_state.qlen;
-			if(new_index == it)
+			if(new_index == it) {
 				exit = true;
+        continue;
+      }
+      if (current->flags & FLAG_ACTOR_ISPLAYER) {
+        kdtree_t * here = kd_check(current->level->features,
+                                    current->x, current->y);
+        if (here) {
+          put_message(here->node->description);
+        } else {
+          put_message("Nothing to see here!");
+        }
+      }
 			add_vector_elem(queue[new_index], current);
 		}
 		queue[it]->length = 0;
@@ -91,10 +104,12 @@ actors_vt* init_actors(level_t* level,
 
 void put_message(char * str) {
   size_t len = strlen(str)+1;
+  game_state.log->cur++;
+  game_state.log->size++;
   game_state.log->buffer[game_state.log->cur].line = calloc(len, sizeof(char));
   strcpy(game_state.log->buffer[game_state.log->cur].line, str);
   game_state.log->buffer[game_state.log->cur].length = len;
-  game_state.log->cur %= game_state.log->size;
+  game_state.log->cur %= game_state.log->max_size;
 }
 
 void init_messages(){

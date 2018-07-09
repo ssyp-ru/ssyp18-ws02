@@ -130,13 +130,49 @@ void kd_delete (kdtree_t * root) {
 	}
 }
 
+kdtree_t * kd_check(kdtree_t * root, int x, int y) {
+ 	if (!root)
+	{
+		return NULL;
+	}
+  int depth = 1;
+	kdtree_t * parent = root;
+	do {
+    if (parent->node->x == x
+        && parent->node->y == y)
+        return parent; //FIXME: Support more than 1 feature per tile.
+		if (depth++%2) {
+			if (parent->node->x > x) {
+				if (parent->lbranch) {
+					parent = parent->lbranch;
+        } else break;
+      } else {
+				if (parent->rbranch)
+					parent = parent->rbranch;
+				else break;
+      }
+		} else {
+			if (parent->node->y > y) {
+				if (parent->lbranch)
+					parent = parent->lbranch;
+				else break;
+			} else {
+				if (parent->rbranch)
+					parent = parent->rbranch;
+				else break;
+      }
+		}
+	} while(parent->rbranch || parent->lbranch); 
+  return NULL;
+}
+
 kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth) {
 	int axis = depth%2;
 	if (!root) {
 		return NULL;
 	}
-if (root->node->fid != node->fid) {
-	if (axis == 1) {
+  if (root->node->fid != node->fid) {
+    if (axis == 1) {
 			if (node->x > root->node->x) { //valgrind error
 				if (root->rbranch)
 					root = kd_remove (root->rbranch, node, depth++);

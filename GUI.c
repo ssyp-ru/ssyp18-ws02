@@ -151,9 +151,9 @@ void draw_borders(WINDOW * window){
 	}
 }
 
-void draw_text(char * line){
+void draw_text(int num, char * line){
 	mvwprintw(GUI.mes_field, 2, 2, "                           ");
-	mvwprintw(GUI.mes_field, 2, 2, line);
+	mvwprintw(GUI.mes_field, 2, 2, "(%d) %s", num, line);
 }
 
 void draw_features(features_vt * features, box_t box){	
@@ -163,10 +163,10 @@ void draw_features(features_vt * features, box_t box){
 				                    features->data[i]->symbol|COLOR_CYAN);
 	}	
 #ifdef DEBUG
-char buffer[100];
-snprintf(buffer, 100, " Found %lu features.\n",
-                    features->size);
-mvwprintw(GUI.mes_field, 2, 2, buffer);
+  char buffer[100];
+  snprintf(buffer, 100, " Found %lu features.\n",
+                      features->size);
+  mvwprintw(GUI.mes_field, 2, 2, buffer);
 #endif /* DEBUG */
 }
 
@@ -237,7 +237,7 @@ void render(actor_t   * hero,
   draw_map(map, box);
 	calculate_view(hero->x, hero->y, hero->view_radius, map, box);
 	draw_inv(hero);
-	draw_text(msgs->buffer[msgs->cur].line);
+	draw_text(msgs->cur, msgs->buffer[msgs->cur].line);
   draw_stats(hero);
 	draw_features(fvec, box);
 	features_vector_destroy(fvec);
@@ -256,7 +256,7 @@ void init_GUI() {
 	int screen_width = 0;
 	int screen_height = 0;
   getmaxyx(stdscr, screen_height, screen_width);
-  const int HUD_width = 30; 
+  const int HUD_width = screen_width/5; 
 	const int text_height = 6;
 	const int stats_height = 12;
 	GUI.map_field = newwin(screen_height,

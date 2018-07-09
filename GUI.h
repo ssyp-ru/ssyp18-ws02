@@ -49,7 +49,7 @@ void draw_actors(actors_vt * actors, box_t box);
 void draw_features(features_vt * features, box_t box);
 
 // Function which introduces messages and their history
-void draw_text(char * line);
+void draw_text(int num, char * line);
 
 //Function for initialisation
 void init_GUI();

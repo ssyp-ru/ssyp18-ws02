@@ -1,6 +1,6 @@
 LD=ld
 CC=gcc
-CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror -DDEBUG
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror
 LDLIBS=-lncurses -lm
 LD=ld
 SOURCES=genmap.c genmap_cellular.c genmap_shrew.c\
