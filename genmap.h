@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rooms.h"
+
 #include <ncurses.h>
 #include "common.h"
 #include "roomvector.h"
@@ -14,6 +16,7 @@
 
 #define COLOR_GREY COLOR_MAGENTA
 #define COLOR_BROWN COLOR_CYAN
+
 
 //general functions
 map_t * create_map(int height,int width);
@@ -39,6 +42,8 @@ map_t * make_walls_shrew(map_t * _map);
 //generation using recursive devision (recursive_devision_map.c)
 map_t* mapgen_recdev(map_t * map);
 
+// tree-based generation
+map_t* mapgen_tree (map_t* map);
 
 //features generation (feature_prototypes)
 extern features_vt * prototypes;
