@@ -1,9 +1,10 @@
 #pragma once
-
+#include "GUI.h"
 #include "common.h"
+#include "kdtree.h"
 
-level_t* init_level(int amount_of_entities, int width,
-                   int height);
+level_t* init_level(int width,
+                    int height);
 
 bool update_level(level_t* level);
 

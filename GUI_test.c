@@ -8,13 +8,22 @@
 #include "find_path.h"
 #include "genmap.h"
 #include "time.h"
+<<<<<<< HEAD
+
+#define MAP_SIZE 1000
+
+// XXX XXX XXX XXX XXX XXX XXX XXX
+//  This file will be deleted ASAP
+// XXX XXX XXX XXX XXX XXX XXX XXX
+=======
+>>>>>>> Dasha
 
 int main(){
 	initscr();
-	int size_x,size_y;
-	int x = 20;
-	int y = 20;
-	keypad(stdscr,true);
+	int size_x, size_y;
+	int x = 10;
+	int y = 10;
+	keypad(stdscr, true);
 	halfdelay(100);
 	curs_set(0);
 	srand(time(NULL));
@@ -23,19 +32,22 @@ int main(){
 	actor->inventory = calloc(1, sizeof(inventory_t));
 	actor->inventory->max_amount = 15;
 	actor->inventory->item = 
-		calloc(actor->inventory->max_amount, sizeof(item_t));
+	calloc(actor->inventory->max_amount, sizeof(item_t));
 	actor[0].hp = 4;
 	actor[0].strength = 10;
 	actor[0].agility = 8;
 	actor[0].stamina = 6;
 	actor[0].symbol = '@';
-	actor[0].x = x;
-	actor[0].y = y;
+	actor[0].x = MAP_SIZE-10;
+	actor[0].y = MAP_SIZE-10;
 	actor[1].symbol = 'V';
 	actor[1].hp = 2;
 	actor[1].x = x + 15;
 	actor[1].y = y + 5;
 	getmaxyx(stdscr, size_y, size_x);
+	size_x = MAP_SIZE;
+	size_y = MAP_SIZE;
+	map_t * _map = gen_map(size_x, size_y);
 	size_x = 150;
 	size_y = 150;
 	map_t * _map = create_map(size_x, size_y);
@@ -48,35 +60,39 @@ int main(){
 	actor[1].level = level;
 	actor[1].view_radius = 4;
 	noecho();
-	/*UNPACK(map, _map);
-	for(int i = 0; i < size_x; i++){
-		for(int k = 0; k < size_y; k++){
-			map[k][i].flags &= FLAG_SOLID;
-			map[k][i].symbol = '-';
-		}
-	}*/
 	msgs_t * msgs = calloc(1, sizeof(msgs_t));
 	msgs->max_size = 1000;
 	msgs->buffer = calloc(msgs->max_size, sizeof(msg_t));
 	msgs->size = 1;
 	msgs->cur = 0;
 	msgs->buffer[0].line = "There is nothing here!";
-	box_t box;
-	box.x = 0;
-	box.y = 0;
-	box.width = 70;
-	box.height = 37;
 	init_GUI(level->map, box);
 	int input = 0;
 	pvector_t * way = calloc(4, sizeof(pvector_t));
 	way = find_path((actor[1]), x, y);
+	way->buffer = calloc(MAP_SIZE*2,sizeof(coord_t));
 	refresh();
 	int fx, fy, len = 0;
 	fx = 0;
 	fy = 0;
+	char str[9999] = {0};
+	FILE * file;
+	file = fopen("loss.txt", "r");
 	while(input != 'q'){
 		bool tick = false;
-		render(level->map, actor, features, msgs, box);
+		if(actor[0].hp > 0)
+			render(level->map, actor, features, msgs, box);
+		else if(file){
+			move(0,0);
+			while(!feof(file)) {	
+				if(!feof(file))
+					printw("%s", str);
+				fgets(str,100, file);
+			} 
+			fclose(file);
+			getch();
+			break;
+		}
 	//	for(int i = 1; i < way->length - 1; i++)
 		//	mvaddch(way->buffer[i].y, way->buffer[i].x + 30, '+');
 		input = getch();

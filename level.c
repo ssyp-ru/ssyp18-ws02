@@ -3,37 +3,21 @@
 #include <stdlib.h>
 #include <time.h>
 #include "actor.h"
-#include "mapgen.h"
+#include "genmap.h"
+level_t* init_level(int width,
+                    int height) {
+	level_t * level = (level_t*) malloc(sizeof(level_t));
 
-level_t* init_level(int amount_of_entities, int width,
-                   int height) {
-	start_color();
-	init_pair(1, COLOR_WHITE, COLOR_BLACK);
-
-	time_t t;
-	srand((unsigned)time(&t));
-
-	level_t* level = (level_t*)malloc(sizeof(level_t));
-	level->map = generate_map(width, height);
-	level->actors = init_actors(level, amount_of_entities);
+	map_t * _map = create_map(height, width);
+	_map = mapgen_shrew(_map);
+	_map = mapgen_rooms_shrew(_map);
+	_map = make_walls_shrew(_map);
+	level->map = _map;
+	level->map->rooms = NULL;
 
 	return level;
 }
 
-void draw_level(level_t* level) {
-	draw_map(level->map);
-	draw_actors(level->actors);
-
-	refresh();
-}
-
-bool update_level(level_t* level) {
-	draw_level(level);
-	return update_actors(level->actors);
-}
-
 void free_level(level_t* level) {
 	free_map(level->map);
-	free_actors(level->actors);
-	free(level);
 }

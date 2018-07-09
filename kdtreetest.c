@@ -35,15 +35,15 @@ int main () {
 		printf ("%d, %d \n", point[i].x, point[i].y);
 	*/
 	box_t box;
-	box.top = 5;
-	box.bottom = 15;
-	box.left = 5;
-	box.right = 15;
+	box.y = 5;
+	box.height= 10;
+	box.x = 5;
+	box.width = 10;
 
-	fvec_t * buf = collect(tree, box);
-	printf("\n %d \n", buf->last);
-	for (int i = 0; i < buf->last; i++)
-		printf ("%d, %d \n", buf->buffer[i]->x, buf->buffer[i]->y);
+	features_vt * buf = collect(tree, box);
+	printf("\n %d \n", buf->size);
+	for (int i = 0; i < buf->size; i++)
+		printf ("%d, %d \n", buf->data[i]->x, buf->data[i]->y);
 	kd_delete (tree);
 
 	return 0;

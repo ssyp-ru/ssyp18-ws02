@@ -1,25 +1,22 @@
 #include "kdtree.h"
 
-void buf (fvec_t * ret, feature_t * node) {
-	if (ret->last < ret->capacity) {
-		ret->buffer[ret->last++] = node;
+void append(features_vt * ret, feature_t * node) {
+	if (ret->size < ret->capacity) {
+		ret->data[ret->size++] = node;
 	} else {
-		ret->buffer = realloc(ret->buffer, sizeof(feature_t *)*ret->capacity*2);
-		ret->buffer[ret->last++] = node;
+		ret->data = realloc(ret->data, sizeof(feature_t *)*ret->capacity*2);
+		ret->data[ret->size++] = node;
 	}
 }
 
-fvec_t * collect(kdtree_t * root, box_t room) {
-	fvec_t * ret = calloc(1, sizeof(fvec_t));
-	ret->last = 0;
-	ret->capacity = 16;
-	ret->buffer = calloc(16, sizeof(feature_t *));
-	buf (ret, root->node);
-	collect_rec (root, 1, room, ret);
-	return ret;
+
+void features_vector_destroy(features_vt * vec)
+{
+  free(vec->data);
+  free(vec);
 }
 
-void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret) {
+void collect_rec (kdtree_t * tree, int num, box_t room, features_vt * ret) {
 	
 	kdtree_t * right = tree->rbranch;
 	kdtree_t * left = tree->lbranch;
@@ -30,7 +27,7 @@ void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret) {
 		if (curr) {
 			if (curr->x > room.x) {
 				if (curr->x < room.x + room.width) {
-					ret->buffer[ret->last++] = curr;
+          append(ret, curr);
 					if (right)
 						if (right->node->x < room.x + room.width)
 							collect_rec (right, num+1, room, ret);
@@ -47,7 +44,7 @@ void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret) {
 		if (curr) {
 			if (curr->y > room.y) {
 				if (curr->y < room.y + room.height) {
-					ret->buffer[ret->last++] = curr;
+          append(ret, curr);
 					if (right)
 						if (right->node->y < room.y + room.height)
 							collect_rec (right, num+1, room, ret);
@@ -62,3 +59,13 @@ void collect_rec (kdtree_t * tree, int num, box_t room, fvec_t * ret) {
 		}
 	}
 }	
+
+features_vt * collect(kdtree_t * root, box_t room) {
+	features_vt * ret = calloc(1, sizeof(features_vt));
+	ret->size = 0;
+	ret->capacity = 16;
+	ret->data = calloc(16, sizeof(feature_t *));
+  if(root)
+	  collect_rec (root, 1, room, ret);
+	return ret;
+}

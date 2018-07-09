@@ -15,8 +15,9 @@ pvector_t * find_path(actor_t actor, int x, int y){
 	int x1 = actor.x;
 	int y1 = actor.y;
 	pvector_t * vector = calloc(1, sizeof(pvector_t));
-	vector->buffer = calloc(size_x * size_y, sizeof(pos_t));
-	vector->capacity = size_x * size_y;
+	vector->buffer = calloc(vr * vr * 5, sizeof(pos_t));
+	vector->capacity = vr * vr * 5;
+	vector->length = 0;
 	int set_map[size_y][size_x];
 	for(int k = 0; k < size_y; k++){
 		for(int i = 0; i < size_x; i++){
