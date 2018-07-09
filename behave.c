@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include "game.h"
 #include <stdint.h>
 #include "actor.h"
 #include "behave.h"
@@ -52,14 +53,14 @@ int behave_fire(actor_t* self){
 	}
 	bullet->inventory = NULL;
 	bullet->behave = behave_projectiles;
-	if (self->level->actors != NULL)
-		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id + 1;
+	bullet->id = give_id();
 	bullet->targ_x = 0;
 	bullet->targ_y = 0;
 	bullet->flags = 0;
 	bullet->flags |= FLAG_PROJECTILE;
 	bullet->level = self->level;
 	add_vector_elem(self->level->actors, bullet);
+	add_actor(bullet);
 	self->state = 0;
 	return 1;
 }
@@ -89,6 +90,7 @@ int behave_projectiles(actor_t* self){
 				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTILE)){
 			//------------------------------------------------------
 				self->level->actors->data[i]->hp -= 3;
+
 				if (self->level->actors->data[i]->hp <= 0){
 					self->level->actors->data[i]->flags |= FLAG_DEAD;
 				}
@@ -101,7 +103,7 @@ int behave_projectiles(actor_t* self){
 		self->flags |= FLAG_DEAD;
 		return 1;
 	}
-	if ((map[self->y][self->x].flags & FLAG_SOLID) != 0){
+	if (map[self->y][self->x].flags & FLAG_SOLID){
 		self->flags |= FLAG_DEAD;
 	}
 	return 1;

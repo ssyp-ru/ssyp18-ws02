@@ -180,6 +180,7 @@ void draw_stats(actor_t * hero) {
 	int agility = hero->agility;
 	int stamina = hero->stamina;
 	mvwprintw(GUI.stat_field, 2, 2, "Name: %s", hero->name);
+	mvwprintw(GUI.stat_field, 4, 2, "            ");
 	mvwprintw(GUI.stat_field, 4, 2, "HP: %d", hp);
 	mvwprintw(GUI.stat_field, 6, 2, "Strength: %d", strength);
 	mvwprintw(GUI.stat_field, 8, 2, "Agility: %d", agility);

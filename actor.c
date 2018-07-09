@@ -11,73 +11,7 @@ actors_vt* create_new_vector(int num) {
 	new_Vect->capacity = num;
 	return new_Vect;
 }
-/*
-actor_t * make_player() {
-	actor_t* player = calloc(1, sizeof(actor_t));
-	player->symbol = '@' | COLOR_PAIR(2);
-	player->flags |= FLAG_ISPLAYER;
-	player->behave = behave_player;
-	player->view_radius = 4;
-  player->inventory = calloc(1, sizeof(inventory_t));
-  player->inventory->data = calloc(10, sizeof(item_t));
-  player->inventory->capacity = 10;
- 	player->name = "Player";
- 	return player;
-}
 
-<<<<<<< HEAD
-actor_t * make_monster() {
-	actor_t* monster = calloc(1, sizeof(actor_t));
-	monster->symbol = 'O' | COLOR_PAIR(2);
-	monster->flags |= FLAG_CANWALK;
-	monster->behave = behave_monster;
-  monster->inventory = calloc(1, sizeof(inventory_t));
-  monster->inventory->data = calloc(10, sizeof(item_t));
-  monster->inventory->capacity = 10;
-	monster->state = 0;
-  return monster;
-}
-*/
-/*
-//FIXME: Should it realy be here?
-=======
->>>>>>> 74e7e48a716724d2230318568af908f18920191e
-actors_vt* init_actors(level_t* level,
-                     int amount_of_entities) {
-	actors_vt* actors = create_new_vector(amount_of_entities + 1);
-  actor_t * player = make_player();
-	player->level = level;
-	if ( level->map->rooms) {
-		int room_number = rand() % level->map->rooms->length;
-
-		player->x = vector_get(level->map->rooms, room_number).x +
-								vector_get(level->map->rooms, room_number).width / 2;
-		player->y = vector_get(level->map->rooms, room_number).y +
-								vector_get(level->map->rooms, room_number).height / 2;
-	} else {
-		player->x = 10;
-		player->y = 10;
-	}
-	add_vector_elem(actors, player);
-	actor_t* monster = make_monster();
-	monster->level = level;
-	if ( level->map->rooms) {
-		int room_number = rand() % level->map->rooms->length;
-
-		monster->x = vector_get(level->map->rooms, room_number).x +
-								vector_get(level->map->rooms, room_number).width / 2;
-		monster->y = vector_get(level->map->rooms, room_number).y +
-								vector_get(level->map->rooms, room_number).height / 2;
-	} else {
-		monster->x = 10;
-		monster->y = 10;
-	}
-
-	add_vector_elem(actors, monster);
-	level->actors = actors; 
-	return actors;
-}
-*/
 void draw_actors(actors_vt* actors) {
 	for (int i = 0; i < actors->length; i++) {
 		if (!(actors->data[i]->flags  & FLAG_DEAD)){

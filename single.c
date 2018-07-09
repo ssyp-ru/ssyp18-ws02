@@ -8,7 +8,8 @@
 actor_t * make_player() {
 	actor_t* player = calloc(1, sizeof(actor_t));
 	player->symbol = '@' | COLOR_PAIR(2);
-	player->id = 1;
+	player->hp = 20;
+	player->id = give_id();
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
   player->inventory = calloc(1, sizeof(inventory_t));
@@ -20,7 +21,7 @@ actor_t * make_player() {
 actor_t * make_monster() {
 	actor_t* monster = calloc(1, sizeof(actor_t));
 	monster->symbol = 'O' | COLOR_PAIR(2);
-	monster->id = 2;
+	monster->id = give_id();
 	monster->flags |= FLAG_CANWALK;
 	monster->behave = behave_monster;
 	monster->view_radius = 4;

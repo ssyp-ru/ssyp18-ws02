@@ -9,23 +9,39 @@
 #include "feature.h"
 #define MAP_SIZE 200
 
-/*struct {
+struct {
 	actors_vt** queue;
 	int it;
-} game_state;*/
+	int id;
+} game_state;
+
+void add_actor(actor_t* self){
+	add_vector_elem(game_state.queue[game_state.it + 1], self);
+}
+
+int give_id(){
+	game_state.id += 1;
+	return (game_state.id - 1);
+}
 
 //Why the hell do we accept queue as an argument?
 void main_cycle(actors_vt * actors, actors_vt ** queue,
                 size_t qlen, levels_vt* levels,
 							 	feature_t * features,msgs_t * msgs) {
 	bool exit = false;
-//	game_state.queue = queue;
+	game_state.queue = queue;
 	for(int it = 0; !exit; it = (it+1)%qlen) {
 		render(actors->data[0], actors, msgs);
 		refresh();
-//		game_state.it;
+		game_state.it = it;
 		for(int i = 0; !exit && i < queue[it]->length; i++) {
 			actor_t * current = actor_get(queue[it], i);
+			if (current->flags & FLAG_DEAD){
+				int i = 0;
+				for (; i < actors->length && current->id != actors->data[i]->id; i++);
+				free_actor(actors, i);
+				break;
+			}
 			int new_index = (it + current->behave(current)) % qlen;
 			if(new_index == it)
 				exit = true;
