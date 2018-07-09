@@ -45,8 +45,8 @@ void build_wall_recdev(map_t* map_packed,
 
 		if (width > 2 && wall_loc - y > 2) {
 			if (rand() % 10 < 9
-			        || width > map_packed->width / 4 ||
-			        wall_loc - y > map_packed->height / 4) {
+			        || width > 20 ||
+			        wall_loc - y > 20) {
 				build_wall_recdev(map_packed, width, wall_loc - y,
 				                  wall_loc - y >= width, x, y);
 			} else 
@@ -56,8 +56,8 @@ void build_wall_recdev(map_t* map_packed,
 
 		if (width > 2 && height - wall_loc + y - 1 > 2) {
 			if (rand() % 10 < 9
-			        || width > map_packed->width / 4 ||
-			        height - wall_loc + y - 1 > map_packed->height / 4)
+			        || width > 20 ||
+			        height - wall_loc + y - 1 > 20)
 				build_wall_recdev(map_packed, width,
 				                  height - wall_loc + y - 1,
 				                  height - wall_loc + y - 1 >= width, x,
@@ -105,8 +105,8 @@ void build_wall_recdev(map_t* map_packed,
 		}
 		if (wall_loc - x > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || wall_loc - x > map_packed->width / 4 ||
-			        height > map_packed->height / 4)
+			        || wall_loc - x > 20 ||
+			        height > 20)
 				build_wall_recdev(map_packed, wall_loc - x, height,
 				                  height >= wall_loc - x, x, y);
 			else 
@@ -118,9 +118,9 @@ void build_wall_recdev(map_t* map_packed,
 
 		if (width - wall_loc + x - 1 > 2 && height > 2) {
 			if (rand() % 10 < 9
-			        || width - wall_loc + x - 1 > map_packed->width / 4
+			        || width - wall_loc + x - 1 > 20
 			        ||
-			        height > map_packed->height / 4)
+			        height > 20)
 				build_wall_recdev(map_packed, width - wall_loc + x - 1,
 				                  height,
 				                  height >= width - wall_loc + x - 1, wall_loc + 1,

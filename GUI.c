@@ -250,8 +250,7 @@ void init_GUI() {
   getmaxyx(stdscr, screen_height, screen_width);
   const int HUD_width = 30; 
 	const int text_height = 6;
-	const int stats_height = 8;
-	screen_height +=2;
+	const int stats_height = 12;
 	GUI.map_field = newwin(screen_height,
                          screen_width-HUD_width,
                          0, HUD_width);
