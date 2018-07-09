@@ -1,23 +1,23 @@
-CC=gcc
 LD=ld
-CFLAGS=-std=c11 -Wall -Wpedantic -g -c -O0 
+CC=gcc
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 
 LDLIBS=-lncurses -lm
-SOURCES=main.c tree.c render.c rooms.c vector_tree.c dumblogger.c
+LD=ld
+SOURCES=genmap.c genmap_cellular.c genmap_shrew.c\
+				genmap_recdev.c genmap_tree.c\
+				level.c actor.c main.c kdtree.o collect.o\
+				roomvector.c behave.c game.c levelvector.c GUI.c\
+			 	rooms.c room_tree.c vector_tree.c
 OBJECTS=$(SOURCES:.c=.o)
-EXECUTABLE=main
-
-all: $(SOURCES) $(EXECUTABLE)
-
+all: main
 build: all
-
 run: all
-	./$(EXECUTABLE)
-
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $@ $(LDLIBS)
-
-.c.o:
-	$(CC) $(CFLAGS) $< -o $@ $(LDLIBS) 
-
+	./main
 clean:
-	rm -rf *.o all -rf
+	rm -rf *.o all
+single: GUI.o game.o behave.o kdtree.o collect.o\
+			actor.o level.o levelvector.o roomvector.o feature.o\
+			genmap.o genmap_shrew.o genmap_cellular.o genmap_recdev.o\
+			genmap_tree.o rooms.o room_tree.o vector_tree.o
+
+kdtreetest: kdtree.o kdtreetest.o collect.o
