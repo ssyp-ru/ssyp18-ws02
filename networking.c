@@ -21,7 +21,7 @@ update_map_t * map_serialize(map_t* _map, int y, int x, int height, int width){
 	return update_map;
 }
 
-void client_map(update_map_t * chunk, map_t * _map){
+void client_map(map_t * map, update_map_t * chunk){
 		UNPACK(map, _map);
 		int y = chunk->y;
 		int x = chunk->x;
