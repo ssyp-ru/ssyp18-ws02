@@ -13,7 +13,7 @@ vector_room_t* vector_room_init (int len) {
 void vector_room_add (vector_room_t* v, tree_room_t* value) {
 	if(v->len >= v->max_len) {
 		v->max_len = v->len * 2;
-		room_tree_t** data_help = realloc(v->data, sizeof(room_tree_t*) * v->max_len);
+		tree_room_t** data_help = realloc(v->data, sizeof(room_tree_t*) * v->max_len);
 		if (data_help != NULL) {
 			v->data = data_help;
 		} else {

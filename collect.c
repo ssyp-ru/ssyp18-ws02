@@ -9,7 +9,6 @@ void append(features_vt * ret, feature_t * node) {
 	}
 }
 
-
 void features_vector_destroy(features_vt * vec)
 {
   free(vec->data);
@@ -65,7 +64,7 @@ features_vt * collect(kdtree_t * root, box_t room) {
 	ret->size = 0;
 	ret->capacity = 16;
 	ret->data = calloc(16, sizeof(feature_t *));
-  if(root)
+  if (root)
 	  collect_rec (root, 1, room, ret);
 	return ret;
 }

@@ -21,5 +21,3 @@ actor_t* actor_get(actors_vt* vect, int num);
 
 void free_actors(actors_vt* vect, bool isFull);
 
-
-

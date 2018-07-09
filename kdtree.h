@@ -11,3 +11,5 @@ kdtree_t * kd_create (feature_t ** point, int len);
 kdtree_t * kd_create_node(feature_t * point);
 kdtree_t * kd_insert (kdtree_t * tree, feature_t * point, int depth); 
 void kd_delete (kdtree_t * root);
+void kdrem (kdtree_t * rem, kdtree_t * root);
+kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth);

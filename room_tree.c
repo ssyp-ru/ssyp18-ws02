@@ -27,7 +27,7 @@ void tree_destroy(tree_room_t* tree) {
 		free(tree);
 	}
 }
-tree_room_t* add_node(tree_room_t* tree, void* value) {
+tree_room_t* add_node(tree_room_t* tree, room_tree_t* value) {
 	if (tree == NULL) {
 		tree = tree_create(value);
 	} else if(value < tree->value) {

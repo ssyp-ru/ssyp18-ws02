@@ -2,7 +2,9 @@
 #include <math.h>
 #include "rooms.h"
 #include <time.h>
-map_t* mapgen_tree (map_t* map, int height, int width) {
+map_t* mapgen_tree (map_t* map) {
+	int height = map->height;
+	int width = map->width;
 	srand (time(NULL));
 	initscr();
 	start_color();

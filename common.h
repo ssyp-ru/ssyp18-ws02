@@ -5,16 +5,10 @@
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
-typedef enum feature_type {
-	NOTHING, DROPPED_ITEM, CONTAINER,
-	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
-} ftype_t;
-
-
-typedef struct tile{
-	chtype symbol;
-	int flags;
-} tile_t;
+#define FLAG_FEATURE_PERSISTENT 0x1
+#define FLAG_FEATURE_EDIBILITY  0x2
+#define FLAG_FEATURE_CLOTHES    0x4
+#define FLAG_FEATURE_WEAPON     0x8
 
 typedef struct item {
 	chtype type;
@@ -24,6 +18,16 @@ typedef struct item {
 	int quality;
 	int amount;
 } item_t;
+
+typedef enum feature_type {
+	NOTHING, DROPPED_ITEM, CONTAINER,
+	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
+} ftype_t;
+
+typedef struct tile{
+	chtype symbol;
+	int flags;
+} tile_t;
 
 typedef struct inventory{
 	item_t * data;
@@ -54,6 +58,8 @@ typedef struct feature{
 	int flags;
 	char * description;
 	chtype symbol;
+	struct level * level;
+	struct feature * crutch;
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 
@@ -68,8 +74,6 @@ typedef struct kdtree {
 	struct kdtree * lbranch;
 	feature_t * node;
 } kdtree_t;
-
-
 
 typedef struct actors_vect {
 	struct actor** data;
@@ -112,4 +116,5 @@ typedef struct box{
 	int x, y;
 	int width, height;
 } box_t;
+
 

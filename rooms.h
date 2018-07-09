@@ -8,7 +8,7 @@ typedef struct room_tree {
 	int door_x[2], door_y[2];
 } room_tree_t;
 typedef struct vector_room {
-	struct tree ** data;
+	struct tree_room_t ** data;
 	size_t len;
 	size_t max_len;
 } vector_room_t;
@@ -19,7 +19,7 @@ typedef struct tree_room_t {
 tree_room_t* tree_create (void* value);
 void tree_add (tree_room_t* tree, void* value);
 void tree_destroy(tree_room_t* tree);
-tree_room_t* add_node(tree_room_t* tree, void* value);
+tree_room_t* add_node(tree_room_t* tree, room_tree_t* value);
 void tree_dfs(tree_room_t* tree, void(*callback)(void*));
 vector_room_t* vector_room_init (int len);
 void vector_room_add (vector_room_t* v, tree_room_t* value);

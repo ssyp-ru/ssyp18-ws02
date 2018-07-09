@@ -39,5 +39,5 @@ map_t * make_walls_shrew(map_t * _map);
 map_t* mapgen_recdev(map_t * map);
 
 // tree-based generation
-map_t* trees (map_t* map, int height, int width);
+map_t* mapgen_tree (map_t* map);
 

@@ -9,7 +9,7 @@ level_t* init_level(int width,
 	level_t * level = (level_t*) malloc(sizeof(level_t));
 
 	map_t * _map = create_map(height, width);
-	_map = mapgen_tree(_map, height, width);
+	_map = mapgen_tree(_map);
 /*	_map = mapgen_shrew(_map);
 	_map = mapgen_rooms_shrew(_map);
 	_map = make_walls_shrew(_map);*/

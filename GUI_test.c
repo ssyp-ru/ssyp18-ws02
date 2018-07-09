@@ -8,12 +8,15 @@
 #include "find_path.h"
 #include "genmap.h"
 #include "time.h"
+<<<<<<< HEAD
 
 #define MAP_SIZE 1000
 
 // XXX XXX XXX XXX XXX XXX XXX XXX
 //  This file will be deleted ASAP
 // XXX XXX XXX XXX XXX XXX XXX XXX
+=======
+>>>>>>> Dasha
 
 int main(){
 	initscr();
