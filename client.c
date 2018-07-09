@@ -6,11 +6,19 @@
 #include "net.h"
 #include "game.h"
 #include "single.h"
+#include "networking.h"
 
 int doExit = FALSE;
-
+map_t * _map;
 void foo(packet_t* msg) {
+	
 	switch(msg->str[0]) {
+		case 'u':
+			int overhead[4] = mesg_deserialize(msg, sizeof(int)*4);
+			int size = overhead[2]*overhead[3]*sizeof(tile_t) + sizeof(int)*4;
+			update_map_t* chunk = mesg_deserialize(msg, size);
+			map_fulfill(_map, chunk);
+			break;
 		case 'c':
 			doExit = TRUE;
 			break;
@@ -36,6 +44,7 @@ int main(int argc, char * argv[]){
 	initscr();
 	noecho();
 	int input;
+	packet_t * chunk;
 	curs_set(0);
 	timeout(20);
 	keypad(stdscr, true);

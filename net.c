@@ -38,14 +38,16 @@ packet_t* mesg_create(int fd, const char* str, int len) {
 	return new_msg;
 }
 
-packet_t* mesg_serialize(int fd, void* what, int size) {
+packet_t* mesg_serialize(int fd, char type_id, void* what, int size) {
 	packet_t* new_msg = mesg_empty(fd);
-	memcpy(new_msg->str, what, size);
+	new_msg->str[new_msg->len++] = type_id;
+	memcpy(new_msg->str+1, what, size);
+	new_msg->len = size+1;
 	return new_msg;
 }
 void* mesg_deserialize(packet_t* msg, int size) {
 	void* new_struct = malloc(sizeof(size));
-	memcpy(new_struct, msg->str, size);
+	memcpy(new_struct, msg->str+1, size);
 	return new_struct;
 }
 
