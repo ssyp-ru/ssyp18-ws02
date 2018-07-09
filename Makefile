@@ -1,7 +1,6 @@
 LD=ld
 CC=gcc
-<<<<<<< HEAD
-CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 
+CFLAGS=-std=c11 -Wall -Wpedantic -g -O0 -Werror
 LDLIBS=-lncurses -lm
 LD=ld
 SOURCES=genmap.c shrew_map.c cellular_map.c\

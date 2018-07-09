@@ -126,25 +126,37 @@ void kd_delete (kdtree_t * root) {
 	}
 }
 
-kdtree_t * kd_remove {kdtree_t * root, feature_t * node, int depth) {
-	int axis = depth%2;
-	if (root->node != node)
-		if (axis == 1)
-			if (node.x > root.x)
-				if (root->rbranch)
-					root = kd_remove (root->rbranch, node);
-			else
-				if (root->lbranch)
-					root = kd_remove (root->lbranch, node);
-		else		
-			if (node.y > root.y)
-				if (root->rbranch)
-					root = kd_remove (root->rbranch, node);
-			else
-				if (root->lbranch)
-					root = kd_remove (root->lbranch, node);
-	kdtree_t * rem = root;
+void kdrem (kdtree_t * rem, kdtree_t * root) {
 	if (!root->rbranch && !root->lbranch)
 		free (root);
 		if (root->lbranch)
+			kdrem (rem, root->lbranch);
+		else
+			rem = root;
+	free (root);
+}
+
+kdtree_t * kd_remove (kdtree_t * root, feature_t * node, int depth) {
+	int axis = depth%2;
+	if (root->node != node) {
+		if (axis == 1) {
+			if (node->x > root->node->x) {
+				if (root->rbranch)
+					root = kd_remove (root->rbranch, node, depth++);
+			} else {
+				if (root->lbranch)
+					root = kd_remove (root->lbranch, node, depth++);
+			}
+		}	else {	
+			if (node->y > root->node->y) {
+				if (root->rbranch)
+					root = kd_remove (root->rbranch, node, depth++);
+			}	else {
+				if (root->lbranch)
+					root = kd_remove (root->lbranch, node, depth++);
+			}
+		}
+	}
+	kdrem (root, root);
+	return (root);
 }
