@@ -53,9 +53,10 @@ int behave_fire(actor_t* self){
 	bullet->inventory = NULL;
 	bullet->behave = behave_projectiles;
 	if (self->level->actors != NULL)
-		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id;
+		bullet->id = self->level->actors->data[self->level->actors->length - 1]->id + 1;
 	bullet->targ_x = 0;
 	bullet->targ_y = 0;
+	bullet->flags |= FLAG_PROJECTALE;
 	bullet->level = self->level;
 	add_vector_elem(self->level->actors, bullet);
 	self->state = 0;
@@ -83,7 +84,8 @@ int behave_projectiles(actor_t* self){
 			//------------------------------------------------------
 			if (self->level->actors->data[i]->x == self->x
 				&& self->level->actors->data[i]->y == self-> y
-				&& self->id != self->level->actors->data[i]->id){
+				&& self->id != self->level->actors->data[i]->id
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
 			//------------------------------------------------------
 				self->level->actors->data[i]->hp -= 3;
 				if (self->level->actors->data[i]->hp <= 0){
@@ -106,22 +108,23 @@ int behave_projectiles(actor_t* self){
 
 int behave_searchtarget(actor_t* self){
 	UNPACK(map, self->level->map);
-	char flag = 'a';
+	int flag = 0;
 	if (self->level->actors != NULL){
 		for (int i = 0; i < self->level->actors->length; i++){
 			//------------------------------------------------------
-			if(abs(self->level->actors->data[i]->x - self->x) <= self->view_radius
-			&& abs(self->level->actors->data[i]->y - self->y) <= self->view_radius
-			&& self->id != self->level->actors->data[i]->id){
+			if(abs(self->level->actors->data[i]->x - self->x) <= 3
+			&& abs(self->level->actors->data[i]->y - self->y) <= 3
+			&& self->id != self->level->actors->data[i]->id
+			&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
 			//------------------------------------------------------
 				self->targ_x = self->level->actors->data[i]->x;
 				self->targ_y = self->level->actors->data[i]->y;
 				self->state = 1;
-				flag = 'b';
+				flag = 1;
 			}
 		}
-	}
-	if (flag != 'b' && (self->flags & FLAG_CANWALK)){
+//	}
+	if (flag != 1 && (self->flags & FLAG_CANWALK)){
 		int i = rand() % 4;
 		switch(i){
 			case 0:
@@ -167,7 +170,8 @@ int behave_meleeattack(actor_t* self){
 			//------------------------------------------------------
 			if (abs(self->level->actors->data[i]->x - self->x) <= 1
 				&& abs(self->level->actors->data[i]->y - self->y) <= 1
-				&& self->id != self->level->actors->data[i]->id){
+				&& self->id != self->level->actors->data[i]->id
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
 			//------------------------------------------------------
 				self->level->actors->data[i]->hp -= 1;
 				if (self->level->actors->data[i]->hp <= 0){
@@ -182,6 +186,8 @@ int behave_meleeattack(actor_t* self){
 
 int behave_chasetarget(actor_t* self){
 	UNPACK(map, self->level->map);
+	init_pair(50, COLOR_RED, COLOR_BLACK);
+	self->symbol = 'O' | COLOR_PAIR(50);
 	//pvector_t* cord = find_path(self, self->targ_x, self->targ_y);
 	if (self->x != self->targ_x){
 		if (self->x < self->targ_x){
@@ -214,12 +220,13 @@ int behave_chasetarget(actor_t* self){
 		}
 	}
 	char flag = 'a';
-	if (self->level->actors->length){
+	if (self->level->actors){
 		for (int i = 0; i < self->level->actors->length; i++){
 			//------------------------------------------------------
 			if (abs(self->level->actors->data[i]->x - self->x) <= 3
 				&& abs(self->level->actors->data[i]->y - self->y) <= 3
-				&& self->id != self->level->actors->data[i]->id){
+				&& self->id != self->level->actors->data[i]->id
+				&& !(self->level->actors->data[i]->flags & FLAG_PROJECTALE)){
 			//------------------------------------------------------
 				self->targ_x = self->level->actors->data[i]->x;
 				self->targ_y = self->level->actors->data[i]->y;
