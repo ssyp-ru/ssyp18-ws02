@@ -5,7 +5,8 @@ LDLIBS=-lncurses -lm
 LD=ld
 SOURCES=genmap.c shrew_map.c cellular_map.c\
 				level.c actor.c main.c kdtree.o collect.o\
-				roomvector.c behave.c game.c levelvector.c GUI.c
+				roomvector.c behave.c game.c levelvector.c GUI.c\
+				feature.c
 OBJECTS=$(SOURCES:.c=.o)
 all: main
 build: all
@@ -24,3 +25,4 @@ main_recdev: main_recdev.o genmap.o recursive_devision_map.o roomvector.o
 GUI_test: GUI_test.o GUI.o feature.o find_path.o
 kdtreetest: kdtreetest.o $(OBJECTS)	
 gen_feature:  gen_feature.o kdtree.o levelvector.o collect.o;
+feature: feature.o kdtree.o 
