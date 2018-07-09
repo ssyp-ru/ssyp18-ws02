@@ -19,28 +19,6 @@ typedef struct item {
 	int amount;
 } item_t;
 
-typedef struct inventory{
-	item_t * item;
-	int amount;
-	int max_amount;
-} inventory_t;
-
-typedef struct actor{
-	struct inventory * inventory;
-	int flags;
-	int hp;
-	int state;
-	int targ_x, targ_y;
-	int strength;
-	int agility;
-	int stamina;
-	int view_radius;
-	int x, y;
-	struct level * level;
-	int (*begave)(struct actor*);
-	chtype symbol;
-} actor_t;	
-
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
 	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
@@ -50,15 +28,6 @@ typedef struct tile{
 	chtype symbol;
 	int flags;
 } tile_t;
-
-typedef struct item {
-	chtype type;
-	float weight;
-	int flags;
-	char * description;
-	int quality;
-	int amount;
-} item_t;
 
 typedef struct inventory{
 	item_t * data;
@@ -89,6 +58,8 @@ typedef struct feature{
 	int flags;
 	char * description;
 	chtype symbol;
+	level_t * level;
+	struct feature * crutch;
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
 
@@ -103,8 +74,6 @@ typedef struct kdtree {
 	struct kdtree * lbranch;
 	feature_t * node;
 } kdtree_t;
-
-
 
 typedef struct actors_vect {
 	struct actor** data;
@@ -143,13 +112,6 @@ typedef struct map {
  * 		}
  * }
 */
-
-typedef struct kdtree {
-	struct kdtree * rbranch;
-	struct kdtree * lbranch;
-	feature_t * node;
-} kdtree_t;
-
 typedef struct level {
 	map_t* map;
   struct actors_vect * actors;
