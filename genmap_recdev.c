@@ -159,7 +159,7 @@ void build_wall_recdev(map_t* map_packed,
 
 map_t* mapgen_recdev(map_t * map) {
 //	if(map->rooms != NULL)
-		map->rooms = vector_init(1);
+	map->rooms = vector_init(1);
 
 	UNPACK(map_unpacked, map);
 

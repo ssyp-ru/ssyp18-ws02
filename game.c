@@ -33,9 +33,9 @@ void destroy_the_world(actors_vt* actors,
                        levels_vt * levels,
                        actors_vt ** queue, int qlen) {
 	lvector_free(levels);
-	free_level(lvector_get(levels, 0));
+	//free_level(lvector_get(levels, 0));
 	//vector_free(lvector_get(levels, 0)->map->rooms);
-	//	free_actors(actors, true);
+	free_actors(actors, true);
 	for(int i = 0; i < qlen; i++)
 		free_actors(queue[i], false); // Double free()? Are you crazy?
 	free(queue);

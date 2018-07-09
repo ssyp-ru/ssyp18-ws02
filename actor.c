@@ -18,10 +18,10 @@ actor_t * make_player() {
 	player->symbol = '@' | COLOR_PAIR(2);
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
-  player->inventory = calloc(1, sizeof(inventory_t));
-  player->inventory->data = calloc(10, sizeof(item_t));
-  player->inventory->capacity = 10;
-  return player;
+  	player->inventory = calloc(1, sizeof(inventory_t));
+  	player->inventory->data = calloc(10, sizeof(item_t));
+  	player->inventory->capacity = 10;
+  	return player;
 }
 //FIXME: Should it realy be here?
 actors_vt* init_actors(level_t* level,
@@ -68,7 +68,11 @@ void free_actors(actors_vt* vect, bool is_Full) {
 	// FIXME: Who will kill them?
 	if(is_Full)
 		for(int i = 0; i < vect -> length; i++)
+		{
+			free(vect->data[i]->inventory->data);
+			free(vect->data[i]->inventory);
 			free(vect->data[i]);
+		}	
 	free(vect->data);
 	free(vect);
 }
