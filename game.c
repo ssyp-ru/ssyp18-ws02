@@ -7,7 +7,6 @@
 #include "actor.h"
 #include "GUI.h"
 #include "feature.h"
-#define MAP_SIZE 200
 
 
 //Why the hell do we accept queue as an argument?
@@ -55,8 +54,8 @@ void start_game() {
 	time_t t;
 	srand((unsigned)time(&t));
 	msgs_t * msgs = init_mes();
-	levels_vt* levels = lvector_init(1); // Seriously? One?
-	lvector_add(levels, init_level(200, 200));
+	levels_vt* levels = lvector_init(1);
+	lvector_add(levels, init_level(30, 30));
 	actors_vt* actors = init_actors(lvector_get(levels, 0), 1);
 	actors_vt ** queue = calloc(100, sizeof(actors_vt*));
 	for(int i = 0; i < 100; i++)

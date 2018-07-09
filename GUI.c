@@ -166,7 +166,7 @@ void draw_features(features_vt * features, box_t box){
 char buffer[100];
 snprintf(buffer, 100, " Found %lu features.\n",
                     features->size);
-mvwprintw(GUI.mes_field, 1, 1, buffer);
+mvwprintw(GUI.mes_field, 2, 2, buffer);
 #endif /* DEBUG */
 }
 
@@ -224,14 +224,14 @@ void render(actor_t   * hero,
                .y = hero->y - h/2,
                .width = w,
                .height = h};
-  if (box.x < 0)
-    box.x = 0;
   if(box.x+w > map->width)
     box.x = map->width - w;
-  if (box.y < 0)
-    box.y = 0;
+  if (box.x < 0)
+    box.x = 0;
   if(box.y+h > map->height)
     box.y = map->height - h;
+  if (box.y < 0)
+    box.y = 0;
   features_vt * fvec = collect(level->features, box);
   draw_map(map, box);
 	calculate_view(hero->x, hero->y, hero->view_radius, map, box);
