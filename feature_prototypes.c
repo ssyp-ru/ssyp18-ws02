@@ -18,14 +18,6 @@
 #define FLAG_FEATURE_CLOTHES    0x4
 #define FLAG_FEATURE_WEAPON     0x8
 
-/*
-typedef enum feature_type {
-	NOTHING, DROPPED_ITEM, CONTAINER,
-	DOOR, DEAD_BADGER, STAIR
-} ftype_t;
-*/
-
-
 void free_protofeatures() {
 	free(prototypes->data);
 	free(prototypes);

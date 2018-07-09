@@ -45,7 +45,7 @@ map_t* mapgen_recdev(map_t * map);
 
 
 //features generation (feature_prototypes)
-features_vt * prototypes = NULL;
+extern features_vt * prototypes;
 
 void free_protofeatures();
 

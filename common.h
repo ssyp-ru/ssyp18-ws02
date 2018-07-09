@@ -54,6 +54,7 @@ typedef struct map {
 
 typedef struct actor{
 	struct inventory * inventory;
+	char * name;
 	int flags;
 	int hp;
 	int state;
@@ -119,7 +120,6 @@ typedef struct actors_vect {
  * 		}
  * }
 */
-
 
 typedef struct level_vector {
 	level_t** data;

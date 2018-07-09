@@ -1,5 +1,4 @@
 *.o
-*.orig
 main_cellular
 *.txt
 main_shrew
@@ -7,3 +6,5 @@ main_recdev
 main
 *.md
 *.orig
+.vscode
+single

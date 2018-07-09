@@ -6,9 +6,9 @@ room_t vector_get(rooms_vt* v, int i) {
 }
 
 rooms_vt* vector_init(int L) {
-	rooms_vt* v = (rooms_vt*)malloc(sizeof(
-	                       rooms_vt));
-
+//	rooms_vt* v = (rooms_vt*)malloc(sizeof(
+	//                       rooms_vt));
+	rooms_vt * v = calloc(1, sizeof(rooms_vt));
 	v->data = (room_t*)calloc(L, sizeof(room_t));
 	v->length = 0;
 	v->capacity = L;
