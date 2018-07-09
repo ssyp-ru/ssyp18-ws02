@@ -128,11 +128,13 @@ void kd_delete (kdtree_t * root) {
 
 void kdrem (kdtree_t * rem, kdtree_t * root) {
 	if (!root->rbranch && !root->lbranch)
+  {
 		free (root);
-		if (root->lbranch)
-			kdrem (rem, root->lbranch);
-		else
-			rem = root;
+  } 
+  if (root->lbranch)
+    kdrem (rem, root->lbranch);
+  else
+    rem = root;
 	free (root);
 }
 

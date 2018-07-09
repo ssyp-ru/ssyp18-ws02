@@ -58,7 +58,7 @@ typedef struct feature{
 	int flags;
 	char * description;
 	chtype symbol;
-	level_t * level;
+	struct level * level;
 	struct feature * crutch;
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
