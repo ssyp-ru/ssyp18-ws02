@@ -179,10 +179,11 @@ void draw_stats(actor_t * hero) {
 	int strength = hero->strength;
 	int agility = hero->agility;
 	int stamina = hero->stamina;
-	mvwprintw(GUI.stat_field, 2, 2, "HP: %d", hp);
-	mvwprintw(GUI.stat_field, 4, 2, "Strength: %d", strength);
+	mvwprintw(GUI.stat_field, 1, 2, "Name");
+	mvwprintw(GUI.stat_field, 3, 2, "HP: %d", hp);
+	mvwprintw(GUI.stat_field, 5, 2, "Strength: %d", strength);
 	mvwprintw(GUI.stat_field, 6, 2, "Agility: %d", agility);
-	mvwprintw(GUI.stat_field, 8, 2, "Stamina: %d", stamina);
+	mvwprintw(GUI.stat_field, 9, 2, "Stamina: %d", stamina);
 }
 
 void draw_actor(actor_t * actor, box_t box) {
@@ -222,7 +223,7 @@ void render(actor_t   * hero,
   features_vt * fvec = collect(level->features, box);
 
   draw_map(map, box);
-	calculate_view(hero->x, hero->y, 4, map, box);
+	calculate_view(hero->x, hero->y, hero->view_radius, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
 	

@@ -6,8 +6,7 @@
 
 actors_vt* create_new_vector(int num) {
 	actors_vt* new_Vect = (actors_vt*)malloc(sizeof(actors_vt));
-	new_Vect->data = (actor_t**)calloc(num,
-	                                        sizeof(actor_t*));
+	new_Vect->data = (actor_t**)calloc(num, sizeof(actor_t*));
 	new_Vect->length = 0;
 	new_Vect->capacity = num;
 	return new_Vect;
@@ -18,10 +17,11 @@ actor_t * make_player() {
 	player->symbol = '@' | COLOR_PAIR(2);
 	player->flags |= FLAG_ISPLAYER;
 	player->behave = behave_player;
-  	player->inventory = calloc(1, sizeof(inventory_t));
-  	player->inventory->data = calloc(10, sizeof(item_t));
-  	player->inventory->capacity = 10;
-  	return player;
+	player->view_radius = 4;
+  player->inventory = calloc(1, sizeof(inventory_t));
+  player->inventory->data = calloc(10, sizeof(item_t));
+  player->inventory->capacity = 10;
+  return player;
 }
 
 actors_vt* init_actors(level_t* level,

@@ -33,6 +33,7 @@ typedef struct inventory{
 
 typedef struct actor{
 	struct inventory * inventory;
+	char * name;
 	int flags;
 	int hp;
 	int state;
