@@ -59,20 +59,9 @@ typedef struct feature{
 	char * description;
 	chtype symbol;
 	level_t * level;
+	struct feature * crutch;
 	void (*interact)(struct feature *, struct actor *);
 } feature_t;
-
-typedef struct stair{
-	struct inventory * inventory;
-	ftype_t type;
-	int x, y;
-	int flags;
-	char * description;
-	chtype symbol;
-	level_t * level;
-	struct stair * next_stair; 
-	void (*interact)(struct feature *, struct actor *);
-} stair_t;
 
 typedef struct features_vec {
 	feature_t ** data;
