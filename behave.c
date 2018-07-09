@@ -94,7 +94,7 @@ int behave_projectiles(actor_t* self){
 		}
 	}
 	if (self->x < 0 || self->y < 0 || self->x > self->level->map->width
-			|| self->x > self->level->map->height){
+			|| self->y > self->level->map->height){
 		self->flags |= FLAG_DEAD;
 		return 1;
 	}
@@ -155,7 +155,7 @@ int behave_searchtarget(actor_t* self){
 					break;
 				self->y -= 1;
 				self->direct = 3;
-			break;	
+			break;
 		}
 	}
 	return 3;
@@ -243,13 +243,13 @@ int behave_player(actor_t* self){
 	UNPACK(map, self->level->map);
 	int key = getch();
 	switch(key){
-		case KEY_F(2):	
+		case KEY_F(2):
 			return 0;
 		break;
 		case 'w':
 			if (self->y < 1)
 				break;
-			if (map[self->y  - 1][self->x].flags & FLAG_SOLID)
+			if (map[self->y - 1][self->x].flags & FLAG_SOLID)
 				break;
 			self->y--;
 		break;
