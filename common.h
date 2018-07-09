@@ -5,11 +5,46 @@
 #define FLAG_TRANS 0x2
 #define FLAG_DESTR 0x4
 
+#define FLAG_FEATURE_PERSISTENT 0x1
+#define FLAG_FEATURE_EDIBILITY  0x2
+#define FLAG_FEATURE_CLOTHES    0x4
+#define FLAG_FEATURE_WEAPON     0x8
+
+typedef struct item {
+	chtype type;
+	float weight;
+	int flags;
+	char * description;
+	int quality;
+	int amount;
+} item_t;
+
+typedef struct inventory{
+	item_t * item;
+	int amount;
+	int max_amount;
+} inventory_t;
+
+typedef struct actor{
+	struct inventory * inventory;
+	int flags;
+	int hp;
+	int state;
+	int targ_x, targ_y;
+	int strength;
+	int agility;
+	int stamina;
+	int view_radius;
+	int x, y;
+	struct level * level;
+	int (*begave)(struct actor*);
+	chtype symbol;
+} actor_t;	
+
 typedef enum feature_type {
 	NOTHING, DROPPED_ITEM, CONTAINER,
 	DOOR, DEAD_BADGER, UPSTAIRS, DOWNSTAIRS
 } ftype_t;
-
 
 typedef struct tile{
 	chtype symbol;
@@ -109,6 +144,12 @@ typedef struct map {
  * }
 */
 
+typedef struct kdtree {
+	struct kdtree * rbranch;
+	struct kdtree * lbranch;
+	feature_t * node;
+} kdtree_t;
+
 typedef struct level {
 	map_t* map;
   struct actors_vect * actors;
@@ -125,4 +166,5 @@ typedef struct box{
 	int x, y;
 	int width, height;
 } box_t;
+
 

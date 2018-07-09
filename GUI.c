@@ -203,6 +203,7 @@ void render(actor_t   * hero,
 	draw_view(hero->x, hero->y, 4, map, box);
 	draw_inv(hero);
 	draw_text(msgs->buffer[msgs->cur].line);
+<<<<<<< HEAD
 	
   draw_stats(hero);
 	draw_features(fvec);
