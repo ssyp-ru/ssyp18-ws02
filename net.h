@@ -9,14 +9,14 @@
 
 #include "datastruct.h"
 
-#define MAX_RECV 256
+#define MAX_RECV 2048
 
 #define NET_CHAR_BEGIN '['
 #define NET_CHAR_TERMINATE ']'
 
-#define NET_MSG_TYPE_OPENED 'o'
-#define NET_MSG_TYPE_CLOSED 'c'
-#define NET_MSG_TYPE_TEXT 't'
+#define NET_PACKET_TYPE_OPENED 'o'
+#define NET_PACKET_TYPE_CLOSED 'c'
+#define NET_PACKET_TYPE_TEXT 't'
 
 enum STATUS {
 	EMPTY = 0,
@@ -33,18 +33,21 @@ typedef struct {
 	int fd;
 	int len;
 	char str[MAX_RECV + 1];
-} msg_t;
+} packet_t;
 
-msg_t* mesg_create(int fd, const char* str, int len);
-msg_t* mesg_build(int fd, const char* str, ...);
-msg_t* mesg_empty(int fd);
+packet_t* mesg_create(int fd, const char* str, int len);
+packet_t* mesg_build(int fd, const char* str, ...);
+packet_t* mesg_empty(int fd);
 
-// sends msg_t into msg_t.fd
-int mesg_send(msg_t* what);
-int mesg_redirect(int fd, msg_t* what);
+packet_t* mesg_serialize(int fd, void* what, int size);
+void* mesg_deserialize(packet_t* msg, int size);
 
-// Also frees the msg_t passed
-int mesg_throw(msg_t* what);
-int mesg_rethrow(int fd, msg_t* what);
+// sends packet_t into packet_t.fd
+int mesg_send(packet_t* what);
+int mesg_redirect(int fd, packet_t* what);
 
-msg_t* mesg_parse(int fd, const char* recieved, int len, msg_t* buffer_msg, list** list_ref);
+// Also frees the packet_t passed
+int mesg_throw(packet_t* what);
+int mesg_rethrow(int fd, packet_t* what);
+
+packet_t* mesg_parse(int fd, const char* recieved, int len, packet_t* buffer_msg, list_t** list_ref);

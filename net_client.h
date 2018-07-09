@@ -4,12 +4,12 @@
 typedef struct {
 	struct pollfd p;
 	int status;
-	msg_t* buffer;
-} client;
+	packet_t* buffer;
+} client_t;
 
 
-client* client_create(int PORT, const char* HOST);
-int client_send(client* which, const char* fmt, ...);
-list* client_read(client* which);
+client_t* client_create(int PORT, const char* HOST);
+int client_send(client_t* which, const char* fmt, ...);
+list_t* client_read(client_t* which);
 
-void client_delete(client* which);
+void client_delete(client_t* which);

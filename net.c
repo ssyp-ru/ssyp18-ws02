@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <arpa/inet.h>
-
+#include "actor.h"
 #include "log.h"
 
 int socket_send(int fd, char* str, int len) {
@@ -28,8 +28,8 @@ int socket_sendf(int fd, const char* str, ...) {
 	return r;
 }
 
-msg_t* mesg_create(int fd, const char* str, int len) {
-	msg_t* new_msg = malloc(sizeof(msg_t));
+packet_t* mesg_create(int fd, const char* str, int len) {
+	packet_t* new_msg = malloc(sizeof(packet_t));
 	memset(new_msg->str + len, 0, (MAX_RECV - len)*sizeof(char));
 	strncpy(new_msg->str, str, len);
 	new_msg->fd = fd;
@@ -37,8 +37,19 @@ msg_t* mesg_create(int fd, const char* str, int len) {
 	return new_msg;
 }
 
-msg_t* mesg_build(int fd, const char* str, ...) {
-	msg_t* new_msg = malloc(sizeof(msg_t));
+packet_t* mesg_serialize(int fd, void* what, int size) {
+	packet_t* new_msg = mesg_empty(fd);
+	memcpy(new_msg->str, what, size);
+	return new_msg;
+}
+void* mesg_deserialize(packet_t* msg, int size) {
+	void* new_struct = malloc(sizeof(size));
+	memcpy(new_struct, msg->str, size);
+	return new_struct;
+}
+
+packet_t* mesg_build(int fd, const char* str, ...) {
+	packet_t* new_msg = malloc(sizeof(packet_t));
     va_list args;
 	va_start(args, str);
 	new_msg->len = vsnprintf(new_msg->str, MAX_RECV, str, args);
@@ -47,34 +58,34 @@ msg_t* mesg_build(int fd, const char* str, ...) {
 	return new_msg;
 }
 
-msg_t* mesg_empty(int fd) {
-	msg_t* new_msg = malloc(sizeof(msg_t));
-	memset(new_msg, 0, sizeof(msg_t));
+packet_t* mesg_empty(int fd) {
+	packet_t* new_msg = malloc(sizeof(packet_t));
+	memset(new_msg, 0, sizeof(packet_t));
 	new_msg->fd = fd;
 	return new_msg;
 }
 
-int mesg_send(msg_t* what) {
+int mesg_send(packet_t* what) {
 	return socket_send(what->fd, what->str, what->len);
 }
 
-int mesg_throw(msg_t* what) {
+int mesg_throw(packet_t* what) {
 	int r = socket_send(what->fd, what->str, what->len);
 	free(what);
 	return r;
 }
 
-int mesg_redirect(int fd, msg_t* what) {
+int mesg_redirect(int fd, packet_t* what) {
 	return socket_send(fd, what->str, what->len);
 }
 
-int mesg_rethrow(int fd, msg_t* what) {
+int mesg_rethrow(int fd, packet_t* what) {
 	int r = socket_send(fd, what->str, what->len);
 	free(what);
 	return r;
 }
 
-msg_t* mesg_parse(int fd, const char* recieved, int len, msg_t* buffer_msg, list** list_ref) {
+packet_t* mesg_parse(int fd, const char* recieved, int len, packet_t* buffer_msg, list_t** list_ref) {
 	for(int t = 0; t < len; t++) {
 		switch(recieved[t]) {
 			case NET_CHAR_BEGIN:

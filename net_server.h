@@ -6,13 +6,13 @@
 typedef struct {
 	struct pollfd* fds;
 	int fd_count;
-	list* recycled;
+	list_t* recycled;
 	int status;
-	msg_t** buffers;
-} server;
+	packet_t** buffers;
+} server_t;
 
-server* server_create(int PORT);
-list* server_read(server* which);
-int server_broadcast(server* which, msg_t* what);
+server_t* server_create(int PORT);
+list_t* server_read(server_t* which);
+int server_broadcast(server_t* which, packet_t* what);
 
-void server_delete(server* which);
+void server_delete(server_t* which);

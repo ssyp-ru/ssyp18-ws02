@@ -6,7 +6,7 @@
 
 #include "log.h"
 
-server* server_create(int PORT) {
+server_t* server_create(int PORT) {
 	int m_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	int on = 1;
 	if(-1 == m_sock)
@@ -39,9 +39,9 @@ server* server_create(int PORT) {
 			log_err("Could not set socket(%d) to non-blocking. errno(%x)", m_sock, errno);
 			break;
 		}
-		server* ns = malloc(sizeof(server));
+		server_t* ns = malloc(sizeof(server_t));
 		ns->fds = calloc(MAX_CONNECTIONS + 1, sizeof(struct pollfd));
-		ns->buffers = calloc(MAX_CONNECTIONS + 1, sizeof(msg_t*));
+		ns->buffers = calloc(MAX_CONNECTIONS + 1, sizeof(packet_t*));
 		ns->recycled = NULL;
 		ns->fd_count = 1;
 		ns->fds[0].fd = m_sock;
@@ -53,7 +53,7 @@ server* server_create(int PORT) {
 	return NULL;
 }
 
-int server_broadcast(server* which, msg_t* what) {
+int server_broadcast(server_t* which, packet_t* what) {
 	if(which->status != RUNNING || what == NULL) return -1;
 	int c = 0;
 	for(int i = 1; i < which->fd_count; i++) if(which->fds[i].fd != -1 && which->fds[i].fd != what->fd) {
@@ -64,7 +64,7 @@ int server_broadcast(server* which, msg_t* what) {
 	return c;
 }
 
-list* server_read(server* which) {
+list_t* server_read(server_t* which) {
 	if(which->status != RUNNING) return NULL;
 	int r = poll(which->fds, which->fd_count, 0);
 	if(r < 0) {
@@ -75,7 +75,7 @@ list* server_read(server* which) {
 	if(r == 0) {
 		return NULL;
 	}
-	list* rlist = NULL;
+	list_t* rlist = NULL;
 	struct pollfd* j = which->fds;
 	if(j->fd != -1 && j->revents != 0) {
 		if(!(j->revents & POLLIN)) {
@@ -100,7 +100,7 @@ list* server_read(server* which) {
 			log_msg("New connection(%d) was accepted with id(%d).", sock, nIx);
 			which->fds[nIx].fd = sock;
 			which->fds[nIx].events = POLLIN;
-			rlist = list_append(rlist, mesg_build(sock, "%c", NET_MSG_TYPE_OPENED));
+			rlist = list_append(rlist, mesg_build(sock, "%c", NET_PACKET_TYPE_OPENED));
 			mesg_throw(mesg_create(sock,"ping",4));
 		}
 	}
@@ -130,7 +130,7 @@ list* server_read(server* which) {
 		}
 		if(doClose) {
 			close(j->fd);
-			rlist = list_append(rlist, mesg_build(j->fd, "%c", NET_MSG_TYPE_CLOSED));
+			rlist = list_append(rlist, mesg_build(j->fd, "%c", NET_PACKET_TYPE_CLOSED));
 			j->fd = -1;
 			which->recycled = list_queue(which->recycled, (void*)i);
 		}
@@ -138,7 +138,7 @@ list* server_read(server* which) {
 	return rlist;
 }
 
-void server_delete(server* which) {
+void server_delete(server_t* which) {
 	list_delete(which->recycled);
 	for(int i = 0; i < which->fd_count; i++)
 			if(which->fds[i].fd != -1)

@@ -6,7 +6,7 @@
 
 #include "log.h"
 
-client* client_create(int PORT, const char* HOST) {
+client_t* client_create(int PORT, const char* HOST) {
 	int m_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if(-1 == m_sock)
 		return NULL;
@@ -39,8 +39,8 @@ client* client_create(int PORT, const char* HOST) {
 			log_err("Could not set socket(%d) to non-blocking. errno(%x)", m_sock, errno);
 			break;
 		}
-		client* nc = malloc(sizeof(client));
-		memset(nc, 0, sizeof(client));
+		client_t* nc = malloc(sizeof(client_t));
+		memset(nc, 0, sizeof(client_t));
 		nc->p.fd = m_sock;
 		nc->p.events = POLLIN;
 		nc->status = RUNNING;
@@ -50,7 +50,7 @@ client* client_create(int PORT, const char* HOST) {
 	return NULL;
 }
 
-int client_send(client* which, const char* fmt, ...) {
+int client_send(client_t* which, const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	int r = socket_sendv(which->p.fd, fmt, args);
@@ -58,7 +58,7 @@ int client_send(client* which, const char* fmt, ...) {
 	return r;
 }
 
-list* client_read(client* which) {
+list_t* client_read(client_t* which) {
 	if(which->status != RUNNING) return NULL;
 	int r = poll(&(which->p), 1, 0);
 	if(r < 0) {
@@ -86,10 +86,10 @@ list* client_read(client* which) {
 		} else if(r == 0) {
 			log_msg("Connection was closed by server.");
 			which->status = CLOSED;
-			return list_queue(NULL, mesg_build(which->p.fd, "%c", NET_MSG_TYPE_CLOSED));
+			return list_queue(NULL, mesg_build(which->p.fd, "%c", NET_PACKET_TYPE_CLOSED));
 		} else {
 			log_msg("Recieved %d bytes: '%.*s'.", r, r, lineptr);
-			list* rlist = NULL;
+			list_t* rlist = NULL;
 			which->buffer = mesg_parse(which->p.fd, lineptr, r, which->buffer, &rlist);
 			return rlist;
 		}
@@ -97,7 +97,8 @@ list* client_read(client* which) {
 	return NULL;
 }
 
-void client_delete(client* which) {
+void client_delete(client_t* which) {
 	close(which->p.fd);
+	if(which->buffer) free(which->buffer);
 	free(which);
 }
