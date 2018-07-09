@@ -126,7 +126,6 @@ typedef struct features_vec {
 } fvec_t;
 
 typedef struct level_vector {
-	level_t * levels;
 	int length;
   level_t * data;
 	int capacity;
