@@ -254,6 +254,10 @@ int behave_chasetarget(actor_t* self){
 int behave_player(actor_t* self){
 	UNPACK(map, self->level->map);
 	int key = getch();
+  if (self->hp < 0){
+    self->flags |= FLAG_ACTOR_DEAD;
+    return 0;
+  }
 	switch(key){
 		case KEY_F(2):
 		case 'x':
@@ -287,6 +291,9 @@ int behave_player(actor_t* self){
 				break;
 		  self->x++;
 		break;
+	case 'p':
+		
+		break;
 	}
 	return 1;
 }
@@ -307,10 +314,15 @@ int behave_goblin(actor_t * self){
 			self->x = x1;
 			self->y = y1;
 		}
+		if(path->length == 1){
+			find_actor->hp--;
+			self->x = path->buffer[0].x;
+			self->y = path->buffer[0].y;
+		}
 	}
   if (path != NULL) {
     free(path->buffer);
     free(path);
   }
-	return 3;
+	return 2;
 }

@@ -52,7 +52,7 @@ void calculate_view(int x2, int y2, int view_radius,
 	vision_t * vision = calloc(1, sizeof(vision_t));
 	vision->view = calloc(10000, sizeof(coord_t));
 	for(angle = -view_radius; angle <= view_radius; angle += 0.2){
-		for(float x = 0; x >= -view_radius; x -= 0.2){	
+		for(float x = 0; x >= -view_radius; x -= 0.1){	
 			int y1 = angle * x + y2;
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
@@ -68,7 +68,7 @@ void calculate_view(int x2, int y2, int view_radius,
 				}
 			}			
 		}
-		for(float x = 0; x <= view_radius; x += 0.2){
+		for(float x = 0; x <= view_radius; x += 0.1){
 			int y1 = angle * x + y2;
 			int x1 = x + x2 + 0.5;
 			int rad_x = x1 - x2;
@@ -87,7 +87,7 @@ void calculate_view(int x2, int y2, int view_radius,
 	}				
 	for(int y = 0; y >= -view_radius; y--){
 		int y1 = y + y2;
-		int x1 = x2;
+		int x1 = x2 + 0.5;
 		if(match_size(_map, x1, y1)){
 			if(map[y1][x1].flags & FLAG_TILE_SOLID){
 				break;
@@ -101,7 +101,7 @@ void calculate_view(int x2, int y2, int view_radius,
 	}	
 	for(int y = 0; y <= view_radius; y++){
 		int y1 = y + y2;
-		int x1 = x2;
+		int x1 = x2 + 0.5;
 		if(match_size(_map, x1, y1)){
 			if(map[y1][x1].flags & FLAG_TILE_SOLID){
 				break;
