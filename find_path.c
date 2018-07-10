@@ -55,8 +55,8 @@ pvector_t * find_path(actor_t * actor, int x, int y){
 	int x_f = x, x_n;
 	int y_f = y, y_n;
 	int min = 999;
-	for(int k = 0; k < size_x; k++){
-		for(int i = 0; i < size_y; i++){
+	for(int k = 0; k < size_y; k++){
+		for(int i = 0; i < size_x; i++){
 			if(set_map[k][i] == -1)
 				set_map[k][i] = 999;
 		}

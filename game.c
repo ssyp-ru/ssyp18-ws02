@@ -21,7 +21,7 @@ struct {
 } game_state;
 
 void add_actor(actor_t* self){
-	add_vector_elem(game_state.queue[game_state.it + 1], self);
+	add_vector_elem(game_state.queue[(game_state.it + 1) % game_state.qlen], self);
 }
 
 void main_cycle(actors_vt * actors, 
@@ -121,7 +121,6 @@ void init_messages(){
   put_message("There is nothing here!");
 }
 
-
 void close_messages() {
   for(int i = 0; i < game_state.log->size; i++)
     if (game_state.log->buffer[i].line)
@@ -144,9 +143,17 @@ void start_game() {
 	srand((unsigned)time(&t));
 	init_messages();
 	levels_vt* levels = lvector_init(1);
-	lvector_add(levels, init_level(30, 30));
-	actors_vt* actors = init_actors(lvector_get(levels, 0), 1);
+	lvector_add(levels, init_level(120, 80));
+	actors_vt* actors = init_actors(lvector_get(levels, 0), 1000);
   init_timequeue(actors);
+  /*for(int i = 0; i < 3; i++)
+  {
+    actor_t * monster = make_monster();
+    monster->level = lvector_get(levels, 0);
+    monster->x = rand() % 120;
+    monster->y = rand() % 80;
+    add_actor(monster);
+  }*/
 	main_cycle(actors, levels, game_state.log);
   close_messages();
 	destroy_the_world(actors, levels);

@@ -64,7 +64,7 @@ int behave_fire(actor_t* self){
 	add_vector_elem(self->level->actors, bullet);
 	add_actor(bullet);
 	self->state = 0;
-	return 1;
+	return 8;
 }
 
 int behave_projectiles(actor_t* self){

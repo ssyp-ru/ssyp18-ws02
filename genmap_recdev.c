@@ -169,8 +169,8 @@ map_t* mapgen_recdev(map_t * map) {
 			map_unpacked[j][i].flags &= ~FLAG_TILE_SOLID;
 		}
 
-	build_wall_recdev(map, map->width, map->height, rand() % 2,
-	                  0, 0);
+	build_wall_recdev(map, map->width-2, map->height-2, rand() % 2,
+	                  1, 1);
 	for(int i = 0; i < map->width; i++)
 		for(int j = 0; j < map->height; j++) {
 			if(i == 0 || j == 0 || i == map->width - 1 || j == map->height - 1)

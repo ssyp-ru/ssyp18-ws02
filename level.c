@@ -11,7 +11,7 @@ level_t* init_level(int width,
 	map_t * _map = create_map(height, width);
 	_map = mapgen_recdev(_map);
 	level->map = _map;
-	int num = 200;
+	int num = 10;
 	gen_feature(level, num);
 
 	/*extern features_vt * prototypes;

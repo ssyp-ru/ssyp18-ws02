@@ -1,6 +1,5 @@
 #pragma once
 #include "common.h"
-#include "dumblogger.h"
 typedef struct room_tree {
 	int x1, y1, x2, y2;
 	int S;
