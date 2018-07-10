@@ -45,6 +45,9 @@ int behave_player(actor_t * self) {
 		self->x++;
 
 		break;
+	case 'p':
+		
+		break;
 	}
 
 	return 1;
@@ -65,6 +68,11 @@ int behave_goblin(actor_t * self){
 			int y1 = path->buffer[path->length].y;
 			self->x = x1;
 			self->y = y1;
+		}
+		if(path->length == 1){
+			find_actor->hp--;
+			self->x = path->buffer[0].x;
+			self->y = path->buffer[0].y;
 		}
 	}
 	return 1;
